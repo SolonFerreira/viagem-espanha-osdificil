@@ -160,20 +160,38 @@ header {
 
 /* Map section */
 #map-section {
-  flex-shrink: 0; position: relative;
+  flex-shrink: 0;
+  display: flex; flex-direction: column;
   background: var(--g100); border-bottom: 1px solid var(--g200);
 }
-#map { height: 250px; width: 100%; transition: height .3s ease; }
+#map { height: 250px; width: 100%; transition: height .3s ease; flex-shrink: 0; }
 #map-section.collapsed #map { height: 0; }
-#map-toggle-btn {
-  position: absolute; bottom: 8px; right: 8px; z-index: 400;
-  background: var(--g0); border: 1px solid var(--g200);
-  border-radius: 6px; padding: 5px 11px;
-  font-size: 12px; font-weight: 600; color: var(--g700);
-  box-shadow: var(--shadow-sm); transition: background .1s;
+
+/* Barra de ação: Google Maps · Waze · toggle */
+.map-action-bar {
+  display: flex; align-items: stretch; gap: 8px;
+  padding: 8px 12px; flex-shrink: 0;
+  background: var(--g0); border-top: 1px solid var(--g200);
 }
-#map-toggle-btn:hover { background: var(--g50); }
-#map-section.collapsed #map-toggle-btn { bottom: -34px; }
+.map-nav-btn {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  min-height: 44px;
+  background: var(--g50); border: 1px solid var(--g200);
+  border-radius: 8px;
+  font-size: 13px; font-weight: 600; color: var(--g700);
+  transition: background .1s;
+}
+.map-nav-btn:hover, .map-nav-btn:active { background: var(--g100); }
+#map-toggle-btn {
+  flex-shrink: 0;
+  min-height: 44px; padding: 0 12px;
+  background: none; border: 1px solid var(--g200);
+  border-radius: 8px;
+  font-size: 12px; font-weight: 600; color: var(--g500);
+  white-space: nowrap; transition: background .1s;
+}
+#map-toggle-btn:hover, #map-toggle-btn:active { background: var(--g100); }
 
 /* Timeline scroll area */
 #timeline-wrap { flex: 1; overflow-y: auto; padding: 16px 20px 40px; }
@@ -401,7 +419,11 @@ header {
       <div id="day-header"></div>
       <div id="map-section">
         <div id="map"></div>
-        <button id="map-toggle-btn" onclick="toggleMap()">▲ Ocultar mapa</button>
+        <div class="map-action-bar">
+          <button class="map-nav-btn" onclick="openGoogleMaps()">🗺️ Google Maps</button>
+          <button class="map-nav-btn" onclick="openWaze()">🚗 Waze</button>
+          <button id="map-toggle-btn" onclick="toggleMap()">▲ Ocultar</button>
+        </div>
       </div>
       <div id="timeline-wrap"><div class="tl-inner" id="timeline"></div></div>
     </div>
@@ -1072,9 +1094,36 @@ function toggleMap() {
   const sec = document.getElementById('map-section');
   const btn = document.getElementById('map-toggle-btn');
   sec.classList.toggle('collapsed', S.mapCollapsed);
-  btn.textContent = S.mapCollapsed ? '▼ Ver mapa' : '▲ Ocultar mapa';
+  btn.textContent = S.mapCollapsed ? '▼ Ver mapa' : '▲ Ocultar';
   if (!S.mapCollapsed) setTimeout(() => leafMap && leafMap.invalidateSize(), 320);
 }
+
+function buildGoogleMapsUrl() {
+  const dest = DEST[S.dest];
+  const day  = dest.days[S.dayIdx];
+  const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
+  if (!pts.length) return null;
+  if (pts.length === 1)
+    return `https://www.google.com/maps/search/?api=1&query=${pts[0].lat},${pts[0].lng}`;
+  const origin = `${pts[0].lat},${pts[0].lng}`;
+  const dst    = `${pts[pts.length-1].lat},${pts[pts.length-1].lng}`;
+  const wp     = pts.slice(1,-1).map(p => `${p.lat},${p.lng}`).join('|');
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dst}&travelmode=driving`;
+  if (wp) url += `&waypoints=${encodeURIComponent(wp)}`;
+  return url;
+}
+
+function buildWazeUrl() {
+  const dest = DEST[S.dest];
+  const day  = dest.days[S.dayIdx];
+  const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
+  if (!pts.length) return null;
+  // Waze não suporta multi-stop via URL — abre no 1º ponto do dia
+  return `https://waze.com/ul?ll=${pts[0].lat},${pts[0].lng}&navigate=yes&zoom=17`;
+}
+
+function openGoogleMaps() { const u = buildGoogleMapsUrl(); if (u) window.open(u, '_blank'); }
+function openWaze()        { const u = buildWazeUrl();        if (u) window.open(u, '_blank'); }
 
 // ════════════════════════════════════════════════════════════
 //  CHECKLIST (localStorage)
