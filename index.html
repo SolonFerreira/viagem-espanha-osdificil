@@ -7,388 +7,343 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-/* ─── RESET & TOKENS ─── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --c-tf: #EA580C; --c-tf-l: #FFF7ED; --c-tf-b: #FED7AA;
-  --c-md: #16A34A; --c-md-l: #F0FDF4; --c-md-b: #BBF7D0;
-  --c-ma: #DC2626; --c-ma-l: #FEF2F2; --c-ma-b: #FECACA;
-  --c-res: #4F46E5; --c-gas: #7C3AED;
-  --c-red: #EF4444; --c-orange: #F97316; --c-green: #22C55E;
-  --g0: #FFFFFF; --g50: #F8FAFC; --g100: #F1F5F9; --g200: #E2E8F0;
-  --g300: #CBD5E1; --g400: #94A3B8; --g500: #64748B; --g700: #334155; --g900: #0F172A;
-  --header-h: 56px;
-  --sidebar-w: 228px;
-  --radius: 10px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.1);
-  /* active destination theming – overridden by JS */
-  --dest: var(--c-tf); --dest-l: var(--c-tf-l); --dest-b: var(--c-tf-b);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+a,button{-webkit-tap-highlight-color:transparent;}
+:root{
+  --c-tf:#EA580C;--c-tf-l:#FFF7ED;--c-tf-b:#FED7AA;
+  --c-md:#16A34A;--c-md-l:#F0FDF4;--c-md-b:#BBF7D0;
+  --c-ma:#DC2626;--c-ma-l:#FEF2F2;--c-ma-b:#FECACA;
+  --c-res:#4F46E5;--c-gas:#7C3AED;
+  --c-red:#EF4444;--c-orange:#F97316;--c-green:#22C55E;
+  --c-warn-bg:#FFFBEB;--c-warn-bd:#FCD34D;--c-warn-tx:#92400E;
+  --c-food-bg:#F0FDF4;--c-food-bd:#86EFAC;--c-food-tx:#166534;
+  --g0:#FFF;--g50:#F8FAFC;--g100:#F1F5F9;--g200:#E2E8F0;
+  --g300:#CBD5E1;--g400:#94A3B8;--g500:#64748B;--g700:#334155;--g900:#0F172A;
+  --header-h:52px;--chips-h:50px;--sidebar-w:228px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --bottom-h:calc(64px + var(--safe-b));
+  --sh-sm:0 1px 3px rgba(0,0,0,.08);--sh-md:0 4px 12px rgba(0,0,0,.1);
+  --sh-card:0 2px 8px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --r-sm:8px;--r-md:12px;--r-lg:16px;
+  --dest:var(--c-tf);--dest-l:var(--c-tf-l);--dest-b:var(--c-tf-b);
 }
-html { scroll-behavior: smooth; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-       background: var(--g50); color: var(--g900); min-height: 100vh; font-size: 14px; line-height: 1.5; }
-button { cursor: pointer; font-family: inherit; }
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:var(--g50);color:var(--g900);min-height:100vh;font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;}
+button{cursor:pointer;font-family:inherit;}
 
-/* ─── HEADER ─── */
-header {
-  position: sticky; top: 0; z-index: 500;
-  height: var(--header-h); background: var(--g0);
-  border-bottom: 1px solid var(--g200);
-  box-shadow: var(--shadow-sm);
-  display: flex; align-items: center; gap: 0; padding: 0 12px 0 0;
-}
-.brand {
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 16px; height: 100%; border-right: 1px solid var(--g200);
-  font-weight: 800; font-size: 15px; white-space: nowrap; color: var(--g900);
-  text-decoration: none; flex-shrink: 0;
-}
-.brand-icon { font-size: 22px; }
-#menu-btn {
-  display: none; background: none; border: none;
-  padding: 8px 12px; font-size: 20px; color: var(--g700); flex-shrink: 0;
-}
-.dest-tabs { display: flex; gap: 2px; padding: 0 8px; overflow-x: auto; scrollbar-width: none; flex: 1; }
-.dest-tabs::-webkit-scrollbar { display: none; }
-.tab {
-  display: flex; align-items: center; gap: 5px; padding: 6px 14px;
-  border: none; border-radius: 8px; background: none; color: var(--g500);
-  font-size: 13px; font-weight: 600; white-space: nowrap; transition: background .15s, color .15s;
-  position: relative;
-}
-.tab:hover { background: var(--g100); color: var(--g900); }
-.tab.active { color: #fff; }
-.tab[data-dest="tenerife"].active  { background: var(--c-tf); }
-.tab[data-dest="madeira"].active   { background: var(--c-md); }
-.tab[data-dest="madrid"].active    { background: var(--c-ma); }
-.tab[data-dest="reservas"].active  { background: var(--c-res); }
-.tab[data-dest="gastro"].active    { background: var(--c-gas); }
-.tab-badge {
-  position: absolute; top: 3px; right: 3px;
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--c-red); border: 2px solid var(--g0);
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:500;height:var(--header-h);
+  background:var(--g0);border-bottom:1px solid var(--g200);
+  box-shadow:var(--sh-sm);display:flex;align-items:center;padding:0 6px 0 0;}
+.brand{display:flex;align-items:center;gap:6px;padding:0 14px;height:100%;
+  border-right:1px solid var(--g200);font-weight:800;font-size:14px;
+  white-space:nowrap;color:var(--g900);text-decoration:none;flex-shrink:0;}
+.brand-icon{font-size:20px;}
+.brand-text{display:none;}
+.dest-tabs{display:flex;gap:2px;padding:0 6px;overflow-x:auto;
+  scrollbar-width:none;flex:1;}
+.dest-tabs::-webkit-scrollbar{display:none;}
+.tab{display:flex;align-items:center;gap:4px;padding:6px 11px;
+  border:none;border-radius:8px;background:none;color:var(--g500);
+  font-size:13px;font-weight:600;white-space:nowrap;
+  transition:background .15s,color .15s;position:relative;}
+.tab:hover{background:var(--g100);color:var(--g900);}
+.tab.active{color:#fff;}
+.tab[data-dest="tenerife"].active{background:var(--c-tf);}
+.tab[data-dest="madeira"].active{background:var(--c-md);}
+.tab[data-dest="madrid"].active{background:var(--c-ma);}
+.tab[data-dest="reservas"].active{background:var(--c-res);}
+.tab[data-dest="gastro"].active{background:var(--c-gas);}
+.tab-badge{position:absolute;top:3px;right:3px;width:8px;height:8px;
+  border-radius:50%;background:var(--c-red);border:2px solid var(--g0);}
+
+/* ── OVERLAY ── */
+#overlay{display:none;position:fixed;inset:0;z-index:480;background:rgba(0,0,0,.4);}
+#overlay.show{display:block;}
+
+/* ── DAY CHIPS ── */
+#day-chips-wrap{position:sticky;top:var(--header-h);z-index:400;
+  background:var(--g0);border-bottom:1px solid var(--g200);
+  height:var(--chips-h);display:flex;align-items:center;padding:0 12px;}
+#day-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+  flex:1;padding:6px 0;}
+#day-chips::-webkit-scrollbar{display:none;}
+.day-chip{display:flex;flex-direction:column;align-items:center;gap:1px;
+  padding:4px 12px;border:1.5px solid var(--g200);border-radius:20px;
+  background:var(--g0);color:var(--g500);font-size:11px;font-weight:600;
+  white-space:nowrap;transition:all .15s;flex-shrink:0;
+  min-width:50px;min-height:36px;justify-content:center;}
+.chip-icon{font-size:14px;line-height:1;}
+.chip-num{font-size:10px;line-height:1;}
+.day-chip.active{background:var(--dest);border-color:var(--dest);color:#fff;}
+.day-chip:not(.active):hover{background:var(--g50);border-color:var(--g300);}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:calc(100dvh - var(--header-h) - var(--chips-h));}
+
+/* ── SIDEBAR (desktop only) ── */
+#sidebar{display:none;width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--g0);border-right:1px solid var(--g200);
+  flex-direction:column;overflow:hidden;
+  position:sticky;top:calc(var(--header-h) + var(--chips-h));
+  height:calc(100dvh - var(--header-h) - var(--chips-h));}
+.sidebar-dest{padding:12px 14px;border-bottom:1px solid var(--g100);flex-shrink:0;}
+.sidebar-dest-label{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--dest);margin-bottom:2px;}
+.sidebar-dest-base{font-size:11px;color:var(--g500);line-height:1.4;}
+#day-list{overflow-y:auto;flex:1;scrollbar-width:thin;}
+#day-list::-webkit-scrollbar{width:4px;}
+#day-list::-webkit-scrollbar-thumb{background:var(--g200);border-radius:2px;}
+.day-row{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-bottom:1px solid var(--g100);cursor:pointer;transition:background .1s;}
+.day-row:hover{background:var(--g50);}
+.day-row.active{background:var(--dest-l);}
+.day-num-badge{width:28px;height:28px;border-radius:50%;background:var(--g100);color:var(--g700);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  flex-shrink:0;transition:background .15s,color .15s;}
+.day-row.active .day-num-badge{background:var(--dest);color:#fff;}
+.day-row-body{flex:1;min-width:0;}
+.day-row-title{font-size:12px;font-weight:600;color:var(--g900);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.day-row-date{font-size:11px;color:var(--g500);}
+.day-row-pips{display:flex;gap:3px;margin-top:2px;}
+.pip{width:5px;height:5px;border-radius:50%;}
+.pip-red{background:var(--c-red);}
+.pip-orange{background:var(--c-orange);}
+.pip-green{background:var(--c-green);}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;min-width:0;overflow-x:hidden;}
+#view-itinerary{display:flex;flex-direction:column;padding-bottom:var(--bottom-h);}
+#view-reservas,#view-gastro{display:none;padding:16px;overflow-y:auto;}
+
+/* ── DAY HEADER CARD ── */
+#day-header-card{margin:12px 12px 0;padding:14px 16px;
+  background:var(--g0);border-radius:var(--r-lg);box-shadow:var(--sh-card);
+  border-top:3px solid var(--dest);}
+.dhc-pill{display:inline-flex;align-items:center;gap:5px;
+  background:var(--dest);color:#fff;font-size:11px;font-weight:700;
+  padding:2px 10px;border-radius:20px;margin-bottom:8px;}
+.dhc-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.dhc-title{font-size:20px;font-weight:800;line-height:1.2;color:var(--g900);flex:1;}
+.dhc-intensity{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;
+  white-space:nowrap;flex-shrink:0;margin-top:3px;}
+.int-leve{background:#F0FDF4;color:#166534;}
+.int-medio{background:#FFF7ED;color:#92400E;}
+.int-intenso{background:#FEF2F2;color:#991B1B;}
+.dhc-date{font-size:12px;color:var(--g500);margin-top:2px;}
+.dhc-summary{margin-top:8px;font-size:13px;color:var(--g700);line-height:1.5;}
+.flight-strip{margin-top:10px;padding:8px 12px;
+  background:linear-gradient(135deg,#EFF6FF,#DBEAFE);
+  border:1px solid #BFDBFE;border-radius:8px;
+  font-size:12px;font-weight:600;color:#1E40AF;line-height:1.5;}
+
+/* ── NEXT ACTION CARD ── */
+#next-action-wrap{margin:10px 12px 0;}
+.next-action-card{background:var(--g0);border-radius:var(--r-lg);
+  border:2px solid var(--dest);box-shadow:var(--sh-md);padding:14px 16px;}
+.nac-label{font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--dest);margin-bottom:8px;}
+.nac-time-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.nac-time{font-size:28px;font-weight:800;color:var(--g900);line-height:1;
+  font-variant-numeric:tabular-nums;}
+.nac-icon{font-size:24px;line-height:1;}
+.nac-name{font-size:16px;font-weight:700;color:var(--g900);margin-bottom:4px;}
+.nac-notes{font-size:12px;color:var(--g500);line-height:1.5;margin-top:4px;}
+.nac-warn{display:flex;align-items:flex-start;gap:6px;padding:8px 10px;
+  border-radius:8px;background:var(--c-warn-bg);border-left:3px solid var(--c-warn-bd);
+  font-size:12px;font-weight:600;color:var(--c-warn-tx);line-height:1.45;margin:8px 0;}
+.nac-actions{display:flex;gap:8px;margin-top:12px;}
+.nac-btn{flex:1;min-height:46px;display:flex;align-items:center;
+  justify-content:center;gap:5px;border-radius:10px;
+  font-size:13px;font-weight:700;border:none;transition:opacity .15s;}
+.nac-btn:active{opacity:.75;}
+.nac-maps{background:#4285F4;color:#fff;}
+.nac-waze{background:#06CCF3;color:#000;}
+
+/* ── ALERT STYLES ── */
+.alert-warn{display:flex;align-items:flex-start;gap:6px;padding:8px 10px;
+  border-radius:8px;background:var(--c-warn-bg);border-left:3px solid var(--c-warn-bd);
+  font-size:12px;font-weight:600;color:var(--c-warn-tx);line-height:1.45;
+  margin:8px 0 0;}
+
+/* ── MAP SECTION ── */
+#map-section{margin:10px 12px 0;border-radius:var(--r-md);overflow:hidden;
+  border:1px solid var(--g200);background:var(--g0);box-shadow:var(--sh-card);
+  display:flex;flex-direction:column;}
+#map{height:240px;width:100%;transition:height .3s ease;flex-shrink:0;}
+#map-section.collapsed #map{height:0;}
+.map-action-bar{display:flex;align-items:stretch;gap:8px;padding:8px 10px;
+  background:var(--g0);border-top:1px solid var(--g200);flex-shrink:0;}
+.map-nav-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
+  min-height:42px;background:var(--g50);border:1px solid var(--g200);
+  border-radius:8px;font-size:12px;font-weight:600;color:var(--g700);
+  transition:background .1s;}
+.map-nav-btn:active{background:var(--g100);}
+#map-toggle-btn{flex-shrink:0;min-height:42px;padding:0 10px;
+  background:none;border:1px solid var(--g200);border-radius:8px;
+  font-size:12px;font-weight:600;color:var(--g500);white-space:nowrap;}
+#map-toggle-btn:active{background:var(--g100);}
+.popup-time{font-size:11px;font-weight:700;color:var(--dest);}
+.popup-name{font-size:13px;font-weight:700;margin:2px 0;}
+.popup-note{font-size:11px;color:#475569;max-width:180px;}
+
+/* ── STOP CARDS ── */
+#stop-cards{display:flex;flex-direction:column;gap:8px;padding:10px 12px 16px;}
+.stop-card{background:var(--g0);border-radius:var(--r-md);box-shadow:var(--sh-card);
+  padding:12px 14px;border-left:3px solid transparent;}
+.stop-card.is-next{border-left-color:var(--dest);}
+.sc-header{display:flex;align-items:flex-start;gap:10px;}
+.sc-time{font-size:13px;font-weight:800;color:var(--dest);
+  min-width:42px;flex-shrink:0;margin-top:2px;font-variant-numeric:tabular-nums;}
+.sc-icon-wrap{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  background:var(--g50);border:1.5px solid var(--g200);
+  display:flex;align-items:center;justify-content:center;font-size:16px;}
+.sc-icon-wrap.is-dinner,.sc-icon-wrap.is-lunch{background:var(--dest-l);border-color:var(--dest-b);}
+.sc-icon-wrap.is-transport{background:var(--g100);border-color:var(--g300);}
+.sc-title{flex:1;font-size:15px;font-weight:700;color:var(--g900);line-height:1.3;min-width:0;}
+.sc-details{padding-top:10px;}
+.sc-notes{font-size:12px;color:var(--g500);line-height:1.55;}
+.sc-food{margin-top:8px;padding:7px 10px;border-radius:7px;
+  background:var(--c-food-bg);border-left:3px solid var(--c-food-bd);
+  font-size:12px;color:var(--c-food-tx);line-height:1.45;}
+.sc-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.sc-btn{display:flex;align-items:center;justify-content:center;gap:4px;
+  min-height:38px;padding:0 14px;border-radius:8px;
+  font-size:12px;font-weight:600;transition:opacity .1s;}
+.sc-btn:active{opacity:.7;}
+.sc-btn-nav{background:var(--dest);color:#fff;}
+.sc-btn-detail{background:var(--g50);border:1px solid var(--g200);color:var(--g700);}
+
+/* ── DAY RESERVAS (inside stop-cards) ── */
+.day-res-block{background:var(--g0);border-radius:var(--r-md);
+  box-shadow:var(--sh-card);padding:12px 14px;border-left:3px solid var(--c-res);}
+.day-res-title{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--c-res);margin-bottom:10px;}
+.res-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;}
+.res-row+.res-row{border-top:1px solid var(--g100);}
+.res-checkbox{width:22px;height:22px;border-radius:6px;flex-shrink:0;margin-top:1px;
+  border:2px solid var(--g300);background:var(--g0);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;transition:all .15s;}
+.res-checkbox.done{background:var(--c-green);border-color:var(--c-green);}
+.res-text{flex:1;min-width:0;}
+.res-text.is-done .res-name,.res-text.is-done .res-how,.res-text.is-done .res-obs{
+  opacity:.45;text-decoration:line-through;}
+.res-badge{display:inline-block;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:10px;margin-bottom:2px;}
+.badge-red{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;}
+.badge-orange{background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;}
+.badge-green{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;}
+.res-name{font-size:14px;font-weight:700;color:var(--g900);}
+.res-how{font-size:12px;color:var(--g700);margin-top:1px;}
+.res-obs{font-size:11px;color:var(--g500);margin-top:1px;font-style:italic;}
+
+/* ── FOOD SUMMARY ── */
+.food-block{background:var(--g0);border-radius:var(--r-md);
+  box-shadow:var(--sh-card);padding:12px 14px;}
+.food-block-title{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--g500);margin-bottom:8px;}
+.food-line{display:flex;gap:7px;align-items:flex-start;padding:3px 0;
+  font-size:12px;color:var(--g700);}
+.food-line-icon{flex-shrink:0;}
+
+/* ── BOTTOM BAR ── */
+#bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:450;
+  padding:8px 12px var(--safe-b);
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--g200);box-shadow:0 -4px 16px rgba(0,0,0,.08);}
+#bottom-nav-btn{display:flex;align-items:center;justify-content:space-between;
+  width:100%;min-height:52px;padding:0 18px;
+  background:var(--dest);color:#fff;border-radius:var(--r-md);
+  font-size:14px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);transition:opacity .1s;}
+#bottom-nav-btn:active{opacity:.85;}
+.bb-left{display:flex;flex-direction:column;align-items:flex-start;}
+.bb-label{font-size:11px;font-weight:600;opacity:.85;}
+.bb-dest{font-size:14px;font-weight:800;}
+.bb-icon{font-size:22px;}
+
+/* ── FULL VIEWS (Reservas / Gastro) ── */
+.view-title{font-size:20px;font-weight:800;color:var(--g900);}
+.view-sub{font-size:13px;color:var(--g500);margin-top:2px;margin-bottom:20px;}
+.progress-wrap{background:var(--g200);border-radius:20px;height:6px;margin-bottom:4px;overflow:hidden;}
+.progress-bar{height:100%;background:var(--c-green);border-radius:20px;transition:width .4s;}
+.progress-label{font-size:11px;color:var(--g500);text-align:right;margin-bottom:16px;}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.filt-btn{border:2px solid var(--g200);background:var(--g0);border-radius:20px;
+  padding:6px 14px;font-size:12px;font-weight:600;color:var(--g700);
+  transition:all .15s;min-height:36px;}
+.filt-btn:hover{border-color:var(--g300);}
+.filt-btn.f-all{background:var(--g900);color:#fff;border-color:var(--g900);}
+.filt-btn.f-red{background:var(--c-red);color:#fff;border-color:var(--c-red);}
+.filt-btn.f-orange{background:var(--c-orange);color:#fff;border-color:var(--c-orange);}
+.filt-btn.f-green{background:var(--c-green);color:#fff;border-color:var(--c-green);}
+.res-group-hd{font-size:12px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--g200);}
+.big-res-card{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+  margin-bottom:8px;background:var(--g0);border-radius:var(--r-md);
+  border:1px solid var(--g200);box-shadow:var(--sh-card);}
+.big-res-card.is-done{opacity:.55;}
+.brc-check{width:24px;height:24px;border-radius:6px;flex-shrink:0;margin-top:2px;
+  border:2px solid var(--g300);background:var(--g0);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;transition:all .15s;}
+.brc-check.done{background:var(--c-green);border-color:var(--c-green);}
+.brc-body{flex:1;min-width:0;}
+.brc-body.is-done .brc-name{text-decoration:line-through;opacity:.6;}
+.brc-dest{display:inline-block;font-size:10px;font-weight:700;color:#fff;
+  padding:2px 8px;border-radius:10px;margin-bottom:4px;}
+.brc-name{font-size:14px;font-weight:700;color:var(--g900);}
+.brc-how{font-size:12px;color:var(--g700);margin-top:2px;}
+.brc-obs{font-size:11px;color:var(--g500);margin-top:1px;font-style:italic;}
+.alerts-box{margin-top:20px;padding:14px 16px;background:var(--c-warn-bg);
+  border-radius:var(--r-md);border:1px solid var(--c-warn-bd);}
+.alerts-box-title{font-size:13px;font-weight:700;color:var(--c-warn-tx);margin-bottom:8px;}
+.alert-line{font-size:12px;color:var(--c-warn-tx);padding:3px 0;line-height:1.5;}
+.gastro-section{margin-bottom:24px;}
+.gastro-hd{font-size:14px;font-weight:800;padding:8px 0;
+  border-bottom:2px solid;margin-bottom:12px;}
+.dish-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+.dish-card{padding:12px;background:var(--g0);border-radius:var(--r-sm);
+  border-left:3px solid;box-shadow:var(--sh-card);}
+.dish-name{font-size:13px;font-weight:700;color:var(--g900);margin-bottom:4px;}
+.dish-desc{font-size:12px;color:var(--g700);line-height:1.45;margin-bottom:6px;}
+.dish-where{font-size:11px;font-weight:600;}
+.strategy-box{margin-top:20px;padding:14px 16px;background:var(--g0);
+  border-radius:var(--r-md);border:1px solid var(--g200);box-shadow:var(--sh-card);}
+.strategy-box-title{font-size:13px;font-weight:700;color:var(--g900);margin-bottom:10px;}
+.strategy-line{font-size:12px;color:var(--g700);line-height:1.8;}
+
+/* ── TABLET ── */
+@media(min-width:641px){
+  .brand-text{display:block;}
+  #day-chips-wrap{padding:0 20px;}
+  #stop-cards{padding:12px 20px 16px;gap:10px;}
+  #day-header-card{margin:14px 20px 0;}
+  #next-action-wrap{margin:12px 20px 0;}
+  #map-section{margin:12px 20px 0;}
+  .dish-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));}
 }
 
-/* ─── LAYOUT ─── */
-.layout {
-  display: flex;
-  height: calc(100vh - var(--header-h));
-  overflow: hidden;
-}
-
-/* ─── SIDEBAR ─── */
-#sidebar {
-  width: var(--sidebar-w); min-width: var(--sidebar-w);
-  background: var(--g0); border-right: 1px solid var(--g200);
-  display: flex; flex-direction: column; overflow: hidden;
-  transition: transform .22s ease;
-}
-.sidebar-dest {
-  padding: 12px 14px; border-bottom: 1px solid var(--g100);
-  flex-shrink: 0;
-}
-.sidebar-dest-label {
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .06em; color: var(--dest); margin-bottom: 2px;
-}
-.sidebar-dest-base { font-size: 11px; color: var(--g500); line-height: 1.4; }
-#day-list { overflow-y: auto; flex: 1; scrollbar-width: thin; }
-#day-list::-webkit-scrollbar { width: 4px; }
-#day-list::-webkit-scrollbar-thumb { background: var(--g200); border-radius: 2px; }
-.day-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; border-bottom: 1px solid var(--g100);
-  cursor: pointer; transition: background .1s;
-}
-.day-row:hover { background: var(--g50); }
-.day-row.active { background: var(--dest-l); }
-.day-num-badge {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: var(--g100); color: var(--g700);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; flex-shrink: 0;
-  transition: background .15s, color .15s;
-}
-.day-row.active .day-num-badge { background: var(--dest); color: #fff; }
-.day-row-body { flex: 1; min-width: 0; }
-.day-row-title { font-size: 12px; font-weight: 600; color: var(--g900);
-                 white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.day-row-date  { font-size: 11px; color: var(--g500); }
-.day-row-pips  { display: flex; gap: 3px; margin-top: 3px; }
-.pip { width: 6px; height: 6px; border-radius: 50%; }
-.pip-red    { background: var(--c-red); }
-.pip-orange { background: var(--c-orange); }
-.pip-green  { background: var(--c-green); }
-
-/* ─── MAIN CONTENT ─── */
-#main {
-  flex: 1; min-width: 0;
-  display: flex; flex-direction: column;
-  overflow: hidden;
-}
-
-/* ─── ITINERARY VIEW ─── */
-#view-itinerary { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
-
-/* Day header */
-#day-header {
-  flex-shrink: 0; padding: 16px 20px 14px; background: var(--g0);
-  border-bottom: 1px solid var(--g200);
-}
-.dh-pill {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--dest); color: #fff;
-  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
-  margin-bottom: 8px;
-}
-.dh-title { font-size: 22px; font-weight: 800; line-height: 1.2; color: var(--g900); }
-.dh-date  { font-size: 13px; color: var(--g500); margin-top: 2px; }
-.dh-summary {
-  margin-top: 10px; padding: 9px 13px; border-radius: 8px;
-  background: var(--dest-l); border-left: 3px solid var(--dest);
-  font-size: 13px; color: var(--g700); line-height: 1.5;
-}
-.flight-strip {
-  margin: 10px 20px 0; padding: 9px 14px;
-  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-  border: 1px solid #BFDBFE; border-radius: 8px;
-  display: flex; align-items: center; gap: 10px;
-}
-.flight-strip-icon { font-size: 18px; }
-.flight-strip-text { font-size: 12px; font-weight: 600; color: #1E40AF; line-height: 1.4; }
-
-/* Map section */
-#map-section {
-  flex-shrink: 0;
-  display: flex; flex-direction: column;
-  background: var(--g100); border-bottom: 1px solid var(--g200);
-}
-#map { height: 250px; width: 100%; transition: height .3s ease; flex-shrink: 0; }
-#map-section.collapsed #map { height: 0; }
-
-/* Barra de ação: Google Maps · Waze · toggle */
-.map-action-bar {
-  display: flex; align-items: stretch; gap: 8px;
-  padding: 8px 12px; flex-shrink: 0;
-  background: var(--g0); border-top: 1px solid var(--g200);
-}
-.map-nav-btn {
-  flex: 1;
-  display: flex; align-items: center; justify-content: center; gap: 5px;
-  min-height: 44px;
-  background: var(--g50); border: 1px solid var(--g200);
-  border-radius: 8px;
-  font-size: 13px; font-weight: 600; color: var(--g700);
-  transition: background .1s;
-}
-.map-nav-btn:hover, .map-nav-btn:active { background: var(--g100); }
-#map-toggle-btn {
-  flex-shrink: 0;
-  min-height: 44px; padding: 0 12px;
-  background: none; border: 1px solid var(--g200);
-  border-radius: 8px;
-  font-size: 12px; font-weight: 600; color: var(--g500);
-  white-space: nowrap; transition: background .1s;
-}
-#map-toggle-btn:hover, #map-toggle-btn:active { background: var(--g100); }
-
-/* Timeline scroll area */
-#timeline-wrap { flex: 1; overflow-y: auto; padding: 16px 20px 40px; }
-.tl-inner { max-width: 640px; }
-
-/* Timeline stops */
-.tl-stop { display: flex; gap: 12px; position: relative; }
-.tl-stop:not(:last-child)::before {
-  content: ''; position: absolute;
-  left: 17px; top: 40px; bottom: 0; width: 2px;
-  background: var(--g200); z-index: 0;
-}
-.tl-icon-col { width: 36px; flex-shrink: 0; padding-top: 8px; z-index: 1; }
-.tl-icon {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--g0); border: 2px solid var(--g200);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; box-shadow: var(--shadow-sm);
-}
-.tl-icon.is-dinner, .tl-icon.is-lunch {
-  border-color: var(--dest); background: var(--dest-l);
-}
-.tl-icon.is-transport { border-color: var(--g300); background: var(--g50); }
-.tl-body { flex: 1; padding: 8px 0 22px; min-width: 0; }
-.tl-time { font-size: 11px; font-weight: 700; color: var(--g500); letter-spacing: .04em; margin-bottom: 2px; }
-.tl-name { font-size: 15px; font-weight: 700; color: var(--g900); line-height: 1.3; }
-.tl-notes { font-size: 12px; color: #475569; margin-top: 4px; line-height: 1.55; }
-.tl-food {
-  margin-top: 6px; padding: 6px 10px; border-radius: 6px;
-  background: var(--g50); border-left: 3px solid var(--dest);
-  font-size: 12px; color: var(--g700);
-}
-.tl-warn {
-  display: inline-flex; align-items: center; gap: 5px;
-  margin-top: 6px; padding: 5px 10px; border-radius: 6px;
-  background: #FFFBEB; border: 1px solid #FDE68A;
-  font-size: 11px; font-weight: 600; color: #92400E;
-}
-
-/* Day reservations block */
-.day-res-block {
-  margin-top: 4px; padding: 14px;
-  background: var(--g0); border: 1px solid var(--g200); border-radius: var(--radius);
-}
-.day-res-title {
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .05em; color: var(--g500); margin-bottom: 10px;
-}
-.res-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
-.res-row + .res-row { border-top: 1px solid var(--g100); }
-.res-checkbox {
-  width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0; margin-top: 2px;
-  border: 2px solid var(--g300); background: var(--g0); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: #fff; transition: all .15s;
-}
-.res-checkbox.done { background: var(--c-green); border-color: var(--c-green); }
-.res-text { flex: 1; min-width: 0; }
-.res-badge {
-  display: inline-block; font-size: 10px; font-weight: 700;
-  padding: 2px 8px; border-radius: 10px; margin-bottom: 3px;
-}
-.badge-red    { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
-.badge-orange { background: #FFF7ED; color: #C2410C; border: 1px solid #FED7AA; }
-.badge-green  { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
-.res-name  { font-size: 14px; font-weight: 700; color: var(--g900); }
-.res-how   { font-size: 12px; color: var(--g700); margin-top: 2px; }
-.res-obs   { font-size: 11px; color: var(--g500); margin-top: 1px; font-style: italic; }
-.res-text.is-done .res-name,
-.res-text.is-done .res-how,
-.res-text.is-done .res-obs { opacity: .45; text-decoration: line-through; }
-
-/* Food summary */
-.food-block {
-  margin-top: 12px; padding: 12px 14px;
-  background: var(--g50); border: 1px solid var(--g200); border-radius: var(--radius);
-}
-.food-block-title {
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .05em; color: var(--g500); margin-bottom: 8px;
-}
-.food-line { display: flex; gap: 7px; align-items: flex-start; padding: 3px 0; font-size: 12px; color: var(--g700); }
-.food-line-icon { flex-shrink: 0; }
-
-/* ─── FULL VIEWS (Reservas + Gastro) ─── */
-#view-reservas, #view-gastro {
-  display: none; flex: 1; overflow-y: auto; padding: 20px;
-}
-.view-title { font-size: 20px; font-weight: 800; color: var(--g900); }
-.view-sub   { font-size: 13px; color: var(--g500); margin-top: 2px; margin-bottom: 20px; }
-
-/* RESERVAS */
-.progress-wrap { background: var(--g200); border-radius: 20px; height: 6px; margin-bottom: 4px; overflow: hidden; }
-.progress-bar  { height: 100%; background: var(--c-green); border-radius: 20px; transition: width .4s; }
-.progress-label { font-size: 11px; color: var(--g500); text-align: right; margin-bottom: 16px; }
-.filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
-.filt-btn {
-  border: 2px solid var(--g200); background: var(--g0); border-radius: 20px;
-  padding: 5px 14px; font-size: 12px; font-weight: 600; color: var(--g700);
-  transition: all .15s;
-}
-.filt-btn:hover { border-color: var(--g300); }
-.filt-btn.f-all    { background: var(--g900); color: #fff; border-color: var(--g900); }
-.filt-btn.f-red    { background: var(--c-red); color: #fff; border-color: var(--c-red); }
-.filt-btn.f-orange { background: var(--c-orange); color: #fff; border-color: var(--c-orange); }
-.filt-btn.f-green  { background: var(--c-green); color: #fff; border-color: var(--c-green); }
-.res-group-hd {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 13px; font-weight: 700; margin: 20px 0 8px;
-}
-.big-res-card {
-  background: var(--g0); border: 1px solid var(--g200); border-radius: var(--radius);
-  padding: 13px 14px; margin-bottom: 8px;
-  display: flex; align-items: flex-start; gap: 12px;
-  transition: opacity .2s;
-}
-.big-res-card.is-done { opacity: .5; }
-.brc-check {
-  width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; margin-top: 2px;
-  border: 2px solid var(--g300); background: var(--g0); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; color: #fff; transition: all .15s;
-}
-.brc-check.done { background: var(--c-green); border-color: var(--c-green); }
-.brc-body { flex: 1; min-width: 0; }
-.brc-dest { display: inline-block; font-size: 10px; font-weight: 700; color: #fff;
-            padding: 2px 8px; border-radius: 10px; margin-bottom: 4px; }
-.brc-name { font-size: 14px; font-weight: 700; color: var(--g900); }
-.brc-how  { font-size: 12px; color: var(--g700); margin-top: 3px; }
-.brc-obs  { font-size: 11px; color: var(--g500); margin-top: 2px; font-style: italic; }
-.brc-body.is-done .brc-name,
-.brc-body.is-done .brc-how,
-.brc-body.is-done .brc-obs { text-decoration: line-through; }
-.alerts-box {
-  margin-top: 20px; padding: 14px; border-radius: var(--radius);
-  background: #FFFBEB; border: 1px solid #FDE68A;
-}
-.alerts-box-title { font-size: 12px; font-weight: 700; color: #92400E; margin-bottom: 8px; }
-.alert-line { font-size: 12px; color: #78350F; line-height: 1.6; }
-
-/* GASTRO */
-.gastro-section { margin-bottom: 28px; }
-.gastro-hd {
-  font-size: 16px; font-weight: 800; color: var(--g900);
-  padding-bottom: 8px; margin-bottom: 12px;
-  border-bottom: 2px solid currentColor;
-  display: flex; align-items: center; gap: 7px;
-}
-.dish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
-.dish-card {
-  background: var(--g0); border: 1px solid var(--g200); border-radius: 8px;
-  padding: 11px 12px; border-left: 3px solid;
-}
-.dish-name  { font-size: 13px; font-weight: 700; color: var(--g900); }
-.dish-desc  { font-size: 11px; color: #475569; margin-top: 3px; line-height: 1.4; }
-.dish-where { font-size: 10px; font-weight: 700; margin-top: 5px; }
-.strategy-box {
-  margin-top: 8px; padding: 14px; border-radius: var(--radius);
-  background: var(--g0); border: 1px solid var(--g200);
-}
-.strategy-box-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
-.strategy-line { font-size: 12px; color: var(--g700); line-height: 2; }
-
-/* ─── LEAFLET OVERRIDES ─── */
-.leaflet-popup-content-wrapper {
-  border-radius: var(--radius); font-family: inherit; box-shadow: var(--shadow-md);
-}
-.leaflet-popup-content { margin: 10px 14px !important; }
-.popup-time { font-size: 11px; font-weight: 700; color: var(--g500); }
-.popup-name { font-size: 14px; font-weight: 700; color: var(--g900); margin-top: 1px; }
-.popup-note { font-size: 11px; color: #475569; margin-top: 3px; line-height: 1.4; max-width: 200px; }
-
-/* ─── OVERLAY ─── */
-#overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.35); z-index: 450;
-}
-#overlay.show { display: block; }
-
-/* ─── RESPONSIVE ─── */
-@media (max-width: 720px) {
-  #menu-btn { display: block; }
-  .brand-text { display: none; }
-  #sidebar {
-    position: fixed; top: var(--header-h); left: 0; bottom: 0;
-    z-index: 490; transform: translateX(-100%);
-    box-shadow: none;
-  }
-  #sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,.18); }
-  .layout { height: calc(100dvh - var(--header-h)); }
-  #map { height: 200px; }
-  #view-reservas, #view-gastro { padding: 14px; }
-  .dish-grid { grid-template-columns: 1fr; }
-  .dh-title { font-size: 19px; }
-}
-@media (min-width: 721px) {
-  .brand { min-width: var(--sidebar-w); }
+/* ── DESKTOP ── */
+@media(min-width:1025px){
+  #sidebar{display:flex;}
+  #day-chips-wrap{display:none;}
+  .layout{min-height:calc(100vh - var(--header-h));}
+  #view-itinerary{padding-bottom:32px;}
+  #bottom-bar{display:none!important;}
+  #day-header-card{margin:16px 20px 0;}
+  #next-action-wrap{margin:12px 20px 0;}
+  #map-section{margin:12px 20px 0;}
+  #map{height:260px;}
+  #stop-cards{padding:12px 20px 24px;gap:10px;}
+  .next-action-card{max-width:760px;}
+  #view-reservas,#view-gastro{padding:20px;}
+  .dish-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
 }
 </style>
 </head>
@@ -399,37 +354,49 @@ header {
     <span class="brand-icon">🌍</span>
     <span class="brand-text">Família Solon · Jun 2025</span>
   </a>
-  <button id="menu-btn" onclick="toggleSidebar()">☰</button>
   <nav class="dest-tabs" id="destTabs"></nav>
 </header>
 
 <div id="overlay" onclick="closeSidebar()"></div>
 
+<div id="day-chips-wrap"><div id="day-chips"></div></div>
+
 <div class="layout">
   <aside id="sidebar">
     <div class="sidebar-dest">
       <div class="sidebar-dest-label" id="sdLabel"></div>
-      <div class="sidebar-dest-base" id="sdBase"></div>
+      <div class="sidebar-dest-base"  id="sdBase"></div>
     </div>
     <div id="day-list"></div>
   </aside>
 
   <main id="main">
     <div id="view-itinerary">
-      <div id="day-header"></div>
-      <div id="map-section">
+      <div id="day-header-card"></div>
+      <div id="next-action-wrap"></div>
+      <div id="map-section" class="collapsed">
         <div id="map"></div>
         <div class="map-action-bar">
-          <button class="map-nav-btn" onclick="openGoogleMaps()">🗺️ Google Maps</button>
-          <button class="map-nav-btn" onclick="openWaze()">🚗 Waze</button>
-          <button id="map-toggle-btn" onclick="toggleMap()">▲ Ocultar</button>
+          <button class="map-nav-btn" onclick="openGoogleMaps()" aria-label="Abrir rota completa no Google Maps">🗺️ Rota do dia</button>
+          <button class="map-nav-btn" onclick="openWaze()" aria-label="Abrir no Waze">🚗 Waze</button>
+          <button id="map-toggle-btn" onclick="toggleMap()">▼ Ver mapa</button>
         </div>
       </div>
-      <div id="timeline-wrap"><div class="tl-inner" id="timeline"></div></div>
+      <div id="stop-cards"></div>
     </div>
     <div id="view-reservas"></div>
     <div id="view-gastro"></div>
   </main>
+</div>
+
+<div id="bottom-bar">
+  <button id="bottom-nav-btn" onclick="navigateToNextStop()" aria-label="Navegar para próxima parada">
+    <div class="bb-left">
+      <span class="bb-label">Navegar agora</span>
+      <span class="bb-dest" id="bb-dest-name">…</span>
+    </div>
+    <span class="bb-icon">🗺️</span>
+  </button>
 </div>
 
 <script>
@@ -1008,84 +975,47 @@ for (const [destId, d] of Object.entries(DEST)) {
 // ════════════════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════════════════
-const S = {
-  dest: 'tenerife',
-  dayIdx: 0,
-  view: 'itinerary',     // 'itinerary' | 'reservas' | 'gastro'
-  resFilter: 'all',      // 'all' | 'red' | 'orange' | 'green'
-  mapCollapsed: false,
-};
+const S = { dest:'tenerife', dayIdx:0, view:'itinerary', resFilter:'all', mapCollapsed:true };
+const G = { nextStop: null }; // computed state
 
 // ════════════════════════════════════════════════════════════
 //  MAP
 // ════════════════════════════════════════════════════════════
-let leafMap = null;
-let mapLayers = [];
+let leafMap = null, mapLayers = [];
 
 function ensureMap() {
   if (leafMap) return;
-  leafMap = L.map('map', { zoomControl: true, attributionControl: true });
+  leafMap = L.map('map', { zoomControl:true, attributionControl:true });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-    maxZoom: 19
+    attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a>', maxZoom:19
   }).addTo(leafMap);
 }
-
-function clearMapLayers() {
-  mapLayers.forEach(l => l.remove());
-  mapLayers = [];
-}
+function clearMapLayers() { mapLayers.forEach(l => l.remove()); mapLayers = []; }
 
 function updateMap() {
-  ensureMap();
-  clearMapLayers();
-
-  const dest = DEST[S.dest];
-  const day  = dest.days[S.dayIdx];
+  ensureMap(); clearMapLayers();
+  const dest = DEST[S.dest], day = dest.days[S.dayIdx];
   const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
-
-  if (!pts.length) {
-    leafMap.setView(dest.mapCenter, dest.mapZoom);
-    setTimeout(() => leafMap.invalidateSize(), 120);
-    return;
-  }
-
-  // Route polyline
+  if (!pts.length) { leafMap.setView(dest.mapCenter, dest.mapZoom); setTimeout(() => leafMap.invalidateSize(), 120); return; }
   const latlngs = pts.map(p => [p.lat, p.lng]);
-  const line = L.polyline(latlngs, {
-    color: dest.color, weight: 3, opacity: .65, dashArray: '8,5'
-  }).addTo(leafMap);
+  const line = L.polyline(latlngs, { color:dest.color, weight:3, opacity:.65, dashArray:'8,5' }).addTo(leafMap);
   mapLayers.push(line);
-
-  // Markers with numbered pins
   pts.forEach((stop, i) => {
-    const html = `
-      <div style="position:relative;display:flex;flex-direction:column;align-items:center">
-        <div style="
-          width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
-          background:${dest.color};border:2px solid #fff;
-          display:flex;align-items:center;justify-content:center;
-          box-shadow:0 2px 6px rgba(0,0,0,.28)">
-          <span style="transform:rotate(45deg);font-size:13px">${stop.icon}</span>
-        </div>
-        <div style="
-          background:#fff;padding:1px 5px;border-radius:4px;
-          font-size:9px;font-weight:700;margin-top:2px;
-          box-shadow:0 1px 3px rgba(0,0,0,.2);
-          max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-          color:${dest.color};">${i+1}. ${stop.name.split('·')[0].trim()}</div>
-      </div>`;
+    const html = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
+      <div style="width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+        background:${dest.color};border:2px solid #fff;display:flex;align-items:center;justify-content:center;
+        box-shadow:0 2px 6px rgba(0,0,0,.28)">
+        <span style="transform:rotate(45deg);font-size:13px">${stop.icon}</span></div>
+      <div style="background:#fff;padding:1px 5px;border-radius:4px;font-size:9px;font-weight:700;margin-top:2px;
+        box-shadow:0 1px 3px rgba(0,0,0,.2);max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+        color:${dest.color};">${i+1}. ${stop.name.split('·')[0].trim()}</div></div>`;
     const icon = L.divIcon({ html, className:'', iconSize:[36,52], iconAnchor:[16,46] });
     const m = L.marker([stop.lat, stop.lng], { icon }).addTo(leafMap);
-    m.bindPopup(`
-      <div class="popup-time">${stop.t || ''}</div>
-      <div class="popup-name">${stop.name}</div>
-      <div class="popup-note">${stop.notes || ''}</div>`);
+    m.bindPopup(`<div class="popup-time">${stop.t||''}</div><div class="popup-name">${stop.name}</div><div class="popup-note">${stop.notes||''}</div>`);
     mapLayers.push(m);
   });
-
   const bounds = L.latLngBounds(latlngs);
-  leafMap.fitBounds(bounds, { padding: [32, 32], maxZoom: 14 });
+  leafMap.fitBounds(bounds, { padding:[32,32], maxZoom:14 });
   setTimeout(() => leafMap.invalidateSize(), 120);
 }
 
@@ -1094,79 +1024,102 @@ function toggleMap() {
   const sec = document.getElementById('map-section');
   const btn = document.getElementById('map-toggle-btn');
   sec.classList.toggle('collapsed', S.mapCollapsed);
-  btn.textContent = S.mapCollapsed ? '▼ Ver mapa' : '▲ Ocultar';
-  if (!S.mapCollapsed) setTimeout(() => leafMap && leafMap.invalidateSize(), 320);
+  btn.textContent = S.mapCollapsed ? '▼ Ver mapa' : '▲ Ocultar mapa';
+  if (!S.mapCollapsed) setTimeout(() => { updateMap(); leafMap && leafMap.invalidateSize(); }, 320);
 }
 
+// ════════════════════════════════════════════════════════════
+//  NAVIGATION URLS
+// ════════════════════════════════════════════════════════════
 function buildGoogleMapsUrl() {
-  const dest = DEST[S.dest];
-  const day  = dest.days[S.dayIdx];
+  const dest = DEST[S.dest], day = dest.days[S.dayIdx];
   const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
   if (!pts.length) return null;
-
-  // Limpa o nome do ponto para exibir no Google Maps (remove emoji, prefixos de refeição etc.)
   function toName(stop) {
-    let n = stop.name
-      .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')   // emoji plano suplementar
-      .replace(/[☀-➿️]/g, '')     // símbolos misc + variation selector
-      .trim();
-    n = n.replace(/^(jantar|almoço|café|bar|lanche)\s*·\s*/i, ''); // "Jantar · Restaurante" → "Restaurante"
-    n = n.replace(/^(check-out|check-in)\s+/i, '');                // "Check-out Airbnb" → "Airbnb"
-    if (n.includes('·')) n = n.split('·')[0].trim();               // "Los Gigantes · Falésias" → "Los Gigantes"
+    let n = stop.name.replace(/[\u{1F000}-\u{1FFFF}]/gu,'').replace(/[\u2600-\u27BF\uFE0F]/g,'').trim();
+    n = n.replace(/^(jantar|almoço|café|bar|lanche)\s*·\s*/i,'');
+    n = n.replace(/^(check-out|check-in)\s+/i,'');
+    if (n.includes('·')) n = n.split('·')[0].trim();
     if (!n) n = dest.name;
     return encodeURIComponent(`${n} ${dest.name}`);
   }
-
-  if (pts.length === 1)
-    return `https://www.google.com/maps/dir/?api=1&destination=${toName(pts[0])}&travelmode=driving`;
-
-  // Sem 'origin' → Maps usa localização GPS atual como ponto de partida
+  if (pts.length === 1) return `https://www.google.com/maps/dir/?api=1&destination=${toName(pts[0])}&travelmode=driving`;
   const dst = toName(pts[pts.length-1]);
-  const wp  = pts.slice(0,-1).map(toName).join('|');  // todos os pontos viram waypoints
+  const wp  = pts.slice(0,-1).map(toName).join('|');
   let url = `https://www.google.com/maps/dir/?api=1&destination=${dst}&travelmode=driving`;
   if (wp) url += `&waypoints=${wp}`;
   return url;
 }
-
 function buildWazeUrl() {
-  const dest = DEST[S.dest];
-  const day  = dest.days[S.dayIdx];
+  const dest = DEST[S.dest], day = dest.days[S.dayIdx];
   const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
   if (!pts.length) return null;
-  // Waze não suporta multi-stop via URL — abre no 1º ponto do dia
   return `https://waze.com/ul?ll=${pts[0].lat},${pts[0].lng}&navigate=yes&zoom=17`;
 }
+function openGoogleMaps() { const u=buildGoogleMapsUrl(); if(u) window.open(u,'_blank'); }
+function openWaze()        { const u=buildWazeUrl();        if(u) window.open(u,'_blank'); }
 
-function openGoogleMaps() { const u = buildGoogleMapsUrl(); if (u) window.open(u, '_blank'); }
-function openWaze()        { const u = buildWazeUrl();        if (u) window.open(u, '_blank'); }
+function cleanStopName(stop, destName) {
+  let n = stop.name.replace(/[\u{1F000}-\u{1FFFF}]/gu,'').replace(/[\u2600-\u27BF\uFE0F]/g,'').trim();
+  n = n.replace(/^(jantar|almoço|café|bar|lanche)\s*·\s*/i,'');
+  n = n.replace(/^(check-out|check-in)\s+/i,'');
+  if (n.includes('·')) n = n.split('·')[0].trim();
+  if (!n) n = destName;
+  return `${n} ${destName}`;
+}
+function navigateToStop(stop) {
+  if (!stop) return;
+  const destName = DEST[S.dest].name;
+  const q = encodeURIComponent(cleanStopName(stop, destName));
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=driving`,'_blank');
+}
+function openWazeToStop(stop) {
+  if (!stop || !stop.lat) return;
+  window.open(`https://waze.com/ul?ll=${stop.lat},${stop.lng}&navigate=yes&zoom=17`,'_blank');
+}
+function navigateToNextStop() {
+  if (G.nextStop) navigateToStop(G.nextStop);
+  else openGoogleMaps();
+}
+
+// ════════════════════════════════════════════════════════════
+//  NEXT STOP LOGIC
+// ════════════════════════════════════════════════════════════
+function getNextStop(day) {
+  const pts = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
+  if (!pts.length) return day.stops[0] || null;
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  for (const stop of pts) {
+    if (!stop.t) continue;
+    const m = stop.t.match(/^(\d{1,2}):(\d{2})/);
+    if (m) {
+      const stopMin = parseInt(m[1]) * 60 + parseInt(m[2]);
+      if (stopMin > nowMin) return stop;
+    }
+  }
+  return pts[0]; // fallback: first stop
+}
 
 // ════════════════════════════════════════════════════════════
 //  CHECKLIST (localStorage)
 // ════════════════════════════════════════════════════════════
-function getChecked() {
-  try { return JSON.parse(localStorage.getItem('res_checked') || '{}'); } catch { return {}; }
-}
-function setChecked(id, val) {
-  const d = getChecked();
-  val ? (d[id] = 1) : delete d[id];
-  localStorage.setItem('res_checked', JSON.stringify(d));
-}
+function getChecked() { try { return JSON.parse(localStorage.getItem('res_checked')||'{}')} catch { return {}; } }
+function setChecked(id, val) { const d=getChecked(); val?(d[id]=1):delete d[id]; localStorage.setItem('res_checked',JSON.stringify(d)); }
 function toggleCheck(id) {
-  const ch = getChecked();
-  setChecked(id, !ch[id]);
-  // Re-render whichever view is active
-  if (S.view === 'itinerary') renderTimeline();
-  else if (S.view === 'reservas') renderReservas();
+  const ch=getChecked(); setChecked(id,!ch[id]);
+  if (S.view==='itinerary') renderStopCards();
+  else if (S.view==='reservas') renderReservas();
 }
 
 // ════════════════════════════════════════════════════════════
-//  CSS-VAR THEME HELPER
+//  THEME
 // ════════════════════════════════════════════════════════════
 function applyTheme(destId) {
   const d = DEST[destId] || {};
   const r = document.documentElement;
-  r.style.setProperty('--dest',   d.color || '#EA580C');
-  r.style.setProperty('--dest-l', d.light || '#FFF7ED');
+  r.style.setProperty('--dest',   d.color  || '#EA580C');
+  r.style.setProperty('--dest-l', d.light  || '#FFF7ED');
   r.style.setProperty('--dest-b', d.border || '#FED7AA');
 }
 
@@ -1175,304 +1128,301 @@ function applyTheme(destId) {
 // ════════════════════════════════════════════════════════════
 function renderTabs() {
   const tabs = [
-    { id:'tenerife', label:'🌋 Tenerife' },
-    { id:'madeira',  label:'🌿 Madeira'  },
-    { id:'madrid',   label:'🏛️ Madrid'   },
-    { id:'reservas', label:'📋 Reservas' },
-    { id:'gastro',   label:'🍴 Gastronomia' },
+    {id:'tenerife',label:'🌋 Tenerife'},{id:'madeira',label:'🌿 Madeira'},
+    {id:'madrid',label:'🏛️ Madrid'},{id:'reservas',label:'📋 Reservas'},{id:'gastro',label:'🍴 Gastronomia'},
   ];
   const ch = getChecked();
-  const unchecked = ALL_RES.filter(r => !ch[r.id] && r.prio === 'red').length;
+  const unchecked = ALL_RES.filter(r => !ch[r.id] && r.prio==='red').length;
   document.getElementById('destTabs').innerHTML = tabs.map(t => {
-    const active = S.dest === t.id ? ' active' : '';
-    const badge = (t.id === 'reservas' && unchecked > 0)
-      ? `<span class="tab-badge"></span>` : '';
+    const active = S.dest===t.id?' active':'';
+    const badge  = (t.id==='reservas' && unchecked>0)?'<span class="tab-badge"></span>':''    ;
     return `<button class="tab${active}" data-dest="${t.id}" onclick="switchDest('${t.id}')">${t.label}${badge}</button>`;
   }).join('');
 }
 
 // ════════════════════════════════════════════════════════════
-//  RENDER: SIDEBAR
+//  RENDER: DAY CHIPS
+// ════════════════════════════════════════════════════════════
+function renderDayChips() {
+  const wrap = document.getElementById('day-chips-wrap');
+  const dest = DEST[S.dest];
+  if (!dest) { wrap.style.display='none'; return; }
+  wrap.style.display='';
+  document.getElementById('day-chips').innerHTML = dest.days.map((day, i) => {
+    const firstStop = day.stops.find(s => !s.name.startsWith('🎒'));
+    const icon = firstStop ? firstStop.icon : '📅';
+    return `<button class="day-chip${i===S.dayIdx?' active':''}" onclick="switchDay(${i})"
+      aria-label="Dia ${day.n}: ${day.title}" aria-current="${i===S.dayIdx}">
+      <span class="chip-icon">${icon}</span>
+      <span class="chip-num">Dia ${day.n}</span>
+    </button>`;
+  }).join('');
+  setTimeout(() => {
+    const active = document.querySelector('.day-chip.active');
+    if (active) active.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+  }, 50);
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER: SIDEBAR (desktop)
 // ════════════════════════════════════════════════════════════
 function renderSidebar() {
   const dest = DEST[S.dest];
-  if (!dest) { document.getElementById('day-list').innerHTML = ''; return; }
+  if (!dest) { document.getElementById('day-list').innerHTML=''; return; }
   document.getElementById('sdLabel').textContent = `${dest.emoji} ${dest.name} · ${dest.dates}`;
   document.getElementById('sdBase').textContent  = dest.base;
   document.getElementById('day-list').innerHTML = dest.days.map((day, i) => {
-    const hasR = day.res.some(r => r.prio === 'red');
-    const hasO = day.res.some(r => r.prio === 'orange');
-    const hasG = day.res.some(r => r.prio === 'green');
-    const pips = [
-      hasR ? '<span class="pip pip-red"></span>'    : '',
-      hasO ? '<span class="pip pip-orange"></span>' : '',
-      hasG ? '<span class="pip pip-green"></span>'  : '',
+    const hasR=day.res.some(r=>r.prio==='red'), hasO=day.res.some(r=>r.prio==='orange'), hasG=day.res.some(r=>r.prio==='green');
+    const pips=[hasR?'<span class="pip pip-red"></span>':''
+               ,hasO?'<span class="pip pip-orange"></span>':''
+               ,hasG?'<span class="pip pip-green"></span>':''
     ].join('');
-    return `<div class="day-row${S.dayIdx === i ? ' active' : ''}" onclick="switchDay(${i})">
+    return `<div class="day-row${S.dayIdx===i?' active':''}" onclick="switchDay(${i})">
       <div class="day-num-badge">${day.n}</div>
       <div class="day-row-body">
         <div class="day-row-title">${day.title}</div>
         <div class="day-row-date">${day.wd} · ${day.date}</div>
-        ${pips ? `<div class="day-row-pips">${pips}</div>` : ''}
-      </div>
-    </div>`;
+        ${pips?`<div class="day-row-pips">${pips}</div>`:''}
+      </div></div>`;
   }).join('');
 }
 
 // ════════════════════════════════════════════════════════════
-//  RENDER: DAY HEADER
+//  RENDER: DAY HEADER CARD
 // ════════════════════════════════════════════════════════════
-function renderDayHeader() {
-  const dest = DEST[S.dest];
-  const day  = dest.days[S.dayIdx];
-  const el   = document.getElementById('day-header');
+function renderDayHeaderCard() {
+  const dest = DEST[S.dest], day = dest.days[S.dayIdx];
+  const pts  = day.stops.filter(s => !s.name.startsWith('🎒') && s.lat);
+  const int  = pts.length<=3?{l:'Leve',c:'int-leve'}:pts.length<=5?{l:'Médio',c:'int-medio'}:{l:'Intenso',c:'int-intenso'};
   let html = `
-    <div class="dh-pill">${dest.emoji} ${dest.name} · Dia ${day.n}</div>
-    <div class="dh-title">${day.title}</div>
-    <div class="dh-date">${day.wd}, ${day.date} · ${dest.dates}</div>
-    <div class="dh-summary">${day.summary}</div>`;
-  if (day.flight) {
-    html += `<div class="flight-strip">
-      <span class="flight-strip-icon">✈️</span>
-      <div class="flight-strip-text">
-        VOO ${day.flight.route} · ${day.flight.dep} → ${day.flight.arr} · ${day.flight.num} · ${day.flight.info}
+    <div class="dhc-pill">${dest.emoji} ${dest.name} · Dia ${day.n}</div>
+    <div class="dhc-row">
+      <div class="dhc-title">${day.title}</div>
+      <span class="dhc-intensity ${int.c}">${int.l}</span>
+    </div>
+    <div class="dhc-date">${day.wd}, ${day.date}</div>
+    <div class="dhc-summary">${day.summary}</div>`;
+  if (day.flight) html += `<div class="flight-strip">✈️ VOO ${day.flight.route} · ${day.flight.dep} → ${day.flight.arr} · ${day.flight.num} · ${day.flight.info}</div>`;
+  document.getElementById('day-header-card').innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER: NEXT ACTION CARD
+// ════════════════════════════════════════════════════════════
+function renderNextActionCard() {
+  const dest = DEST[S.dest], day = dest.days[S.dayIdx];
+  G.nextStop = getNextStop(day);
+  const wrap = document.getElementById('next-action-wrap');
+  const bb   = document.getElementById('bottom-bar');
+  if (!G.nextStop) { wrap.innerHTML=''; bb.style.display='none'; return; }
+  const ns = G.nextStop;
+  const shortName = ns.name.replace(/[🌋🌿🏛️✈️🛒🏠🍽️⛵🏖️🥾👁️🏔️🌊☕🛷🏘️🍷⚓🏙️🌄🌺🏰🏛️]/g,'').split('·')[0].trim();
+  wrap.innerHTML = `
+    <div class="next-action-card">
+      <div class="nac-label">Próxima ação</div>
+      <div class="nac-time-row">
+        <span class="nac-time">${ns.t||'—'}</span>
+        <span class="nac-icon">${ns.icon}</span>
+      </div>
+      <div class="nac-name">${ns.name}</div>
+      ${ns.warn?`<div class="nac-warn">${ns.warn}</div>`:''}
+      ${ns.notes&&!ns.warn?`<div class="nac-notes">${ns.notes}</div>`:''}
+      <div class="nac-actions">
+        <button class="nac-btn nac-maps" onclick="navigateToNextStop()" aria-label="Abrir no Google Maps">🗺️ Google Maps</button>
+        <button class="nac-btn nac-waze" onclick="openWazeToStop(G.nextStop)" aria-label="Abrir no Waze">🚗 Waze</button>
       </div>
     </div>`;
-  }
-  el.innerHTML = html;
+  const bbDest = document.getElementById('bb-dest-name');
+  if (bbDest) bbDest.textContent = shortName || ns.name;
+  bb.style.display='';
 }
 
 // ════════════════════════════════════════════════════════════
-//  RENDER: TIMELINE
+//  RENDER: STOP CARDS
 // ════════════════════════════════════════════════════════════
 function badgeHtml(prio) {
-  if (prio === 'red')    return '<span class="res-badge badge-red">🔴 URGENTE</span>';
-  if (prio === 'orange') return '<span class="res-badge badge-orange">🟠 ALTA PRIORIDADE</span>';
+  if (prio==='red')    return '<span class="res-badge badge-red">🔴 URGENTE</span>';
+  if (prio==='orange') return '<span class="res-badge badge-orange">🟠 ALTA PRIORIDADE</span>';
   return '<span class="res-badge badge-green">🟢 RECOMENDADO</span>';
 }
-
-function renderTimeline() {
-  const dest = DEST[S.dest];
-  const day  = dest.days[S.dayIdx];
-  const ch   = getChecked();
-  let html   = '';
-
-  // Stops
-  html += day.stops.map(stop => `
-    <div class="tl-stop">
-      <div class="tl-icon-col">
-        <div class="tl-icon ${stop.cls || ''}">${stop.icon}</div>
+function renderStopCards() {
+  const dest=DEST[S.dest], day=dest.days[S.dayIdx], ch=getChecked();
+  let html = day.stops.map((stop, idx) => {
+    const isNext   = stop === G.nextStop;
+    const hasNav   = stop.lat && stop.lng && !stop.name.startsWith('🎒');
+    const hasExtra = stop.notes || stop.food;
+    return `<div class="stop-card${isNext?' is-next':''}">
+      <div class="sc-header">
+        <div class="sc-time">${stop.t||'—'}</div>
+        <div class="sc-icon-wrap ${stop.cls||''}">${stop.icon}</div>
+        <div class="sc-title">${stop.name}</div>
       </div>
-      <div class="tl-body">
-        <div class="tl-time">${stop.t || ''}</div>
-        <div class="tl-name">${stop.name}</div>
-        ${stop.notes ? `<div class="tl-notes">${stop.notes}</div>` : ''}
-        ${stop.warn  ? `<div class="tl-warn">${stop.warn}</div>` : ''}
-        ${stop.food  ? `<div class="tl-food">🍴 ${stop.food}</div>` : ''}
+      ${stop.warn?`<div class="alert-warn">${stop.warn}</div>`:''}
+      <div class="sc-details" id="sc-det-${idx}" hidden>
+        ${stop.notes?`<p class="sc-notes">${stop.notes}</p>`:''}
+        ${stop.food?`<div class="sc-food">🍴 ${stop.food}</div>`:''}
       </div>
-    </div>`).join('');
+      <div class="sc-actions">
+        ${hasNav?`<button class="sc-btn sc-btn-nav" onclick="navigateToStopByIdx(${idx})" aria-label="Navegar para ${stop.name}">🗺️ Navegar</button>`:''}
+        ${hasExtra?`<button class="sc-btn sc-btn-detail" onclick="toggleStopDetail(${idx})" id="sc-det-btn-${idx}" aria-expanded="false">+ Detalhes</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
 
-  // Reservations block
   if (day.res.length) {
-    html += `<div class="day-res-block">
-      <div class="day-res-title">📋 Reservas deste dia</div>`;
+    html += '<div class="day-res-block"><div class="day-res-title">📋 Reservas deste dia</div>';
     html += day.res.map(r => {
-      const id   = `${S.dest}_d${day.n}_${r.name.replace(/\W/g,'_')}`;
-      const done = !!ch[id];
-      return `<div class="res-row">
-        <div class="res-checkbox${done ? ' done' : ''}" onclick="toggleCheck('${id}')">${done ? '✓' : ''}</div>
-        <div class="res-text${done ? ' is-done' : ''}">
-          ${badgeHtml(r.prio)}
+      const id=`${S.dest}_d${day.n}_${r.name.replace(/\W/g,'_')}`, done=!!ch[id];
+      return `<div class="res-row"><div class="res-checkbox${done?' done':''}" onclick="toggleCheck('${id}')">${done?'✓':''}</div>
+        <div class="res-text${done?' is-done':''}">${badgeHtml(r.prio)}
           <div class="res-name">${r.name}</div>
           <div class="res-how">${r.how}</div>
           <div class="res-obs">${r.obs}</div>
-        </div>
-      </div>`;
+        </div></div>`;
     }).join('');
     html += '</div>';
   }
-
-  // Food summary
-  if (day.foodLines && day.foodLines.length) {
-    html += `<div class="food-block">
-      <div class="food-block-title">🍽️ Alimentação do dia</div>`;
-    html += day.foodLines.map(f =>
-      `<div class="food-line"><span class="food-line-icon">${f.i}</span><span>${f.t}</span></div>`
-    ).join('');
+  if (day.foodLines&&day.foodLines.length) {
+    html += '<div class="food-block"><div class="food-block-title">🍽️ Alimentação do dia</div>';
+    html += day.foodLines.map(f=>`<div class="food-line"><span class="food-line-icon">${f.i}</span><span>${f.t}</span></div>`).join('');
     html += '</div>';
   }
-
-  document.getElementById('timeline').innerHTML = html;
+  document.getElementById('stop-cards').innerHTML = html;
+}
+function toggleStopDetail(idx) {
+  const det=document.getElementById(`sc-det-${idx}`), btn=document.getElementById(`sc-det-btn-${idx}`);
+  det.hidden=!det.hidden;
+  btn.textContent=det.hidden?'+ Detalhes':'− Detalhes';
+  btn.setAttribute('aria-expanded', !det.hidden);
+}
+function navigateToStopByIdx(idx) {
+  const day=DEST[S.dest].days[S.dayIdx];
+  navigateToStop(day.stops[idx]);
 }
 
 // ════════════════════════════════════════════════════════════
 //  RENDER: RESERVAS
 // ════════════════════════════════════════════════════════════
 function renderReservas() {
-  const ch     = getChecked();
-  const filter = S.resFilter;
-  const total  = ALL_RES.length;
-  const done   = ALL_RES.filter(r => ch[r.id]).length;
-  const pct    = total ? Math.round(done / total * 100) : 0;
-
-  const groups = [
-    { prio: 'red',    label: '🔴 Urgente — fazer imediatamente'  },
-    { prio: 'orange', label: '🟠 Alta prioridade'                 },
-    { prio: 'green',  label: '🟢 Recomendado'                     },
-  ];
-  const gColor = { red: '#EF4444', orange: '#F97316', green: '#22C55E' };
-
-  let html = `
-    <div style="max-width:720px">
+  const ch=getChecked(), filter=S.resFilter;
+  const total=ALL_RES.length, done=ALL_RES.filter(r=>ch[r.id]).length;
+  const pct=total?Math.round(done/total*100):0;
+  const groups=[{prio:'red',label:'🔴 Urgente — fazer imediatamente'},{prio:'orange',label:'🟠 Alta prioridade'},{prio:'green',label:'🟢 Recomendado'}];
+  const gColor={red:'#EF4444',orange:'#F97316',green:'#22C55E'};
+  let html=`<div style="max-width:720px">
     <div class="view-title">📋 Checklist de Reservas</div>
-    <div class="view-sub">6 pessoas · marque como feito conforme reservar</div>
+    <div class="view-sub">6 pessoas · marque conforme reservar</div>
     <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
-    <div class="progress-label">${done} de ${total} reservas concluídas · ${pct}%</div>
+    <div class="progress-label">${done} de ${total} · ${pct}%</div>
     <div class="filter-bar">
-      <button class="filt-btn${filter==='all'    ? ' f-all'    :''}" onclick="setResFilter('all')">Todas (${total})</button>
-      <button class="filt-btn${filter==='red'    ? ' f-red'    :''}" onclick="setResFilter('red')">🔴 Urgente</button>
-      <button class="filt-btn${filter==='orange' ? ' f-orange' :''}" onclick="setResFilter('orange')">🟠 Alta</button>
-      <button class="filt-btn${filter==='green'  ? ' f-green'  :''}" onclick="setResFilter('green')">🟢 Recomendado</button>
+      <button class="filt-btn${filter==='all'?' f-all':''}" onclick="setResFilter('all')">Todas (${total})</button>
+      <button class="filt-btn${filter==='red'?' f-red':''}" onclick="setResFilter('red')">🔴 Urgente</button>
+      <button class="filt-btn${filter==='orange'?' f-orange':''}" onclick="setResFilter('orange')">🟠 Alta</button>
+      <button class="filt-btn${filter==='green'?' f-green':''}" onclick="setResFilter('green')">🟢 Recomendado</button>
     </div>`;
-
   groups.forEach(g => {
-    const items = ALL_RES.filter(r => r.prio === g.prio && (filter === 'all' || filter === g.prio));
+    const items=ALL_RES.filter(r=>r.prio===g.prio&&(filter==='all'||filter===g.prio));
     if (!items.length) return;
-    html += `<div class="res-group-hd" style="color:${gColor[g.prio]}">${g.label}</div>`;
+    html+=`<div class="res-group-hd" style="color:${gColor[g.prio]}">${g.label}</div>`;
     items.forEach(r => {
-      const isDone = !!ch[r.id];
-      html += `<div class="big-res-card${isDone ? ' is-done' : ''}">
-        <div class="brc-check${isDone ? ' done' : ''}" onclick="toggleCheck('${r.id}')">${isDone ? '✓' : ''}</div>
-        <div class="brc-body${isDone ? ' is-done' : ''}">
+      const isDone=!!ch[r.id];
+      html+=`<div class="big-res-card${isDone?' is-done':''}" >
+        <div class="brc-check${isDone?' done':''}" onclick="toggleCheck('${r.id}')">${isDone?'✓':''}</div>
+        <div class="brc-body${isDone?' is-done':''}" >
           <span class="brc-dest" style="background:${r.destColor}">${r.destName} · D${r.dayN} · ${r.dayDate}</span>
           <div class="brc-name">${r.name}</div>
           <div class="brc-how">${r.how}</div>
           <div class="brc-obs">${r.obs}</div>
-        </div>
-      </div>`;
+        </div></div>`;
     });
   });
-
-  html += `
-    <div class="alerts-box">
-      <div class="alerts-box-title">⚠️ Atenções especiais</div>
-      <div class="alert-line">· D5 Tenerife (seg): Mirador de Garachico FECHADO às segundas — usar restaurante do centro histórico</div>
-      <div class="alert-line">· D6 Tenerife: Aeroporto TFN ≠ TFS (Sul) — GPS "Aeropuerto Tenerife Norte"</div>
-      <div class="alert-line">· D2 Madeira (qua): Mercado dos Lavradores — não comprar frutas no 1º piso (preços inflacionados)</div>
-      <div class="alert-line">· D8 Madeira (ter): Pico do Arieiro — verificar webcam antes de sair: <strong>visitmadeira.pt</strong></div>
-      <div class="alert-line">· D3 Madrid (sab): Templo de Debod fecha segunda — sábado está ✓ aberto</div>
-    </div>
-    </div>`;
-
-  document.getElementById('view-reservas').innerHTML = html;
+  html+=`<div class="alerts-box">
+    <div class="alerts-box-title">⚠️ Atenções especiais</div>
+    <div class="alert-line">· D5 Tenerife (seg): Mirador Garachico FECHADO às segundas</div>
+    <div class="alert-line">· D6 Tenerife: Aeroporto TFN ≠ TFS (Sul)</div>
+    <div class="alert-line">· D2 Madeira: Mercado — não comprar frutas no 1º piso</div>
+    <div class="alert-line">· D8 Madeira: Pico Arieiro — verificar webcam: visitmadeira.pt</div>
+    <div class="alert-line">· D3 Madrid: Templo Debod fecha segunda (sábado ✓)</div>
+  </div></div>`;
+  document.getElementById('view-reservas').innerHTML=html;
 }
 
 // ════════════════════════════════════════════════════════════
 //  RENDER: GASTRONOMIA
 // ════════════════════════════════════════════════════════════
 function renderGastro() {
-  let html = `
-    <div style="max-width:720px">
+  let html=`<div style="max-width:720px">
     <div class="view-title">🍴 Guias Gastronômicos</div>
-    <div class="view-sub">Pratos obrigatórios em cada destino · orçamento €15-25/pess/jantar</div>`;
-
+    <div class="view-sub">Pratos obrigatórios · €15-25/pess/jantar</div>`;
   GASTRO.forEach(g => {
-    html += `<div class="gastro-section">
-      <div class="gastro-hd" style="color:${g.color};border-color:${g.color}">
-        ${DEST[g.dest].emoji} ${DEST[g.dest].name} · ${g.label}
-      </div>
+    html+=`<div class="gastro-section">
+      <div class="gastro-hd" style="color:${g.color};border-color:${g.color}">${DEST[g.dest].emoji} ${DEST[g.dest].name} · ${g.label}</div>
       <div class="dish-grid">`;
     g.dishes.forEach(d => {
-      html += `<div class="dish-card" style="border-left-color:${g.color}">
+      html+=`<div class="dish-card" style="border-left-color:${g.color}">
         <div class="dish-name">${d.name}</div>
         <div class="dish-desc">${d.desc}</div>
         <div class="dish-where" style="color:${g.color}">📍 ${d.where}</div>
       </div>`;
     });
-    html += '</div></div>';
+    html+='</div></div>';
   });
-
-  html += `<div class="strategy-box">
-    <div class="strategy-box-title">💰 Estratégia de alimentação (todos os destinos)</div>
+  html+=`<div class="strategy-box">
+    <div class="strategy-box-title">💰 Estratégia de alimentação</div>
     <div class="strategy-line">
-      ☕ <strong>Café da manhã</strong> — No apartamento/hotel (comprar no supermercado no 1º dia) → <strong>€0</strong><br>
-      🥤 <strong>Petiscos</strong> — Bares de praia, cafés nas paradas → <strong>€5-12/pess</strong><br>
-      🍽️ <strong>Jantar</strong> — Restaurante local com reserva → <strong>€15-25/pess</strong><br>
-      <br>
-      <strong>Custo médio diário por pessoa: €20-37</strong><br>
-      <br>
-      🛒 <strong>Compras obrigatórias no 1º dia:</strong><br>
-      · Tenerife → Mercadona ou Hiperdino em Los Cristianos<br>
-      · Madeira → Pingo Doce na Rua Dr. Fernão de Ornelas (5 min do apartamento)
+      ☕ <strong>Café da manhã</strong> — Apartamento (comprar no supermercado) → <strong>€0</strong><br>
+      🥤 <strong>Petiscos</strong> — Bares e cafés nas paradas → <strong>€5-12/pess</strong><br>
+      🍽️ <strong>Jantar</strong> — Restaurante local com reserva → <strong>€15-25/pess</strong><br><br>
+      <strong>Custo médio diário: €20-37/pess</strong><br><br>
+      🛒 <strong>Compras no 1º dia:</strong><br>
+      · Tenerife → Mercadona/Hiperdino em Los Cristianos<br>
+      · Madeira → Pingo Doce · Rua Dr. Fernão de Ornelas
     </div>
   </div></div>`;
-
-  document.getElementById('view-gastro').innerHTML = html;
+  document.getElementById('view-gastro').innerHTML=html;
 }
 
 // ════════════════════════════════════════════════════════════
 //  VIEW SWITCHER
 // ════════════════════════════════════════════════════════════
 function showView(view) {
-  document.getElementById('view-itinerary').style.display = view === 'itinerary' ? 'flex'  : 'none';
-  document.getElementById('view-reservas').style.display  = view === 'reservas'  ? 'block' : 'none';
-  document.getElementById('view-gastro').style.display    = view === 'gastro'    ? 'block' : 'none';
-  // Sidebar only shown in itinerary mode
-  document.getElementById('sidebar').style.display = view === 'itinerary' ? '' : 'none';
+  document.getElementById('view-itinerary').style.display = view==='itinerary'?'flex':'none';
+  document.getElementById('view-reservas').style.display  = view==='reservas'?'block':'none';
+  document.getElementById('view-gastro').style.display    = view==='gastro'?'block':'none';
+  document.getElementById('sidebar').style.display        = view==='itinerary'?'':'none';
+  const cw = document.getElementById('day-chips-wrap');
+  if (cw) cw.style.display = view==='itinerary'?'':'none';
+  document.getElementById('bottom-bar').style.display     = view==='itinerary'?'':'none';
 }
 
 function switchDest(destId) {
-  closeSidebar();
-  if (destId === 'reservas') {
-    S.dest = 'reservas'; S.view = 'reservas';
-    applyTheme('tenerife');
-    showView('reservas');
-    renderReservas();
-  } else if (destId === 'gastro') {
-    S.dest = 'gastro'; S.view = 'gastro';
-    applyTheme('tenerife');
-    showView('gastro');
-    renderGastro();
+  if (destId==='reservas') {
+    S.dest='reservas'; S.view='reservas'; applyTheme('tenerife');
+    showView('reservas'); renderReservas();
+  } else if (destId==='gastro') {
+    S.dest='gastro'; S.view='gastro'; applyTheme('tenerife');
+    showView('gastro'); renderGastro();
   } else {
-    S.dest   = destId;
-    S.dayIdx = 0;
-    S.view   = 'itinerary';
-    applyTheme(destId);
-    showView('itinerary');
-    renderSidebar();
-    renderDayHeader();
-    renderTimeline();
-    updateMap();
+    S.dest=destId; S.dayIdx=0; S.view='itinerary';
+    applyTheme(destId); showView('itinerary');
+    renderDayChips(); renderSidebar();
+    renderDayHeaderCard(); renderNextActionCard(); renderStopCards();
+    if (!S.mapCollapsed) updateMap();
   }
   renderTabs();
+  window.scrollTo({ top:0, behavior:'smooth' });
 }
 
 function switchDay(idx) {
-  S.dayIdx = idx;
-  closeSidebar();
-  renderSidebar();
-  renderDayHeader();
-  renderTimeline();
-  updateMap();
-  document.getElementById('timeline-wrap').scrollTop = 0;
+  S.dayIdx=idx;
+  renderDayChips(); renderSidebar();
+  renderDayHeaderCard(); renderNextActionCard(); renderStopCards();
+  if (!S.mapCollapsed) updateMap();
+  window.scrollTo({ top:0, behavior:'smooth' });
 }
 
-function setResFilter(f) {
-  S.resFilter = f;
-  renderReservas();
-}
-
-// ════════════════════════════════════════════════════════════
-//  SIDEBAR MOBILE TOGGLE
-// ════════════════════════════════════════════════════════════
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('show');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('overlay').classList.remove('show');
-}
+function setResFilter(f) { S.resFilter=f; renderReservas(); }
+function closeSidebar()  {}  // no mobile sidebar in v2
 
 // ════════════════════════════════════════════════════════════
 //  INIT
@@ -1480,12 +1430,13 @@ function closeSidebar() {
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme('tenerife');
   renderTabs();
+  renderDayChips();
   renderSidebar();
-  renderDayHeader();
-  renderTimeline();
+  renderDayHeaderCard();
+  renderNextActionCard();
+  renderStopCards();
   showView('itinerary');
-  // Defer map init so layout is painted first
-  requestAnimationFrame(() => updateMap());
+  // Map starts collapsed; init lazily when user opens it
 });
 </script>
 </body>
