@@ -1118,12 +1118,12 @@ function buildGoogleMapsUrl() {
   }
 
   if (pts.length === 1)
-    return `https://www.google.com/maps/search/?api=1&query=${toName(pts[0])}`;
+    return `https://www.google.com/maps/dir/?api=1&destination=${toName(pts[0])}&travelmode=driving`;
 
-  const origin = toName(pts[0]);
-  const dst    = toName(pts[pts.length-1]);
-  const wp     = pts.slice(1,-1).map(toName).join('|');
-  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dst}&travelmode=driving`;
+  // Sem 'origin' → Maps usa localização GPS atual como ponto de partida
+  const dst = toName(pts[pts.length-1]);
+  const wp  = pts.slice(0,-1).map(toName).join('|');  // todos os pontos viram waypoints
+  let url = `https://www.google.com/maps/dir/?api=1&destination=${dst}&travelmode=driving`;
   if (wp) url += `&waypoints=${wp}`;
   return url;
 }
