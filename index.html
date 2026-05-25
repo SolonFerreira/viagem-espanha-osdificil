@@ -1103,13 +1103,28 @@ function buildGoogleMapsUrl() {
   const day  = dest.days[S.dayIdx];
   const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
   if (!pts.length) return null;
+
+  // Limpa o nome do ponto para exibir no Google Maps (remove emoji, prefixos de refeição etc.)
+  function toName(stop) {
+    let n = stop.name
+      .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')   // emoji plano suplementar
+      .replace(/[☀-➿️]/g, '')     // símbolos misc + variation selector
+      .trim();
+    n = n.replace(/^(jantar|almoço|café|bar|lanche)\s*·\s*/i, ''); // "Jantar · Restaurante" → "Restaurante"
+    n = n.replace(/^(check-out|check-in)\s+/i, '');                // "Check-out Airbnb" → "Airbnb"
+    if (n.includes('·')) n = n.split('·')[0].trim();               // "Los Gigantes · Falésias" → "Los Gigantes"
+    if (!n) n = dest.name;
+    return encodeURIComponent(`${n} ${dest.name}`);
+  }
+
   if (pts.length === 1)
-    return `https://www.google.com/maps/search/?api=1&query=${pts[0].lat},${pts[0].lng}`;
-  const origin = `${pts[0].lat},${pts[0].lng}`;
-  const dst    = `${pts[pts.length-1].lat},${pts[pts.length-1].lng}`;
-  const wp     = pts.slice(1,-1).map(p => `${p.lat},${p.lng}`).join('|');
+    return `https://www.google.com/maps/search/?api=1&query=${toName(pts[0])}`;
+
+  const origin = toName(pts[0]);
+  const dst    = toName(pts[pts.length-1]);
+  const wp     = pts.slice(1,-1).map(toName).join('|');
   let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dst}&travelmode=driving`;
-  if (wp) url += `&waypoints=${encodeURIComponent(wp)}`;
+  if (wp) url += `&waypoints=${wp}`;
   return url;
 }
 
