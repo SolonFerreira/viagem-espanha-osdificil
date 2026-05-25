@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🌍 Família Solon · Jun 2025</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ─── RESET & TOKENS ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --c-tf: #EA580C; --c-tf-l: #FFF7ED; --c-tf-b: #FED7AA;
+  --c-md: #16A34A; --c-md-l: #F0FDF4; --c-md-b: #BBF7D0;
+  --c-ma: #DC2626; --c-ma-l: #FEF2F2; --c-ma-b: #FECACA;
+  --c-res: #4F46E5; --c-gas: #7C3AED;
+  --c-red: #EF4444; --c-orange: #F97316; --c-green: #22C55E;
+  --g0: #FFFFFF; --g50: #F8FAFC; --g100: #F1F5F9; --g200: #E2E8F0;
+  --g300: #CBD5E1; --g400: #94A3B8; --g500: #64748B; --g700: #334155; --g900: #0F172A;
+  --header-h: 56px;
+  --sidebar-w: 228px;
+  --radius: 10px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+  /* active destination theming – overridden by JS */
+  --dest: var(--c-tf); --dest-l: var(--c-tf-l); --dest-b: var(--c-tf-b);
+}
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+       background: var(--g50); color: var(--g900); min-height: 100vh; font-size: 14px; line-height: 1.5; }
+button { cursor: pointer; font-family: inherit; }
+
+/* ─── HEADER ─── */
+header {
+  position: sticky; top: 0; z-index: 500;
+  height: var(--header-h); background: var(--g0);
+  border-bottom: 1px solid var(--g200);
+  box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; gap: 0; padding: 0 12px 0 0;
+}
+.brand {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 16px; height: 100%; border-right: 1px solid var(--g200);
+  font-weight: 800; font-size: 15px; white-space: nowrap; color: var(--g900);
+  text-decoration: none; flex-shrink: 0;
+}
+.brand-icon { font-size: 22px; }
+#menu-btn {
+  display: none; background: none; border: none;
+  padding: 8px 12px; font-size: 20px; color: var(--g700); flex-shrink: 0;
+}
+.dest-tabs { display: flex; gap: 2px; padding: 0 8px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.dest-tabs::-webkit-scrollbar { display: none; }
+.tab {
+  display: flex; align-items: center; gap: 5px; padding: 6px 14px;
+  border: none; border-radius: 8px; background: none; color: var(--g500);
+  font-size: 13px; font-weight: 600; white-space: nowrap; transition: background .15s, color .15s;
+  position: relative;
+}
+.tab:hover { background: var(--g100); color: var(--g900); }
+.tab.active { color: #fff; }
+.tab[data-dest="tenerife"].active  { background: var(--c-tf); }
+.tab[data-dest="madeira"].active   { background: var(--c-md); }
+.tab[data-dest="madrid"].active    { background: var(--c-ma); }
+.tab[data-dest="reservas"].active  { background: var(--c-res); }
+.tab[data-dest="gastro"].active    { background: var(--c-gas); }
+.tab-badge {
+  position: absolute; top: 3px; right: 3px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--c-red); border: 2px solid var(--g0);
+}
+
+/* ─── LAYOUT ─── */
+.layout {
+  display: flex;
+  height: calc(100vh - var(--header-h));
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ─── */
+#sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--g0); border-right: 1px solid var(--g200);
+  display: flex; flex-direction: column; overflow: hidden;
+  transition: transform .22s ease;
+}
+.sidebar-dest {
+  padding: 12px 14px; border-bottom: 1px solid var(--g100);
+  flex-shrink: 0;
+}
+.sidebar-dest-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--dest); margin-bottom: 2px;
+}
+.sidebar-dest-base { font-size: 11px; color: var(--g500); line-height: 1.4; }
+#day-list { overflow-y: auto; flex: 1; scrollbar-width: thin; }
+#day-list::-webkit-scrollbar { width: 4px; }
+#day-list::-webkit-scrollbar-thumb { background: var(--g200); border-radius: 2px; }
+.day-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-bottom: 1px solid var(--g100);
+  cursor: pointer; transition: background .1s;
+}
+.day-row:hover { background: var(--g50); }
+.day-row.active { background: var(--dest-l); }
+.day-num-badge {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--g100); color: var(--g700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+  transition: background .15s, color .15s;
+}
+.day-row.active .day-num-badge { background: var(--dest); color: #fff; }
+.day-row-body { flex: 1; min-width: 0; }
+.day-row-title { font-size: 12px; font-weight: 600; color: var(--g900);
+                 white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.day-row-date  { font-size: 11px; color: var(--g500); }
+.day-row-pips  { display: flex; gap: 3px; margin-top: 3px; }
+.pip { width: 6px; height: 6px; border-radius: 50%; }
+.pip-red    { background: var(--c-red); }
+.pip-orange { background: var(--c-orange); }
+.pip-green  { background: var(--c-green); }
+
+/* ─── MAIN CONTENT ─── */
+#main {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* ─── ITINERARY VIEW ─── */
+#view-itinerary { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+
+/* Day header */
+#day-header {
+  flex-shrink: 0; padding: 16px 20px 14px; background: var(--g0);
+  border-bottom: 1px solid var(--g200);
+}
+.dh-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--dest); color: #fff;
+  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  margin-bottom: 8px;
+}
+.dh-title { font-size: 22px; font-weight: 800; line-height: 1.2; color: var(--g900); }
+.dh-date  { font-size: 13px; color: var(--g500); margin-top: 2px; }
+.dh-summary {
+  margin-top: 10px; padding: 9px 13px; border-radius: 8px;
+  background: var(--dest-l); border-left: 3px solid var(--dest);
+  font-size: 13px; color: var(--g700); line-height: 1.5;
+}
+.flight-strip {
+  margin: 10px 20px 0; padding: 9px 14px;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1px solid #BFDBFE; border-radius: 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+.flight-strip-icon { font-size: 18px; }
+.flight-strip-text { font-size: 12px; font-weight: 600; color: #1E40AF; line-height: 1.4; }
+
+/* Map section */
+#map-section {
+  flex-shrink: 0; position: relative;
+  background: var(--g100); border-bottom: 1px solid var(--g200);
+}
+#map { height: 250px; width: 100%; transition: height .3s ease; }
+#map-section.collapsed #map { height: 0; }
+#map-toggle-btn {
+  position: absolute; bottom: 8px; right: 8px; z-index: 400;
+  background: var(--g0); border: 1px solid var(--g200);
+  border-radius: 6px; padding: 5px 11px;
+  font-size: 12px; font-weight: 600; color: var(--g700);
+  box-shadow: var(--shadow-sm); transition: background .1s;
+}
+#map-toggle-btn:hover { background: var(--g50); }
+#map-section.collapsed #map-toggle-btn { bottom: -34px; }
+
+/* Timeline scroll area */
+#timeline-wrap { flex: 1; overflow-y: auto; padding: 16px 20px 40px; }
+.tl-inner { max-width: 640px; }
+
+/* Timeline stops */
+.tl-stop { display: flex; gap: 12px; position: relative; }
+.tl-stop:not(:last-child)::before {
+  content: ''; position: absolute;
+  left: 17px; top: 40px; bottom: 0; width: 2px;
+  background: var(--g200); z-index: 0;
+}
+.tl-icon-col { width: 36px; flex-shrink: 0; padding-top: 8px; z-index: 1; }
+.tl-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--g0); border: 2px solid var(--g200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; box-shadow: var(--shadow-sm);
+}
+.tl-icon.is-dinner, .tl-icon.is-lunch {
+  border-color: var(--dest); background: var(--dest-l);
+}
+.tl-icon.is-transport { border-color: var(--g300); background: var(--g50); }
+.tl-body { flex: 1; padding: 8px 0 22px; min-width: 0; }
+.tl-time { font-size: 11px; font-weight: 700; color: var(--g500); letter-spacing: .04em; margin-bottom: 2px; }
+.tl-name { font-size: 15px; font-weight: 700; color: var(--g900); line-height: 1.3; }
+.tl-notes { font-size: 12px; color: #475569; margin-top: 4px; line-height: 1.55; }
+.tl-food {
+  margin-top: 6px; padding: 6px 10px; border-radius: 6px;
+  background: var(--g50); border-left: 3px solid var(--dest);
+  font-size: 12px; color: var(--g700);
+}
+.tl-warn {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 6px; padding: 5px 10px; border-radius: 6px;
+  background: #FFFBEB; border: 1px solid #FDE68A;
+  font-size: 11px; font-weight: 600; color: #92400E;
+}
+
+/* Day reservations block */
+.day-res-block {
+  margin-top: 4px; padding: 14px;
+  background: var(--g0); border: 1px solid var(--g200); border-radius: var(--radius);
+}
+.day-res-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--g500); margin-bottom: 10px;
+}
+.res-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
+.res-row + .res-row { border-top: 1px solid var(--g100); }
+.res-checkbox {
+  width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0; margin-top: 2px;
+  border: 2px solid var(--g300); background: var(--g0); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff; transition: all .15s;
+}
+.res-checkbox.done { background: var(--c-green); border-color: var(--c-green); }
+.res-text { flex: 1; min-width: 0; }
+.res-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px; margin-bottom: 3px;
+}
+.badge-red    { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+.badge-orange { background: #FFF7ED; color: #C2410C; border: 1px solid #FED7AA; }
+.badge-green  { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+.res-name  { font-size: 14px; font-weight: 700; color: var(--g900); }
+.res-how   { font-size: 12px; color: var(--g700); margin-top: 2px; }
+.res-obs   { font-size: 11px; color: var(--g500); margin-top: 1px; font-style: italic; }
+.res-text.is-done .res-name,
+.res-text.is-done .res-how,
+.res-text.is-done .res-obs { opacity: .45; text-decoration: line-through; }
+
+/* Food summary */
+.food-block {
+  margin-top: 12px; padding: 12px 14px;
+  background: var(--g50); border: 1px solid var(--g200); border-radius: var(--radius);
+}
+.food-block-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--g500); margin-bottom: 8px;
+}
+.food-line { display: flex; gap: 7px; align-items: flex-start; padding: 3px 0; font-size: 12px; color: var(--g700); }
+.food-line-icon { flex-shrink: 0; }
+
+/* ─── FULL VIEWS (Reservas + Gastro) ─── */
+#view-reservas, #view-gastro {
+  display: none; flex: 1; overflow-y: auto; padding: 20px;
+}
+.view-title { font-size: 20px; font-weight: 800; color: var(--g900); }
+.view-sub   { font-size: 13px; color: var(--g500); margin-top: 2px; margin-bottom: 20px; }
+
+/* RESERVAS */
+.progress-wrap { background: var(--g200); border-radius: 20px; height: 6px; margin-bottom: 4px; overflow: hidden; }
+.progress-bar  { height: 100%; background: var(--c-green); border-radius: 20px; transition: width .4s; }
+.progress-label { font-size: 11px; color: var(--g500); text-align: right; margin-bottom: 16px; }
+.filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.filt-btn {
+  border: 2px solid var(--g200); background: var(--g0); border-radius: 20px;
+  padding: 5px 14px; font-size: 12px; font-weight: 600; color: var(--g700);
+  transition: all .15s;
+}
+.filt-btn:hover { border-color: var(--g300); }
+.filt-btn.f-all    { background: var(--g900); color: #fff; border-color: var(--g900); }
+.filt-btn.f-red    { background: var(--c-red); color: #fff; border-color: var(--c-red); }
+.filt-btn.f-orange { background: var(--c-orange); color: #fff; border-color: var(--c-orange); }
+.filt-btn.f-green  { background: var(--c-green); color: #fff; border-color: var(--c-green); }
+.res-group-hd {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700; margin: 20px 0 8px;
+}
+.big-res-card {
+  background: var(--g0); border: 1px solid var(--g200); border-radius: var(--radius);
+  padding: 13px 14px; margin-bottom: 8px;
+  display: flex; align-items: flex-start; gap: 12px;
+  transition: opacity .2s;
+}
+.big-res-card.is-done { opacity: .5; }
+.brc-check {
+  width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; margin-top: 2px;
+  border: 2px solid var(--g300); background: var(--g0); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; transition: all .15s;
+}
+.brc-check.done { background: var(--c-green); border-color: var(--c-green); }
+.brc-body { flex: 1; min-width: 0; }
+.brc-dest { display: inline-block; font-size: 10px; font-weight: 700; color: #fff;
+            padding: 2px 8px; border-radius: 10px; margin-bottom: 4px; }
+.brc-name { font-size: 14px; font-weight: 700; color: var(--g900); }
+.brc-how  { font-size: 12px; color: var(--g700); margin-top: 3px; }
+.brc-obs  { font-size: 11px; color: var(--g500); margin-top: 2px; font-style: italic; }
+.brc-body.is-done .brc-name,
+.brc-body.is-done .brc-how,
+.brc-body.is-done .brc-obs { text-decoration: line-through; }
+.alerts-box {
+  margin-top: 20px; padding: 14px; border-radius: var(--radius);
+  background: #FFFBEB; border: 1px solid #FDE68A;
+}
+.alerts-box-title { font-size: 12px; font-weight: 700; color: #92400E; margin-bottom: 8px; }
+.alert-line { font-size: 12px; color: #78350F; line-height: 1.6; }
+
+/* GASTRO */
+.gastro-section { margin-bottom: 28px; }
+.gastro-hd {
+  font-size: 16px; font-weight: 800; color: var(--g900);
+  padding-bottom: 8px; margin-bottom: 12px;
+  border-bottom: 2px solid currentColor;
+  display: flex; align-items: center; gap: 7px;
+}
+.dish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.dish-card {
+  background: var(--g0); border: 1px solid var(--g200); border-radius: 8px;
+  padding: 11px 12px; border-left: 3px solid;
+}
+.dish-name  { font-size: 13px; font-weight: 700; color: var(--g900); }
+.dish-desc  { font-size: 11px; color: #475569; margin-top: 3px; line-height: 1.4; }
+.dish-where { font-size: 10px; font-weight: 700; margin-top: 5px; }
+.strategy-box {
+  margin-top: 8px; padding: 14px; border-radius: var(--radius);
+  background: var(--g0); border: 1px solid var(--g200);
+}
+.strategy-box-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.strategy-line { font-size: 12px; color: var(--g700); line-height: 2; }
+
+/* ─── LEAFLET OVERRIDES ─── */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius); font-family: inherit; box-shadow: var(--shadow-md);
+}
+.leaflet-popup-content { margin: 10px 14px !important; }
+.popup-time { font-size: 11px; font-weight: 700; color: var(--g500); }
+.popup-name { font-size: 14px; font-weight: 700; color: var(--g900); margin-top: 1px; }
+.popup-note { font-size: 11px; color: #475569; margin-top: 3px; line-height: 1.4; max-width: 200px; }
+
+/* ─── OVERLAY ─── */
+#overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.35); z-index: 450;
+}
+#overlay.show { display: block; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 720px) {
+  #menu-btn { display: block; }
+  .brand-text { display: none; }
+  #sidebar {
+    position: fixed; top: var(--header-h); left: 0; bottom: 0;
+    z-index: 490; transform: translateX(-100%);
+    box-shadow: none;
+  }
+  #sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,.18); }
+  .layout { height: calc(100dvh - var(--header-h)); }
+  #map { height: 200px; }
+  #view-reservas, #view-gastro { padding: 14px; }
+  .dish-grid { grid-template-columns: 1fr; }
+  .dh-title { font-size: 19px; }
+}
+@media (min-width: 721px) {
+  .brand { min-width: var(--sidebar-w); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="#" onclick="return false">
+    <span class="brand-icon">🌍</span>
+    <span class="brand-text">Família Solon · Jun 2025</span>
+  </a>
+  <button id="menu-btn" onclick="toggleSidebar()">☰</button>
+  <nav class="dest-tabs" id="destTabs"></nav>
+</header>
+
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<div class="layout">
+  <aside id="sidebar">
+    <div class="sidebar-dest">
+      <div class="sidebar-dest-label" id="sdLabel"></div>
+      <div class="sidebar-dest-base" id="sdBase"></div>
+    </div>
+    <div id="day-list"></div>
+  </aside>
+
+  <main id="main">
+    <div id="view-itinerary">
+      <div id="day-header"></div>
+      <div id="map-section">
+        <div id="map"></div>
+        <button id="map-toggle-btn" onclick="toggleMap()">▲ Ocultar mapa</button>
+      </div>
+      <div id="timeline-wrap"><div class="tl-inner" id="timeline"></div></div>
+    </div>
+    <div id="view-reservas"></div>
+    <div id="view-gastro"></div>
+  </main>
+</div>
+
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════════════════════════
+const DEST = {
+  tenerife: {
+    name:'Tenerife', emoji:'🌋', tab:'🌋 Tenerife',
+    dates:'04–09 jun', nights:'5 noites',
+    color:'#EA580C', light:'#FFF7ED', border:'#FED7AA',
+    mapCenter:[28.18,-16.70], mapZoom:10,
+    base:'Airbnb Palm-Mar · Av. el Palm-Mar / C. los Falcones · Carro alugado em TFN',
+    days:[
+      { n:1, date:'04 jun', wd:'Quinta', title:'Chegada',
+        summary:'Pouso TFN 15:40 → supermercado → check-in → Montaña Amarilla → jantar Los Abrigos',
+        flight:{route:'MAD → TFN', dep:'13:50', arr:'15:40', num:'—', info:'2h50 direto'},
+        stops:[
+          {t:'15:40', name:'Aeroporto TFN', icon:'✈️', cls:'is-transport',
+           lat:28.4827, lng:-16.3415, notes:'Retirar carro. ⚠️ TFN = Tenerife Norte — NÃO é o TFS (Sul)'},
+          {t:'16:30', name:'Supermercado Los Cristianos', icon:'🛒', cls:'',
+           lat:28.023, lng:-16.698, notes:'Mercadona ou Hiperdino. Comprar café, pão, frios e frutas para todos os dias de Tenerife'},
+          {t:'17:00', name:'Airbnb Palm-Mar', icon:'🏠', cls:'',
+           lat:28.023, lng:-16.698, notes:'Check-in · Av. el Palm-Mar / C. los Falcones'},
+          {t:'17:30', name:'Montaña Amarilla', icon:'🌋', cls:'',
+           lat:28.011, lng:-16.636, notes:'Formação vulcânica amarela icônica. Caminhada curtíssima (<1km). Pôr do sol às 21h30'},
+          {t:'19:30', name:'Jantar · Los Abrigos', icon:'🍽️', cls:'is-dinner',
+           lat:28.0235, lng:-16.7065,
+           notes:'Vila de pescadores. Peixe fresco grelhado, papas arrugadas, mojo verde/vermelho. Sem reserva. ~€15-20/pess',
+           food:'Peixe grelhado fresco · papas arrugadas · mojo verde e vermelho · vinho local'},
+        ],
+        foodLines:[
+          {i:'🍽️', t:'Jantar: Los Abrigos · peixe fresco · sem reserva · ~€15-20/pess'},
+        ],
+        res:[]
+      },
+      { n:2, date:'05 jun', wd:'Sexta', title:'Três Praias',
+        summary:'Playa del Duque → La Enramada → Las Vistas → jantar El Rincón de Pancho',
+        flight:null,
+        stops:[
+          {t:'9:30',  name:'Playa del Duque', icon:'🏖️', cls:'', lat:28.091, lng:-16.744,
+           notes:'Melhor praia do sul. Mar protegido, +100 vagas de estacionamento. Ideal para manhã inteira'},
+          {t:'15:00', name:'La Enramada', icon:'🏖️', cls:'', lat:28.098, lng:-16.752,
+           notes:'Praia de areia preta vulcânica. 10 min a pé pela orla a partir do Duque'},
+          {t:'16:30', name:'Las Vistas', icon:'🏖️', cls:'', lat:28.053, lng:-16.724,
+           notes:'Praia longa com areia dourada. Vista aberta para o oceano Atlântico'},
+          {t:'20:00', name:'Jantar · El Rincón de Pancho', icon:'🍽️', cls:'is-dinner',
+           lat:28.0519, lng:-16.7161,
+           notes:'Culinária canária autêntica. Rating 4.6 ★ · ~€15-20/pess · +34 922 78 73 93',
+           food:'Almogrote · banana assada · papas arrugadas · gofio · ropa vieja'},
+        ],
+        foodLines:[
+          {i:'🍺', t:'Bar praia Duque: papas fritas, calamares, cerveja · ~€8-12/pess'},
+          {i:'🥤', t:'Bar La Enramada · ~€5-8/pess'},
+          {i:'🍦', t:'Café ou sorvete Las Vistas · ~€3-5/pess'},
+          {i:'🍽️', t:'Jantar: El Rincón de Pancho · almogrote + gofio · ~€15-20/pess'},
+        ],
+        res:[
+          {prio:'orange', name:'El Rincón de Pancho',
+           how:'Ligar: +34 922 78 73 93', obs:'Mesa para 6 · fecha seg e dom · sexta ✓'}
+        ]
+      },
+      { n:3, date:'06 jun', wd:'Sábado', title:'Whale Watching',
+        summary:'Whale watching 3h → Playa El Camisón → jantar Mesón Las Lanzas',
+        flight:null,
+        stops:[
+          {t:'9:00',  name:'Puerto Colón · Whale Watch', icon:'⛵', cls:'', lat:28.078, lng:-16.736,
+           notes:'Pantalán 3. Barco pequeno ~10 pessoas. Biólogos a bordo. ~3h de passeio. ~€40/pess'},
+          {t:'13:00', name:'Playa El Camisón', icon:'🏖️', cls:'', lat:28.053, lng:-16.731,
+           notes:'Mar quase de piscina, muito calmo. Perfeito para descanso pós-barco'},
+          {t:'20:00', name:'Jantar · Mesón Las Lanzas', icon:'🍽️', cls:'is-dinner',
+           lat:28.0596, lng:-16.7286,
+           notes:'Espanhol autêntico. Pedir paella com antecedência ao reservar. Rating 4.5 ★ · ~€15-20/pess',
+           food:'Tapas variadas · grelhados · paella (avisar ao reservar) · vinho'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Café no porto Puerto Colón pós-barco · ~€5/pess'},
+          {i:'🍺', t:'Bar praia El Camisón · ~€5-8/pess'},
+          {i:'🍽️', t:'Jantar: Mesón Las Lanzas · tapas + paella · ~€15-20/pess'},
+        ],
+        res:[
+          {prio:'red',    name:'Whale Watch Tenerife',
+           how:'whalewatchtenerife.org · +34 634 35 18 56', obs:'Sábado 06 jun · barco pequeno · 6 pessoas · ~16 dias antes'},
+          {prio:'orange', name:'Mesón Las Lanzas',
+           how:'Ligar: +34 922 79 11 72', obs:'Mesa para 6 · fecha ter e qua · sábado ✓ · pedir paella'},
+        ]
+      },
+      { n:4, date:'07 jun', wd:'Domingo', title:'Teide',
+        summary:'Saída 7h30 → teleférico 3.555m → Roques de García → Vilaflor → jantar El Burgado',
+        flight:null,
+        stops:[
+          {t:'—',    name:'🎒 Levar lanche de casa', icon:'🎒', cls:'', lat:28.023, lng:-16.698,
+           notes:'Sandes, fruta, água. O restaurante na base do teleférico é muito caro'},
+          {t:'8:15', name:'Teleférico do Teide', icon:'🚡', cls:'', lat:28.2544, lng:-16.6258,
+           notes:'Sobe ao cume em 8 min: 3.555m altitude. ~10°C no topo — levar agasalho. ~€28/pess. Abre 9h'},
+          {t:'13:00',name:'Roques de García', icon:'🥾', cls:'', lat:28.225, lng:-16.632,
+           notes:'Trilha plana de ~3.5km a 2.200m. Formações vulcânicas icônicas da Cañada. Vista para o Teide'},
+          {t:'15:30',name:'Vilaflor', icon:'☕', cls:'', lat:28.159, lng:-16.634,
+           notes:'Vila mais alta da Espanha (1.400m). Pausa com café e torta no regresso. ~€3-5/pess'},
+          {t:'20:00',name:'Jantar · El Burgado', icon:'🍽️', cls:'is-dinner', lat:28.0521, lng:-16.7176,
+           notes:'Mediterrâneo. Peixe fresco. Abre todos os dias ✓. Domingos têm show de flamenco ao vivo! ~€15-20/pess',
+           food:'Peixe fresco · arroz de marisco · grelhados · flamenco ao vivo (domingos)'},
+        ],
+        foodLines:[
+          {i:'🎒', t:'Lanche de casa (mochila) no cume'},
+          {i:'☕', t:'Café e torta em Vilaflor · ~€3-5/pess'},
+          {i:'🍽️', t:'Jantar: El Burgado · peixe + flamenco aos domingos · ~€15-20/pess'},
+        ],
+        res:[
+          {prio:'red',    name:'Permissão cume do Teide',
+           how:'reservasparquesnacionales.es (gratuito)', obs:'Vagas limitadas! Domingo esgota rapidamente'},
+          {prio:'orange', name:'Teleférico do Teide',
+           how:'volcanoteide.com · ~€28/pess', obs:'Domingo 07 jun · comprar online com antecedência'},
+          {prio:'green',  name:'El Burgado (jantar)',
+           how:'Ligar: +34 822 14 39 13', obs:'Mesa para 6 · domingo tem flamenco ao vivo'},
+        ]
+      },
+      { n:5, date:'08 jun', wd:'Segunda', title:'Norte da Ilha',
+        summary:'Abama → Los Gigantes → Masca → Garachico → Drago Milenário (~200km)',
+        flight:null,
+        stops:[
+          {t:'8:55', name:'Mirante Abama (TF-47)', icon:'👁️', cls:'', lat:28.172, lng:-16.805,
+           notes:'Parada rápida de 5 min. Vista aérea completa do resort e costa sul. Não descer'},
+          {t:'9:05', name:'Los Gigantes · Falésias', icon:'🏔️', cls:'', lat:28.244, lng:-16.843,
+           notes:'Falésias de 600m de altura. Mirante espetacular + porto pintoresco. Barco turístico opcional ~€15'},
+          {t:'10:25',name:'Masca', icon:'🏘️', cls:'', lat:28.305, lng:-16.84,
+           notes:'Aldeia em gorge vulcânico dramático. ⚠️ Estrada muito sinuosa — GPS atualizado, dirigir devagar',
+           warn:'⚠️ Estrada sinuosa e estreita — dirigir com cuidado'},
+          {t:'13:00',name:'El Caletón · Garachico', icon:'🌊', cls:'', lat:28.374, lng:-16.766,
+           notes:'Piscinas naturais de lava. ~€4 entrada. ⚠️ Mirador de Garachico FECHADO às segundas',
+           warn:'⚠️ Mirador de Garachico FECHADO às segundas — buscar restaurante no centro histórico'},
+          {t:'15:30',name:'Drago Milenário · Icod de los Vinos', icon:'🌳', cls:'', lat:28.367, lng:-16.722,
+           notes:'Dracaena draco com mais de 1.000 anos. Símbolo das Canárias. ~€5. Abre até 18h'},
+          {t:'20:00',name:'Jantar · Los Abrigos', icon:'🍽️', cls:'is-dinner', lat:28.023, lng:-16.698,
+           notes:'Orla de pescadores. Jantar leve após dia longo. Sem reserva. ~€15-20/pess',
+           food:'Peixe grelhado simples · papas arrugadas · sem reserva'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Café no porto Los Gigantes · ~€5/pess'},
+          {i:'🍺', t:'Bar de Masca · ~€5-10/pess'},
+          {i:'🍽️', t:'Almoço em Garachico: restaurante no centro histórico (Mirador fechado) · ~€15-20/pess'},
+          {i:'☕', t:'Café e pastéis em Icod de los Vinos · ~€5-8/pess'},
+          {i:'🍽️', t:'Jantar: Los Abrigos · peixe simples · ~€15-20/pess'},
+        ],
+        res:[]
+      },
+      { n:6, date:'09 jun', wd:'Terça', title:'Partida para Madeira',
+        summary:'El Camisón → La Laguna UNESCO → Aeroporto TFN → voo 16:05 para Funchal',
+        flight:{route:'TFN → FNC', dep:'16:05', arr:'17:25', num:'Binter NT4152', info:'Direto 1h20 · ⚠️ TFN = Tenerife Norte, NÃO TFS'},
+        stops:[
+          {t:'até 10h',name:'Check-out Airbnb', icon:'🏠', cls:'', lat:28.023, lng:-16.698,
+           notes:'Bagagens no carro. Devolver as chaves'},
+          {t:'10:00', name:'Playa El Camisón', icon:'🏖️', cls:'', lat:28.053, lng:-16.731,
+           notes:'Último banho em Tenerife. Mar muito calmo e protegido'},
+          {t:'13:30', name:'La Laguna · Patrimônio UNESCO', icon:'🏛️', cls:'', lat:28.4894, lng:-16.3165,
+           notes:'Ex-capital das Canárias. Patrimônio Mundial UNESCO. 1h15 de passeio a pé. A 15 min do TFN'},
+          {t:'15:00', name:'Aeroporto TFN · partida', icon:'✈️', cls:'is-transport', lat:28.4827, lng:-16.3415,
+           notes:'⚠️ GPS: "Aeropuerto Tenerife Norte". Devolver carro. Voo 16:05 → Funchal 17:25'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Bar El Camisón: café e lanche · ~€8-12/pess'},
+          {i:'🍰', t:'Café ou pastel em La Laguna · ~€3-5/pess'},
+          {i:'🌿', t:'Próximo jantar: Zona Velha de Funchal na chegada (~18h30)'},
+        ],
+        res:[]
+      },
+    ]
+  },
+
+  madeira: {
+    name:'Madeira', emoji:'🌿', tab:'🌿 Madeira',
+    dates:'09–19 jun', nights:'10 noites',
+    color:'#16A34A', light:'#F0FDF4', border:'#BBF7D0',
+    mapCenter:[32.72,-16.95], mapZoom:10,
+    base:'Apt. Caires · R. do Infante Santo 11, Sé, Funchal · Booking #6335.075.321 · PIN 6004 · check-in 14h / check-out 11h',
+    days:[
+      { n:1, date:'09 jun', wd:'Terça', title:'Chegada a Funchal',
+        summary:'FNC 17:25 → supermercado → check-in → jantar Zona Velha',
+        flight:null,
+        stops:[
+          {t:'17:25',name:'Aeroporto FNC', icon:'✈️', cls:'is-transport', lat:32.6942, lng:-16.7783,
+           notes:'Retirar carro. 25 min até o centro de Funchal'},
+          {t:'18:00',name:'Pingo Doce · Funchal', icon:'🛒', cls:'', lat:32.651, lng:-16.9093,
+           notes:'Rua Dr. Fernão de Ornelas. 5 min a pé do apartamento. Comprar mantimentos para os 10 dias'},
+          {t:'18:30',name:'Apartamento Caires', icon:'🏠', cls:'', lat:32.6505, lng:-16.9082,
+           notes:'R. do Infante Santo 11 · Sé, Funchal · PIN 6004 · check-in (avisar chegada ~18h)'},
+          {t:'20:00',name:'Jantar · Restaurante Galeria', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9032,
+           notes:'Zona Velha · Rua Santa Maria. Madeirense tradicional. Rating 4.6 ★ · ~€15-20/pess · sem reserva',
+           food:'Peixe-espada preto com banana · lapas grelhadas · bolo do caco · poncha'},
+        ],
+        foodLines:[
+          {i:'🍽️', t:'Jantar: Restaurante Galeria · Zona Velha · peixe-espada preto · ~€15-20/pess'},
+        ],
+        res:[]
+      },
+      { n:2, date:'10 jun', wd:'Quarta', title:'Funchal Cidade',
+        summary:'Mercado dos Lavradores → Teleférico → Monte Palace → Tobogãs → jantar Dona Joana',
+        flight:null,
+        stops:[
+          {t:'9:00', name:'Mercado dos Lavradores', icon:'🛒', cls:'', lat:32.6487, lng:-16.9041,
+           notes:'Desde 1940. Peixe-espada preto, flores tropicais. ⚠️ NÃO comprar frutas no 1º piso (preços inflacionados). Fecha domingo',
+           warn:'⚠️ Não comprar frutas no 1º piso — preços inflacionados para turistas'},
+          {t:'10:30',name:'Teleférico do Funchal', icon:'🚡', cls:'', lat:32.6472, lng:-16.9024,
+           notes:'15-18 min de subida. Vista panorâmica da baía do Funchal. ~€20 ida e volta. Abre 8h45'},
+          {t:'11:00',name:'Monte Palace Tropical Garden', icon:'🌺', cls:'', lat:32.6756, lng:-16.9005,
+           notes:'70.000m² de jardins. Koi gigantes, coleção de minerais, arte asiática. ~€12/pess. Rating 4.7 ★. Abre 9h-18h'},
+          {t:'14:30',name:'Tobogãs do Monte (opcional)', icon:'🛷', cls:'', lat:32.6474, lng:-16.9032,
+           notes:'~€30/carrinho para 2 pessoas. 2km guiados por carreiros com trajes tradicionais. Alternativa: teleférico de regresso'},
+          {t:'20:00',name:'Jantar · Dona Joana', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
+           notes:'Muito frequentado por locais. R. Dr. Fernão de Ornelas 26. ~€15-20/pess',
+           food:'Peixe-espada preto com banana da Madeira · sopa de tomate · lapas grelhadas · bolo do caco'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Bica na estação do teleférico antes de subir · ~€2/pess'},
+          {i:'🍰', t:'Café interno Monte Palace · ~€5-8/pess'},
+          {i:'🍽️', t:'Jantar: Dona Joana · peixe-espada + lapas · ~€15-20/pess'},
+        ],
+        res:[
+          {prio:'orange',name:'Teleférico do Funchal',
+           how:'madeiracablecar.com', obs:'Quarta 10 jun · filas grandes no verão'},
+          {prio:'orange',name:'Monte Palace Tropical Garden',
+           how:'montepalacemadeira.com · ~€12/pess', obs:'Quarta 10 jun · 6 pessoas'},
+        ]
+      },
+      { n:3, date:'11 jun', wd:'Quinta', title:'Levada dos Balcões',
+        summary:'Ribeiro Frio → Levada dos Balcões PR11 (3km plana) → tarde Funchal → jantar A Tendinha',
+        flight:null,
+        stops:[
+          {t:'8:30', name:'Ribeiro Frio · ponto de partida', icon:'☕', cls:'', lat:32.7327, lng:-16.8879,
+           notes:'860m de altitude. Estacionar no largo. Victor\'s Bar para café antes de partir'},
+          {t:'9:00', name:'Levada dos Balcões · PR11', icon:'🥾', cls:'', lat:32.7351, lng:-16.886,
+           notes:'3km ida e volta, totalmente PLANA na beira da levada. Floresta Laurissilva (UNESCO). Bar a meio. Miradouro no final. Rating 4.7 ★',
+           warn:'⚠️ Chegar antes das 11h — fica muito lotado. Reserva obrigatória e gratuita'},
+          {t:'14:00',name:'Funchal · tarde', icon:'🏙️', cls:'', lat:32.651, lng:-16.9093,
+           notes:'Regresso. Descanso no apartamento ou passeio pelas Portas Pintadas da Rua Santa Maria'},
+          {t:'20:00',name:'Jantar · A Tendinha', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
+           notes:'Melhor custo-benefício do Funchal. Comida caseira madeirense. Frequentado por locais. ~€10-15/pess',
+           food:'Prato do dia caseiro madeirense · sopa · vinho da casa'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Café em Victor\'s Bar · Ribeiro Frio · ~€3-5/pess'},
+          {i:'🥤', t:'Bar a meio da levada · ~€5-8/pess'},
+          {i:'🍽️', t:'Jantar: A Tendinha · comida caseira · ~€10-15/pess'},
+        ],
+        res:[
+          {prio:'red', name:'Levada dos Balcões PR11',
+           how:'gov.madeira.pt/simplifica (gratuito)', obs:'Quinta 11 jun · reserva obrigatória · chegue antes das 11h'},
+        ]
+      },
+      { n:4, date:'12 jun', wd:'Sexta', title:'Ponta de São Lourenço',
+        summary:'Caniçal → PR8 (1,5km ida) → almoço Caniçal → Zona Velha Funchal',
+        flight:null,
+        stops:[
+          {t:'8:30', name:'Caniçal · padaria', icon:'☕', cls:'', lat:32.7397, lng:-16.7331,
+           notes:'Vila de pescadores no extremo leste da Madeira. Café e bolo do caco na padaria local antes da trilha'},
+          {t:'9:00', name:'Ponta de São Lourenço · PR8', icon:'🥾', cls:'', lat:32.7434, lng:-16.701,
+           notes:'Ponta mais oriental da Madeira. Paisagem árida e dramática. Fazer 1,5-2km ida (30-40 min) e voltar. €4,50/pess. Rating 4.8 ★',
+           warn:'⚠️ Vento forte frequente — levar casaco mesmo no verão. Reserva obrigatória'},
+          {t:'12:00',name:'Almoço · tasca Caniçal', icon:'🍽️', cls:'is-lunch', lat:32.7397, lng:-16.7331,
+           notes:'Atum fresco e peixe-espada direto dos pescadores. Autêntico e barato. ~€12-15/pess'},
+          {t:'14:30',name:'Funchal · Zona Velha', icon:'🏙️', cls:'', lat:32.651, lng:-16.9093,
+           notes:'Portas Pintadas da Rua Santa Maria. Comprinha, artesanato, poncha'},
+          {t:'20:00',name:'Jantar · Restaurante Galeria', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
+           notes:'Lapas, bacalhau, sopa de tomate, bolo do caco. ~€15-20/pess',
+           food:'Lapas grelhadas · bacalhau · sopa de tomate · bolo do caco com manteiga de alho'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Café e bolo do caco na padaria de Caniçal · ~€3-5/pess'},
+          {i:'🍽️', t:'Almoço: tasca de pescadores Caniçal · atum fresco · ~€12-15/pess'},
+          {i:'🍽️', t:'Jantar: Restaurante Galeria · Zona Velha · ~€15-20/pess'},
+        ],
+        res:[
+          {prio:'red', name:'Ponta de São Lourenço PR8',
+           how:'gov.madeira.pt/simplifica · €4,50/pess', obs:'Sexta 12 jun · reserva obrigatória · 6 pessoas'},
+        ]
+      },
+      { n:5, date:'13 jun', wd:'Sábado', title:'Whale Watching + Lido',
+        summary:'Whale watching 3h → petisco Zona Velha → Lido Público → jantar espetada Santo António',
+        flight:null,
+        stops:[
+          {t:'9:00', name:'Marina do Funchal · Whale Watch', icon:'⛵', cls:'', lat:32.6457, lng:-16.9109,
+           notes:'~3h no oceano. Baleias-piloto e golfinhos residentes. Biólogo marinho a bordo. ~€50/pess'},
+          {t:'13:00',name:'Zona Velha · petisco', icon:'☕', cls:'', lat:32.6479, lng:-16.9041,
+           notes:'Rua Santa Maria. Café, sumo, sandes ou bolo do caco. ~€5-8/pess'},
+          {t:'14:00',name:'Lido Público · Funchal', icon:'🌊', cls:'', lat:32.6356, lng:-16.9339,
+           notes:'Acesso ao mar em plataformas de rocha natural. Gratuito. Abre 9h30',
+           warn:'⚠️ Mar pode ter ondulação — usar sempre a escada para entrar e sair'},
+          {t:'20:00',name:'Jantar · Santo António', icon:'🍽️', cls:'is-dinner', lat:32.6474, lng:-16.9749,
+           notes:'Estreito Câmara de Lobos (20 min). A referência da espetada desde 1966. Abre todos os dias. ~€15-20/pess · +351 291 941 866',
+           food:'Espetada no pau de louro · milho frito · bolo do caco · poncha · pudim de maracujá'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Café pós-barco no porto da Marina · ~€5/pess'},
+          {i:'🥤', t:'Petisco Zona Velha · bolo do caco · ~€5-8/pess'},
+          {i:'🍺', t:'Bar vizinho ao Lido · ~€8-12/pess'},
+          {i:'🍽️', t:'Jantar: Santo António · espetada + poncha · ~€15-20/pess'},
+        ],
+        res:[
+          {prio:'red',   name:'Whale Watch Madeira',
+           how:'lobosonda.com', obs:'Sábado 13 jun · 6 pessoas · ~€50/pess · reservar com antecedência'},
+          {prio:'green', name:'Santo António (espetada)',
+           how:'Ligar: +351 291 941 866', obs:'Estrada João Gonçalves Zarco 656 · Estreito Câmara de Lobos'},
+        ]
+      },
+      { n:6, date:'14 jun', wd:'Domingo', title:'Norte · Santana + Porto da Cruz',
+        summary:'Santana (casas típicas) → Engenho Porto da Cruz → Miradouro Portela → jantar',
+        flight:null,
+        stops:[
+          {t:'9:00', name:'Santana · casas típicas', icon:'🏘️', cls:'', lat:32.8055, lng:-16.8826,
+           notes:'Ícone da Madeira: casas tradicionais de telhado de colmo até o chão. Parada 45-60 min. Queijada e café'},
+          {t:'10:30',name:'Engenho · Porto da Cruz', icon:'🍷', cls:'', lat:32.7742, lng:-16.828,
+           notes:'Única destilaria de aguardente a vapor ativa do mundo. Desde 1942. Visita GRATUITA. Prova de poncha e aguardente. Abre dom 10h-17h ✓'},
+          {t:'12:30',name:'Almoço · Porto da Cruz', icon:'🍽️', cls:'is-lunch', lat:32.7742, lng:-16.828,
+           notes:'Tascas de pescadores junto ao porto. Peixe do dia muito fresco. ~€12-15/pess'},
+          {t:'15:00',name:'Miradouro da Portela', icon:'👁️', cls:'', lat:32.7697, lng:-16.8609,
+           notes:'662m de altitude. Vista esplêndida do vale do Machico e litoral norte. Bar com café. Parada 30 min'},
+          {t:'20:00',name:'Jantar · A Tendinha', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
+           notes:'Comida caseira madeirense. Muito frequentado por locais. ~€10-15/pess',
+           food:'Prato do dia · sopa de légumes · vinho da casa'},
+        ],
+        foodLines:[
+          {i:'🧀', t:'Queijada e café em Santana · ~€3-5/pess'},
+          {i:'🍶', t:'Prova de poncha e aguardente no Engenho (gratuito)'},
+          {i:'🍽️', t:'Almoço: tasca Porto da Cruz · peixe fresco · ~€12-15/pess'},
+          {i:'☕', t:'Café no Miradouro da Portela · ~€3-5/pess'},
+          {i:'🍽️', t:'Jantar: A Tendinha · comida caseira · ~€10-15/pess'},
+        ],
+        res:[]
+      },
+      { n:7, date:'15 jun', wd:'Segunda', title:'Paul da Serra + Porto Moniz',
+        summary:'Paul da Serra (planalto 1.500m) → piscinas vulcânicas Porto Moniz → costa sul',
+        flight:null,
+        stops:[
+          {t:'—',    name:'🎒 Levar lanche de casa', icon:'🎒', cls:'', lat:32.6505, lng:-16.9082,
+           notes:'Sem estabelecimentos no planalto do Paul da Serra'},
+          {t:'8:30', name:'Paul da Serra · planalto', icon:'🏔️', cls:'', lat:32.7333, lng:-17.05,
+           notes:'1.500m de altitude. Maior planalto da Madeira. Aerogeradores, nuvens baixas, paisagem mística de outro mundo. Rating 4.7 ★'},
+          {t:'10:00',name:'Porto Moniz · piscinas vulcânicas', icon:'🌊', cls:'', lat:32.8686, lng:-17.1706,
+           notes:'Piscinas naturais de lava na costa noroeste. ~€3-5 entrada. Ondas entram pelas rochas. Abre 9h-19h. Rating 4.7 ★'},
+          {t:'13:00',name:'Almoço · Porto Moniz', icon:'🍽️', cls:'is-lunch', lat:32.8686, lng:-17.1706,
+           notes:'Restaurante junto às piscinas. Peixe na lenha, atum, lapas grelhadas. ~€15-20/pess'},
+          {t:'20:00',name:'Jantar · Zona Velha Funchal', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
+           notes:'Jantar leve após dia longo. Regresso pela ER101 costa sul (~1h). ~€15-20/pess',
+           food:'Tapas leves · vinho da Madeira · bolo do caco'},
+        ],
+        foodLines:[
+          {i:'🎒', t:'Lanche de casa — comer no planalto Paul da Serra'},
+          {i:'🍽️', t:'Almoço: Porto Moniz · peixe na lenha + lapas · ~€15-20/pess'},
+          {i:'🍽️', t:'Jantar: Zona Velha · tapas leves · ~€15-20/pess'},
+        ],
+        res:[]
+      },
+      { n:8, date:'16 jun', wd:'Terça', title:'Pico do Arieiro',
+        summary:'Arieiro ao amanhecer (saída 5h30) → Ribeiro Frio → tarde livre → jantar Vila do Peixe',
+        flight:null,
+        stops:[
+          {t:'5:30 ou 8:00',name:'Pico do Arieiro · 1.818m', icon:'🌄', cls:'', lat:32.7356, lng:-16.9287,
+           notes:'3º pico mais alto da Madeira. Acima das nuvens no verão — pôr do sol acima das nuvens. Bar no cume. Levar casaco ~10°C. Rating 4.8 ★',
+           warn:'⚠️ Verificar webcam antes de sair: visitmadeira.pt — cume pode estar encoberto'},
+          {t:'10:00',name:'Ribeiro Frio · regresso', icon:'☕', cls:'', lat:32.7327, lng:-16.8879,
+           notes:'Victor\'s Bar para café e lanche no regresso. ~€8-12/pess'},
+          {t:'13:00',name:'Funchal · tarde livre', icon:'🏙️', cls:'', lat:32.651, lng:-16.9093,
+           notes:'Descanso. Passeio pelas Portas Pintadas da Rua Santa Maria. Últimas compras de artesanato'},
+          {t:'20:00',name:'Jantar · Vila do Peixe', icon:'🍽️', cls:'is-dinner', lat:32.6474, lng:-16.9749,
+           notes:'Câmara de Lobos (15 min). Bancada de peixe vivo — você escolhe e é grelhado na hora. Vista da baía. ~€20-25/pess',
+           food:'Peixe escolhido na bancada · grelhado na hora · salada · vinho · vista da baía'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Bar do cume do Arieiro · ~€5-8/pess'},
+          {i:'🍰', t:'Victor\'s Bar · Ribeiro Frio · ~€8-12/pess'},
+          {i:'🥪', t:'Sandes ou café no centro de Funchal · ~€5-8/pess'},
+          {i:'🍽️', t:'Jantar: Vila do Peixe · peixe na bancada · ~€20-25/pess'},
+        ],
+        res:[]
+      },
+      { n:9, date:'17 jun', wd:'Quarta', title:"Blandy's + Câmara de Lobos",
+        summary:"Blandy's Wine Lodge → compras Funchal → Câmara de Lobos → jantar BeerHouse",
+        flight:null,
+        stops:[
+          {t:'10:00',name:"Blandy's Wine Lodge", icon:'🍷', cls:'', lat:32.6479, lng:-16.9107,
+           notes:'Adega histórica fundada em 1811. Tour guiado + degustação de 3 vinhos Madeira. ~€18-20/pess. Abre 10h todos os dias. Rating 4.5 ★'},
+          {t:'12:00',name:'Funchal · compras', icon:'🛒', cls:'', lat:32.651, lng:-16.9093,
+           notes:'Bordados madeirenses, poncha, mel de cana, queijo. Rua Dr. Fernão de Ornelas'},
+          {t:'14:00',name:'Câmara de Lobos · porto', icon:'⚓', cls:'', lat:32.6474, lng:-16.9749,
+           notes:'Vila de pescadores histórica. Barcos coloridos, murais de azulejo, estátua de Churchill (pescou aqui em 1950), capelas'},
+          {t:'20:00',name:'Jantar · BeerHouse', icon:'🍽️', cls:'is-dinner', lat:32.6474, lng:-16.9749,
+           notes:'Especialidade: peixe-espada de cebolada. Vista da baía de Câmara de Lobos. Abre todos os dias. ~€20-25/pess',
+           food:'Peixe-espada de cebolada · imperial gelada · vista da baía'},
+        ],
+        foodLines:[
+          {i:'🥪', t:'Sandes de bolo do caco · ~€5-8/pess'},
+          {i:'🍹', t:'Poncha e pastéis no porto de Câmara de Lobos · ~€5-8/pess'},
+          {i:'🍽️', t:'Jantar: BeerHouse · peixe-espada cebolada · ~€20-25/pess'},
+        ],
+        res:[
+          {prio:'orange', name:"Blandy's Wine Lodge",
+           how:'blandyswinelodge.com · ~€18-20/pess', obs:'Quarta 17 jun · 6 pessoas · tour + degustação'},
+        ]
+      },
+      { n:10, date:'18 jun', wd:'Quinta', title:'Cabo Girão + Despedida',
+        summary:'Cabo Girão 580m → Câmara de Lobos → tarde livre → jantar de despedida Santo António',
+        flight:null,
+        stops:[
+          {t:'9:30', name:'Cabo Girão · plataforma de vidro', icon:'🏔️', cls:'', lat:32.6566, lng:-17.0044,
+           notes:'Uma das falésias mais altas da Europa: 580m. Plataforma de vidro sobre o abismo. ~€5/pess. Abre 9h-20h. Rating 4.5 ★'},
+          {t:'11:00',name:'Câmara de Lobos · último passeio', icon:'⚓', cls:'', lat:32.6474, lng:-16.9749,
+           notes:'Último passeio no porto histórico. Poncha de despedida com os pescadores'},
+          {t:'13:00',name:'Funchal · tarde livre', icon:'🏙️', cls:'', lat:32.651, lng:-16.9093,
+           notes:'Descanso. Últimas compras. Fazer as malas para Madrid'},
+          {t:'20:00',name:'Jantar de Despedida · Santo António', icon:'🍽️', cls:'is-dinner', lat:32.6474, lng:-16.9749,
+           notes:'O jantar icônico da Madeira. Estreito Câmara de Lobos. Desde 1966. Abre todos os dias. ~€15-20/pess · +351 291 941 866',
+           food:'Espetada no pau de louro · milho frito · bolo do caco · poncha · pudim de maracujá 🍮'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Bar do Cabo Girão · ~€3-5/pess'},
+          {i:'🍹', t:'Poncha de despedida em Câmara de Lobos · ~€5-8/pess'},
+          {i:'🍽️', t:'Jantar de despedida: Santo António · espetada + poncha + pudim · ~€15-20/pess'},
+        ],
+        res:[
+          {prio:'green', name:'Santo António · jantar de despedida',
+           how:'Ligar: +351 291 941 866', obs:'Quinta 18 jun · jantar especial · 6 pessoas · Estreito Câmara de Lobos'},
+        ]
+      },
+      { n:11, date:'19 jun', wd:'Sexta', title:'Partida para Madrid',
+        summary:'Check-out → café final na Zona Velha → Aeroporto FNC → voo 12:40 para Madrid',
+        flight:{route:'FNC → MAD', dep:'12:40', arr:'19:10', num:'—', info:'1 escala · 5h30 total'},
+        stops:[
+          {t:'até 11h',name:'Check-out Apartamento Caires', icon:'🏠', cls:'', lat:32.6505, lng:-16.9082,
+           notes:'R. do Infante Santo 11 · PIN 6004 · devolver chaves até 11h'},
+          {t:'11:00',name:'Café final · Zona Velha', icon:'☕', cls:'', lat:32.6479, lng:-16.9041,
+           notes:'Último café da Madeira na Rua Santa Maria. ~€5/pess'},
+          {t:'11:30',name:'Aeroporto FNC · partida', icon:'✈️', cls:'is-transport', lat:32.6942, lng:-16.7783,
+           notes:'Devolver carro. Voo 12:40 → MAD 19:10. 1 escala. 5h30 total'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Café final na Zona Velha · ~€5/pess'},
+          {i:'✈️', t:'Próximo jantar: Calle Cava Baja · Madrid · ~21h00'},
+        ],
+        res:[]
+      },
+    ]
+  },
+
+  madrid: {
+    name:'Madrid', emoji:'🏛️', tab:'🏛️ Madrid',
+    dates:'19–21 jun', nights:'2 noites',
+    color:'#DC2626', light:'#FEF2F2', border:'#FECACA',
+    mapCenter:[40.416,-3.705], mapZoom:14,
+    base:'Hotel a confirmar · La Latina, Sol ou Ópera · Metrô L8 aeroporto → Nuevos Ministerios → La Latina · Suplemento €3 + €1,50',
+    days:[
+      { n:1, date:'19 jun', wd:'Quinta', title:'Chegada a Madrid',
+        summary:'FNC 19:10 → metrô L8 → hotel → jantar Calle Cava Baja',
+        flight:null,
+        stops:[
+          {t:'19:10',name:'Aeroporto MAD (Barajas)', icon:'✈️', cls:'is-transport', lat:40.4983, lng:-3.5676,
+           notes:'Metrô L8 → Nuevos Ministerios (12 min) + baldeação → La Latina (~25 min total). Suplemento €3 + bilhete €1,50. Táxi ~€35'},
+          {t:'20:15',name:'Hotel · La Latina / Sol / Ópera', icon:'🏨', cls:'', lat:40.4153, lng:-3.7003,
+           notes:'A confirmar. Sem carro necessário — toda Madrid a pé e metrô'},
+          {t:'21:00',name:'Jantar · Calle Cava Baja', icon:'🍽️', cls:'is-dinner', lat:40.4131, lng:-3.7084,
+           notes:'A rua de tapas mais autêntica de Madrid. Estratégia: 2-3 bares em sequência para provar tudo. ~€20-25/pess',
+           food:'Taberna La Concha (vermute caseiro) · ou Casa Lucio (huevos estrellados, ~€25-30/pess)'},
+        ],
+        foodLines:[
+          {i:'🍽️', t:'Jantar: bar crawl Cava Baja · 2-3 bares em sequência · ~€20-25/pess'},
+          {i:'🍳', t:'Opção: Casa Lucio · huevos estrellados · Cava Baja 35 · ~€25-30/pess'},
+        ],
+        res:[
+          {prio:'green', name:'Casa Lucio (se quiser sentar)',
+           how:'casalucio.es · Cava Baja 35', obs:'Quinta noite · mesa para 6 · opcional · huevos estrellados'},
+        ]
+      },
+      { n:2, date:'20 jun', wd:'Sexta', title:'Madrid · Dia Completo',
+        summary:'Prado (3h) → Retiro → Azotea Bellas Artes → Plaza Mayor → Mercado San Miguel',
+        flight:null,
+        stops:[
+          {t:'10:00',name:'Museo del Prado', icon:'🏛️', cls:'', lat:40.4138, lng:-3.6922,
+           notes:'Um dos maiores museus de arte do mundo. Velázquez, Goya, Rubens, El Greco. Mínimo 2-3h. ~€15/pess. Rating 4.7 ★',
+           warn:'⚠️ Proibido fotografar as obras · comprar ingresso online para evitar fila'},
+          {t:'13:30',name:'Parque del Retiro', icon:'🌳', cls:'', lat:40.4153, lng:-3.6835,
+           notes:'125 hectares no coração de Madrid. Pérgola das Rosas, lago com barquinhos (~€6/30 min). Totalmente gratuito. Rating 4.8 ★'},
+          {t:'16:00',name:'Azotea Círculo Bellas Artes', icon:'🏙️', cls:'', lat:40.4183, lng:-3.6965,
+           notes:'7º andar. Vista 360° de Madrid + Serra Guadarrama ao fundo. €4 entrada. Abre 10h todos os dias'},
+          {t:'19:00',name:'Plaza Mayor', icon:'🏛️', cls:'', lat:40.4155, lng:-3.7074,
+           notes:'Praça barroca do séc. XVII. Arcos, fachadas vermelhas icônicas. 400 anos de história de Madri. Rating 4.6 ★'},
+          {t:'20:30',name:'Jantar · Mercado de San Miguel', icon:'🍽️', cls:'is-dinner', lat:40.4153, lng:-3.709,
+           notes:'Mercado gourmet de 1916. 20+ bancas. Jamón, frutos do mar, tapas, vinho. Abre até meia-noite. ~€20-25/pess',
+           food:'Jamón ibérico de bellota · ostras · croquetas · boquerones · vermute · vinho'},
+        ],
+        foodLines:[
+          {i:'☕', t:'Café interno no Prado · ~€5-8/pess'},
+          {i:'🥤', t:'Quiosques do Retiro · ~€5-8/pess'},
+          {i:'🍺', t:'Cerveja no rooftop Azotea · ~€8-12/pess'},
+          {i:'🍹', t:'Cerveja/sangria Plaza Mayor · ~€8-12/pess'},
+          {i:'🍽️', t:'Jantar: Mercado San Miguel · bar crawl pelas bancas · ~€20-25/pess'},
+        ],
+        res:[
+          {prio:'orange', name:'Museo del Prado',
+           how:'museodelprado.es · ~€15/pess', obs:'Sexta 20 jun · comprar online · evitar fila'},
+        ]
+      },
+      { n:3, date:'21 jun', wd:'Sábado', title:'Última Manhã + Partida',
+        summary:'Palácio Real → Templo de Debod → almoço final Cava Baja → Aeroporto MAD → Brasil',
+        flight:{route:'MAD → Brasil', dep:'a confirmar', arr:'—', num:'—', info:'Verificar horário exato do voo'},
+        stops:[
+          {t:'10:00',name:'Palácio Real', icon:'🏰', cls:'', lat:40.418, lng:-3.7143,
+           notes:'Maior palácio da Europa Ocidental. 3.418 salas, ~30 abertas ao público. ~€14/pess. Abre 10h-18h sábado ✓. Rating 4.7 ★'},
+          {t:'12:00',name:'Templo de Debod', icon:'🏛️', cls:'', lat:40.4241, lng:-3.7178,
+           notes:'Templo egípcio de 2.000 anos. Presenteado pelo Egito à Espanha em 1968. Totalmente gratuito. Vista panorâmica de Madrid. Fecha segunda (sábado ✓)'},
+          {t:'13:30',name:'Almoço final · Cava Baja', icon:'🍽️', cls:'is-lunch', lat:40.4131, lng:-3.7084,
+           notes:'A última refeição da viagem. Ritual madrileno: huevos estrellados, croquetas, patatas bravas, sangria. ~€20-25/pess',
+           food:'Huevos estrellados · croquetas de jamón · patatas bravas · sangria · café'},
+          {t:'15:30+',name:'Aeroporto MAD · regresso Brasil', icon:'✈️', cls:'is-transport', lat:40.4983, lng:-3.5676,
+           notes:'Metrô L8 ou táxi. Verificar horário exato do voo para o Brasil'},
+        ],
+        foodLines:[
+          {i:'🍽️', t:'Almoço final: Cava Baja · huevos estrellados + sangria · ~€20-25/pess'},
+        ],
+        res:[
+          {prio:'orange', name:'Palácio Real',
+           how:'patrimonionacional.es · ~€14/pess', obs:'Sábado 21 jun · 6 pessoas · comprar online'},
+        ]
+      },
+    ]
+  },
+};
+
+// ────────────────────────────────────────────────────────────
+//  GASTRONOMIA DATA
+// ────────────────────────────────────────────────────────────
+const GASTRO = [
+  { dest:'tenerife', label:'Culinária Canária', color:'#EA580C', dishes:[
+    {name:'Papas arrugadas con mojo',desc:'Batatas cozidas em água salgada + mojo verde ou vermelho. Acompanhamento universal de Tenerife.',where:'Qualquer restaurante local'},
+    {name:'Almogrote',desc:'Pasta cremosa de queijo curado picante. Ótima para passar no pão.',where:'El Rincón de Pancho'},
+    {name:'Gofio',desc:'Farinha de cereais tostados, base milenar da cozinha canária. Denso e saboroso.',where:'El Rincón de Pancho'},
+    {name:'Ropa vieja',desc:'Ensopado rico de grão-de-bico com carne de vitela desfiada.',where:'Guachinche local'},
+    {name:'Espetada canária',desc:'Carne em espeto de louro grelhado. Acompanha milho frito.',where:'Guachinche local'},
+    {name:'Bienmesabe',desc:'Sobremesa cremosa de amêndoa moída com mel e ovo. Clássico das Canárias.',where:'Qualquer confeitaria'},
+    {name:'Poncha canária',desc:'Aguardente de cana com mel. Diferente da madeirense — mais doce.',where:'Qualquer bar local'},
+  ]},
+  { dest:'madeira', label:'Culinária Madeirense', color:'#16A34A', dishes:[
+    {name:'Peixe-espada preto com banana',desc:'Filé escuro com banana frita e molho de maracujá. O prato mais icônico da Madeira.',where:'Dona Joana · Zona Velha'},
+    {name:'Espetada no pau de louro',desc:'Carne bovina em espeto de pau de louro grelhada ao carvão. Perfume único.',where:'Santo António · Estreito CL'},
+    {name:'Lapas grelhadas',desc:'Molusco grelhado com limão, manteiga de alho e ervas. Petisco obrigatório.',where:'Qualquer restaurante de peixe'},
+    {name:'Bolo do caco',desc:'Pão de batata-doce grelhado na chapa com manteiga de alho. Comer em tudo.',where:'Padarias e restaurantes'},
+    {name:'Poncha madeirense',desc:'Aguardente de cana + mel de cana + limão. Porto da Cruz tem a mais autêntica.',where:'Engenho Porto da Cruz'},
+    {name:'Vinho da Madeira',desc:'Vinho fortificado centenário com notas de caramelo e noz. Tour completo na Blandy\'s.',where:"Blandy's Wine Lodge"},
+    {name:'Pudim de maracujá',desc:'Sobremesa clássica: flan cremoso de maracujá tropical. Leve e refrescante.',where:'Santo António · Estreito CL'},
+    {name:'Queijada da Madeira',desc:'Pastelzinho de queijo fresco suave. Clássico das padarias de Santana.',where:'Padarias de Santana'},
+  ]},
+  { dest:'madrid', label:'Tapas Madrilenas', color:'#DC2626', dishes:[
+    {name:'Huevos estrellados',desc:'Ovos fritos no azeite sobre batatas crocantes, gema cremosa. O prato mais icônico de Madrid.',where:'Casa Lucio · Cava Baja 35'},
+    {name:'Jamón ibérico de bellota',desc:'Presunto de porco ibérico alimentado exclusivamente com bolotas. O melhor do mundo.',where:'Mercado San Miguel'},
+    {name:'Croquetas de jamón',desc:'Croquete cremoso de presunto ibérico. Cada bar madrileno tem a sua receita secreta.',where:'Qualquer bar da Cava Baja'},
+    {name:'Patatas bravas',desc:'Batatas fritas com molho picante de tomate e aioli. Em qualquer bar por ~€4-6.',where:'Qualquer bar local'},
+    {name:'Boquerones',desc:'Anchovas fritas crocantes ou marinadas em vinagre com alho e salsa.',where:'Cava Baja'},
+    {name:'Vermute (Vermuteo)',desc:'Aperitivo ritual das 12h. A Taberna La Concha faz o próprio com laranja e especiarias.',where:'Taberna La Concha · Cava Baja'},
+    {name:'Sangria',desc:'Caro na Plaza Mayor, mas vale uma jarra grande dividida entre os 6 na primeira noite.',where:'Plaza Mayor'},
+  ]},
+];
+
+// ────────────────────────────────────────────────────────────
+//  ALL RESERVATIONS (flattened for the Reservas view)
+// ────────────────────────────────────────────────────────────
+const ALL_RES = [];
+for (const [destId, d] of Object.entries(DEST)) {
+  for (const day of d.days) {
+    for (const r of day.res) {
+      ALL_RES.push({ ...r, destId, destName: d.name, destColor: d.color,
+                     dayN: day.n, dayDate: day.date,
+                     id: `${destId}_d${day.n}_${r.name.replace(/\W/g,'_')}` });
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════
+const S = {
+  dest: 'tenerife',
+  dayIdx: 0,
+  view: 'itinerary',     // 'itinerary' | 'reservas' | 'gastro'
+  resFilter: 'all',      // 'all' | 'red' | 'orange' | 'green'
+  mapCollapsed: false,
+};
+
+// ════════════════════════════════════════════════════════════
+//  MAP
+// ════════════════════════════════════════════════════════════
+let leafMap = null;
+let mapLayers = [];
+
+function ensureMap() {
+  if (leafMap) return;
+  leafMap = L.map('map', { zoomControl: true, attributionControl: true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(leafMap);
+}
+
+function clearMapLayers() {
+  mapLayers.forEach(l => l.remove());
+  mapLayers = [];
+}
+
+function updateMap() {
+  ensureMap();
+  clearMapLayers();
+
+  const dest = DEST[S.dest];
+  const day  = dest.days[S.dayIdx];
+  const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
+
+  if (!pts.length) {
+    leafMap.setView(dest.mapCenter, dest.mapZoom);
+    setTimeout(() => leafMap.invalidateSize(), 120);
+    return;
+  }
+
+  // Route polyline
+  const latlngs = pts.map(p => [p.lat, p.lng]);
+  const line = L.polyline(latlngs, {
+    color: dest.color, weight: 3, opacity: .65, dashArray: '8,5'
+  }).addTo(leafMap);
+  mapLayers.push(line);
+
+  // Markers with numbered pins
+  pts.forEach((stop, i) => {
+    const html = `
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center">
+        <div style="
+          width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+          background:${dest.color};border:2px solid #fff;
+          display:flex;align-items:center;justify-content:center;
+          box-shadow:0 2px 6px rgba(0,0,0,.28)">
+          <span style="transform:rotate(45deg);font-size:13px">${stop.icon}</span>
+        </div>
+        <div style="
+          background:#fff;padding:1px 5px;border-radius:4px;
+          font-size:9px;font-weight:700;margin-top:2px;
+          box-shadow:0 1px 3px rgba(0,0,0,.2);
+          max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+          color:${dest.color};">${i+1}. ${stop.name.split('·')[0].trim()}</div>
+      </div>`;
+    const icon = L.divIcon({ html, className:'', iconSize:[36,52], iconAnchor:[16,46] });
+    const m = L.marker([stop.lat, stop.lng], { icon }).addTo(leafMap);
+    m.bindPopup(`
+      <div class="popup-time">${stop.t || ''}</div>
+      <div class="popup-name">${stop.name}</div>
+      <div class="popup-note">${stop.notes || ''}</div>`);
+    mapLayers.push(m);
+  });
+
+  const bounds = L.latLngBounds(latlngs);
+  leafMap.fitBounds(bounds, { padding: [32, 32], maxZoom: 14 });
+  setTimeout(() => leafMap.invalidateSize(), 120);
+}
+
+function toggleMap() {
+  S.mapCollapsed = !S.mapCollapsed;
+  const sec = document.getElementById('map-section');
+  const btn = document.getElementById('map-toggle-btn');
+  sec.classList.toggle('collapsed', S.mapCollapsed);
+  btn.textContent = S.mapCollapsed ? '▼ Ver mapa' : '▲ Ocultar mapa';
+  if (!S.mapCollapsed) setTimeout(() => leafMap && leafMap.invalidateSize(), 320);
+}
+
+// ════════════════════════════════════════════════════════════
+//  CHECKLIST (localStorage)
+// ════════════════════════════════════════════════════════════
+function getChecked() {
+  try { return JSON.parse(localStorage.getItem('res_checked') || '{}'); } catch { return {}; }
+}
+function setChecked(id, val) {
+  const d = getChecked();
+  val ? (d[id] = 1) : delete d[id];
+  localStorage.setItem('res_checked', JSON.stringify(d));
+}
+function toggleCheck(id) {
+  const ch = getChecked();
+  setChecked(id, !ch[id]);
+  // Re-render whichever view is active
+  if (S.view === 'itinerary') renderTimeline();
+  else if (S.view === 'reservas') renderReservas();
+}
+
+// ════════════════════════════════════════════════════════════
+//  CSS-VAR THEME HELPER
+// ════════════════════════════════════════════════════════════
+function applyTheme(destId) {
+  const d = DEST[destId] || {};
+  const r = document.documentElement;
+  r.style.setProperty('--dest',   d.color || '#EA580C');
+  r.style.setProperty('--dest-l', d.light || '#FFF7ED');
+  r.style.setProperty('--dest-b', d.border || '#FED7AA');
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER: TABS
+// ════════════════════════════════════════════════════════════
+function renderTabs() {
+  const tabs = [
+    { id:'tenerife', label:'🌋 Tenerife' },
+    { id:'madeira',  label:'🌿 Madeira'  },
+    { id:'madrid',   label:'🏛️ Madrid'   },
+    { id:'reservas', label:'📋 Reservas' },
+    { id:'gastro',   label:'🍴 Gastronomia' },
+  ];
+  const ch = getChecked();
+  const unchecked = ALL_RES.filter(r => !ch[r.id] && r.prio === 'red').length;
+  document.getElementById('destTabs').innerHTML = tabs.map(t => {
+    const active = S.dest === t.id ? ' active' : '';
+    const badge = (t.id === 'reservas' && unchecked > 0)
+      ? `<span class="tab-badge"></span>` : '';
+    return `<button class="tab${active}" data-dest="${t.id}" onclick="switchDest('${t.id}')">${t.label}${badge}</button>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER: SIDEBAR
+// ════════════════════════════════════════════════════════════
+function renderSidebar() {
+  const dest = DEST[S.dest];
+  if (!dest) { document.getElementById('day-list').innerHTML = ''; return; }
+  document.getElementById('sdLabel').textContent = `${dest.emoji} ${dest.name} · ${dest.dates}`;
+  document.getElementById('sdBase').textContent  = dest.base;
+  document.getElementById('day-list').innerHTML = dest.days.map((day, i) => {
+    const hasR = day.res.some(r => r.prio === 'red');
+    const hasO = day.res.some(r => r.prio === 'orange');
+    const hasG = day.res.some(r => r.prio === 'green');
+    const pips = [
+      hasR ? '<span class="pip pip-red"></span>'    : '',
+      hasO ? '<span class="pip pip-orange"></span>' : '',
+      hasG ? '<span class="pip pip-green"></span>'  : '',
+    ].join('');
+    return `<div class="day-row${S.dayIdx === i ? ' active' : ''}" onclick="switchDay(${i})">
+      <div class="day-num-badge">${day.n}</div>
+      <div class="day-row-body">
+        <div class="day-row-title">${day.title}</div>
+        <div class="day-row-date">${day.wd} · ${day.date}</div>
+        ${pips ? `<div class="day-row-pips">${pips}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER: DAY HEADER
+// ════════════════════════════════════════════════════════════
+function renderDayHeader() {
+  const dest = DEST[S.dest];
+  const day  = dest.days[S.dayIdx];
+  const el   = document.getElementById('day-header');
+  let html = `
+    <div class="dh-pill">${dest.emoji} ${dest.name} · Dia ${day.n}</div>
+    <div class="dh-title">${day.title}</div>
+    <div class="dh-date">${day.wd}, ${day.date} · ${dest.dates}</div>
+    <div class="dh-summary">${day.summary}</div>`;
+  if (day.flight) {
+    html += `<div class="flight-strip">
+      <span class="flight-strip-icon">✈️</span>
+      <div class="flight-strip-text">
+        VOO ${day.flight.route} · ${day.flight.dep} → ${day.flight.arr} · ${day.flight.num} · ${day.flight.info}
+      </div>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER: TIMELINE
+// ════════════════════════════════════════════════════════════
+function badgeHtml(prio) {
+  if (prio === 'red')    return '<span class="res-badge badge-red">🔴 URGENTE</span>';
+  if (prio === 'orange') return '<span class="res-badge badge-orange">🟠 ALTA PRIORIDADE</span>';
+  return '<span class="res-badge badge-green">🟢 RECOMENDADO</span>';
+}
+
+function renderTimeline() {
+  const dest = DEST[S.dest];
+  const day  = dest.days[S.dayIdx];
+  const ch   = getChecked();
+  let html   = '';
+
+  // Stops
+  html += day.stops.map(stop => `
+    <div class="tl-stop">
+      <div class="tl-icon-col">
+        <div class="tl-icon ${stop.cls || ''}">${stop.icon}</div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-time">${stop.t || ''}</div>
+        <div class="tl-name">${stop.name}</div>
+        ${stop.notes ? `<div class="tl-notes">${stop.notes}</div>` : ''}
+        ${stop.warn  ? `<div class="tl-warn">${stop.warn}</div>` : ''}
+        ${stop.food  ? `<div class="tl-food">🍴 ${stop.food}</div>` : ''}
+      </div>
+    </div>`).join('');
+
+  // Reservations block
+  if (day.res.length) {
+    html += `<div class="day-res-block">
+      <div class="day-res-title">📋 Reservas deste dia</div>`;
+    html += day.res.map(r => {
+      const id   = `${S.dest}_d${day.n}_${r.name.replace(/\W/g,'_')}`;
+      const done = !!ch[id];
+      return `<div class="res-row">
+        <div class="res-checkbox${done ? ' done' : ''}" onclick="toggleCheck('${id}')">${done ? '✓' : ''}</div>
+        <div class="res-text${done ? ' is-done' : ''}">
+          ${badgeHtml(r.prio)}
+          <div class="res-name">${r.name}</div>
+          <div class="res-how">${r.how}</div>
+          <div class="res-obs">${r.obs}</div>
+        </div>
+      </div>`;
+    }).join('');
+    html += '</div>';
+  }
+
+  // Food summary
+  if (day.foodLines && day.foodLines.length) {
+    html += `<div class="food-block">
+      <div class="food-block-title">🍽️ Alimentação do dia</div>`;
+    html += day.foodLines.map(f =>
+      `<div class="food-line"><span class="food-line-icon">${f.i}</span><span>${f.t}</span></div>`
+    ).join('');
+    html += '</div>';
+  }
+
+  document.getElementById('timeline').innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER: RESERVAS
+// ════════════════════════════════════════════════════════════
+function renderReservas() {
+  const ch     = getChecked();
+  const filter = S.resFilter;
+  const total  = ALL_RES.length;
+  const done   = ALL_RES.filter(r => ch[r.id]).length;
+  const pct    = total ? Math.round(done / total * 100) : 0;
+
+  const groups = [
+    { prio: 'red',    label: '🔴 Urgente — fazer imediatamente'  },
+    { prio: 'orange', label: '🟠 Alta prioridade'                 },
+    { prio: 'green',  label: '🟢 Recomendado'                     },
+  ];
+  const gColor = { red: '#EF4444', orange: '#F97316', green: '#22C55E' };
+
+  let html = `
+    <div style="max-width:720px">
+    <div class="view-title">📋 Checklist de Reservas</div>
+    <div class="view-sub">6 pessoas · marque como feito conforme reservar</div>
+    <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <div class="progress-label">${done} de ${total} reservas concluídas · ${pct}%</div>
+    <div class="filter-bar">
+      <button class="filt-btn${filter==='all'    ? ' f-all'    :''}" onclick="setResFilter('all')">Todas (${total})</button>
+      <button class="filt-btn${filter==='red'    ? ' f-red'    :''}" onclick="setResFilter('red')">🔴 Urgente</button>
+      <button class="filt-btn${filter==='orange' ? ' f-orange' :''}" onclick="setResFilter('orange')">🟠 Alta</button>
+      <button class="filt-btn${filter==='green'  ? ' f-green'  :''}" onclick="setResFilter('green')">🟢 Recomendado</button>
+    </div>`;
+
+  groups.forEach(g => {
+    const items = ALL_RES.filter(r => r.prio === g.prio && (filter === 'all' || filter === g.prio));
+    if (!items.length) return;
+    html += `<div class="res-group-hd" style="color:${gColor[g.prio]}">${g.label}</div>`;
+    items.forEach(r => {
+      const isDone = !!ch[r.id];
+      html += `<div class="big-res-card${isDone ? ' is-done' : ''}">
+        <div class="brc-check${isDone ? ' done' : ''}" onclick="toggleCheck('${r.id}')">${isDone ? '✓' : ''}</div>
+        <div class="brc-body${isDone ? ' is-done' : ''}">
+          <span class="brc-dest" style="background:${r.destColor}">${r.destName} · D${r.dayN} · ${r.dayDate}</span>
+          <div class="brc-name">${r.name}</div>
+          <div class="brc-how">${r.how}</div>
+          <div class="brc-obs">${r.obs}</div>
+        </div>
+      </div>`;
+    });
+  });
+
+  html += `
+    <div class="alerts-box">
+      <div class="alerts-box-title">⚠️ Atenções especiais</div>
+      <div class="alert-line">· D5 Tenerife (seg): Mirador de Garachico FECHADO às segundas — usar restaurante do centro histórico</div>
+      <div class="alert-line">· D6 Tenerife: Aeroporto TFN ≠ TFS (Sul) — GPS "Aeropuerto Tenerife Norte"</div>
+      <div class="alert-line">· D2 Madeira (qua): Mercado dos Lavradores — não comprar frutas no 1º piso (preços inflacionados)</div>
+      <div class="alert-line">· D8 Madeira (ter): Pico do Arieiro — verificar webcam antes de sair: <strong>visitmadeira.pt</strong></div>
+      <div class="alert-line">· D3 Madrid (sab): Templo de Debod fecha segunda — sábado está ✓ aberto</div>
+    </div>
+    </div>`;
+
+  document.getElementById('view-reservas').innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER: GASTRONOMIA
+// ════════════════════════════════════════════════════════════
+function renderGastro() {
+  let html = `
+    <div style="max-width:720px">
+    <div class="view-title">🍴 Guias Gastronômicos</div>
+    <div class="view-sub">Pratos obrigatórios em cada destino · orçamento €15-25/pess/jantar</div>`;
+
+  GASTRO.forEach(g => {
+    html += `<div class="gastro-section">
+      <div class="gastro-hd" style="color:${g.color};border-color:${g.color}">
+        ${DEST[g.dest].emoji} ${DEST[g.dest].name} · ${g.label}
+      </div>
+      <div class="dish-grid">`;
+    g.dishes.forEach(d => {
+      html += `<div class="dish-card" style="border-left-color:${g.color}">
+        <div class="dish-name">${d.name}</div>
+        <div class="dish-desc">${d.desc}</div>
+        <div class="dish-where" style="color:${g.color}">📍 ${d.where}</div>
+      </div>`;
+    });
+    html += '</div></div>';
+  });
+
+  html += `<div class="strategy-box">
+    <div class="strategy-box-title">💰 Estratégia de alimentação (todos os destinos)</div>
+    <div class="strategy-line">
+      ☕ <strong>Café da manhã</strong> — No apartamento/hotel (comprar no supermercado no 1º dia) → <strong>€0</strong><br>
+      🥤 <strong>Petiscos</strong> — Bares de praia, cafés nas paradas → <strong>€5-12/pess</strong><br>
+      🍽️ <strong>Jantar</strong> — Restaurante local com reserva → <strong>€15-25/pess</strong><br>
+      <br>
+      <strong>Custo médio diário por pessoa: €20-37</strong><br>
+      <br>
+      🛒 <strong>Compras obrigatórias no 1º dia:</strong><br>
+      · Tenerife → Mercadona ou Hiperdino em Los Cristianos<br>
+      · Madeira → Pingo Doce na Rua Dr. Fernão de Ornelas (5 min do apartamento)
+    </div>
+  </div></div>`;
+
+  document.getElementById('view-gastro').innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════
+//  VIEW SWITCHER
+// ════════════════════════════════════════════════════════════
+function showView(view) {
+  document.getElementById('view-itinerary').style.display = view === 'itinerary' ? 'flex'  : 'none';
+  document.getElementById('view-reservas').style.display  = view === 'reservas'  ? 'block' : 'none';
+  document.getElementById('view-gastro').style.display    = view === 'gastro'    ? 'block' : 'none';
+  // Sidebar only shown in itinerary mode
+  document.getElementById('sidebar').style.display = view === 'itinerary' ? '' : 'none';
+}
+
+function switchDest(destId) {
+  closeSidebar();
+  if (destId === 'reservas') {
+    S.dest = 'reservas'; S.view = 'reservas';
+    applyTheme('tenerife');
+    showView('reservas');
+    renderReservas();
+  } else if (destId === 'gastro') {
+    S.dest = 'gastro'; S.view = 'gastro';
+    applyTheme('tenerife');
+    showView('gastro');
+    renderGastro();
+  } else {
+    S.dest   = destId;
+    S.dayIdx = 0;
+    S.view   = 'itinerary';
+    applyTheme(destId);
+    showView('itinerary');
+    renderSidebar();
+    renderDayHeader();
+    renderTimeline();
+    updateMap();
+  }
+  renderTabs();
+}
+
+function switchDay(idx) {
+  S.dayIdx = idx;
+  closeSidebar();
+  renderSidebar();
+  renderDayHeader();
+  renderTimeline();
+  updateMap();
+  document.getElementById('timeline-wrap').scrollTop = 0;
+}
+
+function setResFilter(f) {
+  S.resFilter = f;
+  renderReservas();
+}
+
+// ════════════════════════════════════════════════════════════
+//  SIDEBAR MOBILE TOGGLE
+// ════════════════════════════════════════════════════════════
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme('tenerife');
+  renderTabs();
+  renderSidebar();
+  renderDayHeader();
+  renderTimeline();
+  showView('itinerary');
+  // Defer map init so layout is painted first
+  requestAnimationFrame(() => updateMap());
+});
+</script>
+</body>
+</html>
