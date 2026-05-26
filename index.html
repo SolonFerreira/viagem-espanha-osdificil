@@ -10,15 +10,15 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 a,button{-webkit-tap-highlight-color:transparent;}
 :root{
-  --c-tf:#EA580C;--c-tf-l:#FFF7ED;--c-tf-b:#FED7AA;
+  --c-tf:#C2632A;--c-tf-l:#FDF4EE;--c-tf-b:#ECC99A;
   --c-md:#16A34A;--c-md-l:#F0FDF4;--c-md-b:#BBF7D0;
   --c-ma:#DC2626;--c-ma-l:#FEF2F2;--c-ma-b:#FECACA;
   --c-res:#4F46E5;--c-gas:#7C3AED;--c-pre:#0EA5E9;
   --c-red:#EF4444;--c-orange:#F97316;--c-green:#22C55E;
   --c-warn-bg:#FFFBEB;--c-warn-bd:#FCD34D;--c-warn-tx:#92400E;
   --c-food-bg:#F0FDF4;--c-food-bd:#86EFAC;--c-food-tx:#166534;
-  --g0:#FFF;--g50:#F8FAFC;--g100:#F1F5F9;--g200:#E2E8F0;
-  --g300:#CBD5E1;--g400:#94A3B8;--g500:#64748B;--g700:#334155;--g900:#0F172A;
+  --g0:#FFFEF9;--g50:#FAF8F4;--g100:#F2EDE8;--g200:#EAE3DC;
+  --g300:#C8BEB4;--g400:#94A3B8;--g500:#64748B;--g700:#334155;--g900:#0F172A;
   --header-h:52px;--chips-h:50px;--sidebar-w:228px;
   --safe-b:env(safe-area-inset-bottom,0px);
   --bottom-h:calc(64px + var(--safe-b));
@@ -45,18 +45,17 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 .dest-tabs{display:flex;gap:2px;padding:0 6px;overflow-x:auto;
   scrollbar-width:none;flex:1;}
 .dest-tabs::-webkit-scrollbar{display:none;}
-.tab{display:flex;align-items:center;gap:4px;padding:6px 11px;
-  border:none;border-radius:8px;background:none;color:var(--g500);
+.tab{display:flex;align-items:center;gap:4px;padding:6px 12px;
+  border:none;border-radius:20px;background:none;color:var(--g500);
   font-size:13px;font-weight:600;white-space:nowrap;
   transition:background .15s,color .15s;position:relative;}
-.tab:hover{background:var(--g100);color:var(--g900);}
-.tab.active{color:#fff;}
-.tab[data-dest="tenerife"].active{background:var(--c-tf);}
-.tab[data-dest="madeira"].active{background:var(--c-md);}
-.tab[data-dest="madrid"].active{background:var(--c-ma);}
-.tab[data-dest="reservas"].active{background:var(--c-res);}
-.tab[data-dest="gastro"].active{background:var(--c-gas);}
-.tab[data-dest="pretrip"].active{background:var(--c-pre);}
+.tab:hover{background:var(--g100);color:var(--g700);}
+.tab[data-dest="tenerife"].active{background:var(--c-tf-l);color:var(--c-tf);font-weight:700;}
+.tab[data-dest="madeira"].active{background:var(--c-md-l);color:var(--c-md);font-weight:700;}
+.tab[data-dest="madrid"].active{background:var(--c-ma-l);color:var(--c-ma);font-weight:700;}
+.tab[data-dest="reservas"].active{background:#EEF2FF;color:var(--c-res);font-weight:700;}
+.tab[data-dest="gastro"].active{background:#F5F3FF;color:var(--c-gas);font-weight:700;}
+.tab[data-dest="pretrip"].active{background:#F0F9FF;color:var(--c-pre);font-weight:700;}
 .tab-badge{position:absolute;top:3px;right:3px;width:8px;height:8px;
   border-radius:50%;background:var(--c-red);border:2px solid var(--g0);}
 
@@ -121,14 +120,14 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 #view-reservas,#view-gastro,#view-pretrip{display:none;padding:16px;overflow-y:auto;}
 
 /* ── DAY HEADER CARD ── */
-#day-header-card{margin:12px 12px 0;padding:14px 16px;
+#day-header-card{margin:12px 12px 0;padding:16px 16px;
   background:var(--g0);border-radius:var(--r-lg);box-shadow:var(--sh-card);
   border-top:3px solid var(--dest);}
 .dhc-pill{display:inline-flex;align-items:center;gap:5px;
-  background:var(--dest);color:#fff;font-size:11px;font-weight:700;
-  padding:2px 10px;border-radius:20px;margin-bottom:8px;}
+  background:var(--dest-l);color:var(--dest);font-size:11px;font-weight:700;
+  padding:2px 10px;border-radius:20px;margin-bottom:10px;}
 .dhc-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
-.dhc-title{font-size:20px;font-weight:800;line-height:1.2;color:var(--g900);flex:1;}
+.dhc-title{font-size:19px;font-weight:800;line-height:1.2;color:var(--g900);flex:1;}
 .dhc-intensity{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;
   white-space:nowrap;flex-shrink:0;margin-top:3px;}
 .int-leve{background:#F0FDF4;color:#166534;}
@@ -155,47 +154,49 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   display:flex;flex-direction:column;}
 #map{height:240px;width:100%;transition:height .3s ease;flex-shrink:0;}
 #map-section.collapsed #map{height:0;}
-.map-action-bar{display:flex;align-items:stretch;gap:8px;padding:8px 10px;
+#map-section.collapsed .map-nav-btn{display:none;}
+#map-section.collapsed #map-toggle-btn{flex:1;}
+.map-action-bar{display:flex;align-items:stretch;gap:6px;padding:8px 10px;
   background:var(--g0);border-top:1px solid var(--g200);flex-shrink:0;}
 .map-nav-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
-  min-height:42px;background:var(--g50);border:1px solid var(--g200);
+  min-height:38px;background:var(--g50);border:1px solid var(--g200);
   border-radius:8px;font-size:12px;font-weight:600;color:var(--g700);
   transition:background .1s;}
 .map-nav-btn:active{background:var(--g100);}
-#map-toggle-btn{flex-shrink:0;min-height:42px;padding:0 10px;
+#map-toggle-btn{flex-shrink:0;min-height:38px;padding:0 10px;
   background:none;border:1px solid var(--g200);border-radius:8px;
-  font-size:12px;font-weight:600;color:var(--g500);white-space:nowrap;}
+  font-size:11px;font-weight:600;color:var(--g400);white-space:nowrap;}
 #map-toggle-btn:active{background:var(--g100);}
 .popup-time{font-size:11px;font-weight:700;color:var(--dest);}
 .popup-name{font-size:13px;font-weight:700;margin:2px 0;}
 .popup-note{font-size:11px;color:#475569;max-width:180px;}
 
 /* ── STOP CARDS ── */
-#stop-cards{display:flex;flex-direction:column;gap:8px;padding:10px 12px 16px;}
+#stop-cards{display:flex;flex-direction:column;gap:10px;padding:12px 12px 16px;}
 .stop-card{background:var(--g0);border-radius:var(--r-md);box-shadow:var(--sh-card);
-  padding:12px 14px;border-left:3px solid transparent;}
+  padding:13px 14px;border-left:3px solid transparent;}
 .stop-card.is-next{border-left-color:var(--dest);}
 .sc-header{display:flex;align-items:flex-start;gap:10px;}
-.sc-time{font-size:13px;font-weight:800;color:var(--dest);
-  min-width:42px;flex-shrink:0;margin-top:2px;font-variant-numeric:tabular-nums;}
-.sc-icon-wrap{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+.sc-time{font-size:12px;font-weight:800;color:var(--dest);
+  min-width:40px;flex-shrink:0;margin-top:3px;font-variant-numeric:tabular-nums;}
+.sc-icon-wrap{width:32px;height:32px;border-radius:50%;flex-shrink:0;
   background:var(--g50);border:1.5px solid var(--g200);
-  display:flex;align-items:center;justify-content:center;font-size:16px;}
+  display:flex;align-items:center;justify-content:center;font-size:15px;}
 .sc-icon-wrap.is-dinner,.sc-icon-wrap.is-lunch{background:var(--dest-l);border-color:var(--dest-b);}
 .sc-icon-wrap.is-transport{background:var(--g100);border-color:var(--g300);}
-.sc-title{flex:1;font-size:15px;font-weight:700;color:var(--g900);line-height:1.3;min-width:0;}
+.sc-title{flex:1;font-size:14px;font-weight:700;color:var(--g900);line-height:1.35;min-width:0;}
 .sc-details{padding-top:10px;}
-.sc-notes{font-size:12px;color:var(--g500);line-height:1.55;}
+.sc-notes{font-size:12px;color:var(--g500);line-height:1.6;}
 .sc-food{margin-top:8px;padding:7px 10px;border-radius:7px;
   background:var(--c-food-bg);border-left:3px solid var(--c-food-bd);
   font-size:12px;color:var(--c-food-tx);line-height:1.45;}
 .sc-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
 .sc-btn{display:flex;align-items:center;justify-content:center;gap:4px;
-  min-height:38px;padding:0 14px;border-radius:8px;
+  min-height:36px;padding:0 14px;border-radius:8px;
   font-size:12px;font-weight:600;transition:opacity .1s;}
 .sc-btn:active{opacity:.7;}
 .sc-btn-nav{background:var(--dest);color:#fff;}
-.sc-btn-detail{background:var(--g50);border:1px solid var(--g200);color:var(--g700);}
+.sc-btn-detail{background:var(--g50);border:1px solid var(--g200);color:var(--g500);}
 
 /* ── DAY RESERVAS (inside stop-cards) ── */
 .day-res-block{background:var(--g0);border-radius:var(--r-md);
@@ -233,19 +234,19 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 /* ── BOTTOM BAR ── */
 #bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:450;
   padding:8px 12px var(--safe-b);
-  background:rgba(255,255,255,.96);
+  background:rgba(255,254,249,.97);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border-top:1px solid var(--g200);box-shadow:0 -4px 16px rgba(0,0,0,.08);}
+  border-top:1px solid var(--g200);box-shadow:0 -4px 16px rgba(0,0,0,.06);}
 #bottom-nav-btn{display:flex;align-items:center;justify-content:space-between;
-  width:100%;min-height:52px;padding:0 18px;
+  width:100%;min-height:50px;padding:0 18px;
   background:var(--dest);color:#fff;border-radius:var(--r-md);
   font-size:14px;font-weight:700;
-  box-shadow:0 2px 8px rgba(0,0,0,.18);transition:opacity .1s;}
+  box-shadow:0 2px 10px rgba(0,0,0,.15);transition:opacity .1s;}
 #bottom-nav-btn:active{opacity:.85;}
 .bb-left{display:flex;flex-direction:column;align-items:flex-start;}
-.bb-label{font-size:11px;font-weight:600;opacity:.85;}
+.bb-label{font-size:10px;font-weight:600;opacity:.8;letter-spacing:.03em;text-transform:uppercase;}
 .bb-dest{font-size:14px;font-weight:800;}
-.bb-icon{font-size:22px;}
+.bb-icon{font-size:20px;}
 
 /* ── FULL VIEWS (Reservas / Gastro) ── */
 .view-title{font-size:20px;font-weight:800;color:var(--g900);}
@@ -300,33 +301,30 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 
 
 /* ── TRANSIT CONNECTOR ── */
-.transit-row{display:flex;align-items:center;gap:6px;padding:2px 14px 2px 68px;
-  color:var(--g400);font-size:11px;font-weight:600;line-height:1;}
-.transit-dot{width:5px;height:5px;border-radius:50%;background:var(--g300);flex-shrink:0;}
+.transit-row{display:flex;align-items:center;gap:5px;padding:0 14px 0 72px;
+  color:var(--g300);font-size:10px;font-weight:500;line-height:1;
+  min-height:18px;letter-spacing:.01em;}
+.transit-dot{width:1px;height:12px;background:var(--g200);flex-shrink:0;}
 
 /* ── STOP CARD DONE STATE ── */
-.stop-card.is-done{opacity:.58;}
+.stop-card.is-done{opacity:.5;}
 .stop-card.is-done .sc-title{text-decoration:line-through;color:var(--g400);}
 .stop-card.is-done .sc-time{color:var(--g400);}
 .stop-card.is-done .sc-icon-wrap{filter:grayscale(1);}
-.sc-done-btn{width:26px;height:26px;border-radius:50%;border:2px solid var(--g300);
-  background:var(--g0);flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  font-size:12px;transition:all .15s;cursor:pointer;margin-top:2px;}
-.sc-done-btn.done{background:var(--c-green);border-color:var(--c-green);color:#fff;}
-.sc-done-badge{font-size:10px;font-weight:700;color:var(--c-green);
-  display:flex;align-items:center;gap:3px;margin-top:4px;}
+.sc-done-btn{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--g300);
+  background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;transition:all .2s;cursor:pointer;margin-top:3px;color:transparent;}
+.sc-done-btn.done{background:var(--dest);border-color:var(--dest);color:#fff;}
 
-/* ── DAY HEADER CARD: PROGRESS + CTAs ── */
-.dhc-progress{margin-top:12px;padding-top:12px;border-top:1px solid var(--g100);}
-.dhc-prog-label{font-size:11px;color:var(--g500);margin-bottom:5px;}
-.dhc-prog-bar-wrap{background:var(--g200);border-radius:20px;height:5px;overflow:hidden;margin-bottom:10px;}
+/* ── DAY HEADER CARD: PROGRESS ── */
+.dhc-progress{margin-top:14px;padding-top:12px;border-top:1px solid var(--g100);}
+.dhc-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.dhc-prog-label{font-size:11px;color:var(--g500);}
+.dhc-map-link{background:none;border:none;padding:0;font-size:11px;font-weight:600;
+  color:var(--dest);cursor:pointer;white-space:nowrap;line-height:1.5;}
+.dhc-map-link:active{opacity:.65;}
+.dhc-prog-bar-wrap{background:var(--g200);border-radius:20px;height:4px;overflow:hidden;}
 .dhc-prog-bar{height:100%;background:var(--c-green);border-radius:20px;transition:width .4s;}
-.dhc-actions{display:flex;gap:8px;}
-.dhc-btn{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;gap:5px;
-  border-radius:9px;font-size:13px;font-weight:700;border:none;transition:opacity .1s;cursor:pointer;}
-.dhc-btn:active{opacity:.75;}
-.dhc-btn-route{background:var(--dest);color:#fff;}
-.dhc-btn-map{background:var(--g100);color:var(--g700);border:1px solid var(--g200);}
 
 /* ── PRÉ-VIAGEM VIEW ── */
 .pre-view{max-width:720px;}
@@ -361,7 +359,7 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 
 /* ── DAY CHECKLIST CARD ── */
 .day-checklist-card{background:var(--dest-l);border:1px solid var(--dest-b);
-  border-radius:var(--r-md);padding:12px 14px;margin-bottom:2px;}
+  border-radius:var(--r-md);padding:12px 14px;margin-bottom:8px;}
 .dcl-title{font-size:12px;font-weight:700;color:var(--dest);margin-bottom:8px;
   display:flex;justify-content:space-between;align-items:center;cursor:pointer;
   text-transform:uppercase;letter-spacing:.05em;}
@@ -378,7 +376,7 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 
 /* ── MEAL PLAN CARD ── */
 .meal-plan-card{background:var(--c-food-bg);border:1px solid var(--c-food-bd);
-  border-radius:var(--r-md);padding:0;margin-bottom:2px;overflow:hidden;}
+  border-radius:var(--r-md);padding:0;margin-bottom:8px;overflow:hidden;}
 .meal-plan-card summary{font-size:12px;font-weight:700;color:var(--c-food-tx);
   padding:10px 14px;cursor:pointer;list-style:none;
   display:flex;justify-content:space-between;align-items:center;
@@ -401,7 +399,7 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   padding:1px 6px;border-radius:10px;margin-left:4px;vertical-align:middle;white-space:nowrap;}
 
 /* ── STOP GUIDE TEXT ── */
-.sc-guide{font-size:13px;color:var(--g600,#475569);line-height:1.65;font-style:italic;
+.sc-guide{font-size:13px;color:var(--g700);line-height:1.65;font-style:italic;
   padding-bottom:8px;border-bottom:1px solid var(--g100);margin-bottom:6px;}
 
 /* ── RETURN STOP ── */
@@ -463,9 +461,9 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
       <div id="map-section" class="collapsed">
         <div id="map"></div>
         <div class="map-action-bar">
-          <button class="map-nav-btn" onclick="openGoogleMaps()" aria-label="Abrir rota completa no Google Maps">🗺️ Rota do dia</button>
-          <button class="map-nav-btn" onclick="openWaze()" aria-label="Abrir no Waze">🚗 Waze</button>
-          <button id="map-toggle-btn" onclick="toggleMap()">▼ Ver mapa</button>
+          <button class="map-nav-btn" onclick="openGoogleMaps()" aria-label="Abrir rota no Google Maps">Google Maps</button>
+          <button class="map-nav-btn" onclick="openWaze()" aria-label="Abrir no Waze">Waze</button>
+          <button id="map-toggle-btn" onclick="toggleMap()">▾ Ver mapa</button>
         </div>
       </div>
       <div id="stop-cards"></div>
@@ -495,7 +493,7 @@ const DEST = {
   tenerife: {
     name:'Tenerife', emoji:'🌋', tab:'🌋 Tenerife',
     dates:'04–09 jun', nights:'5 noites',
-    color:'#EA580C', light:'#FFF7ED', border:'#FED7AA',
+    color:'#C2632A', light:'#FDF4EE', border:'#ECC99A',
     mapCenter:[28.18,-16.70], mapZoom:10,
     base:'Airbnb Palm-Mar · Av. el Palm-Mar / C. los Falcones · Carro alugado em TFN',
     days:[
@@ -1346,10 +1344,9 @@ function toggleMap() {
   const sec    = document.getElementById('map-section');
   const btn    = document.getElementById('map-toggle-btn');
   const dhcBtn = document.getElementById('dhc-map-btn');
-  const label  = S.mapCollapsed ? '▼ Ver mapa' : '▲ Ocultar mapa';
   sec.classList.toggle('collapsed', S.mapCollapsed);
-  btn.textContent = label;
-  if (dhcBtn) dhcBtn.textContent = label;
+  if (btn)    btn.textContent    = S.mapCollapsed ? '▾ Ver mapa' : '▴ Fechar';
+  if (dhcBtn) dhcBtn.textContent = S.mapCollapsed ? 'Ver mapa ▾' : 'Ocultar ▴';
   if (!S.mapCollapsed) setTimeout(() => { updateMap(); leafMap && leafMap.invalidateSize(); }, 320);
 }
 
@@ -1590,9 +1587,9 @@ function toggleTripActivity(destId, dayN, stopIdx) {
 function applyTheme(destId) {
   const d = DEST[destId] || {};
   const r = document.documentElement;
-  r.style.setProperty('--dest',   d.color  || '#EA580C');
-  r.style.setProperty('--dest-l', d.light  || '#FFF7ED');
-  r.style.setProperty('--dest-b', d.border || '#FED7AA');
+  r.style.setProperty('--dest',   d.color  || '#C2632A');
+  r.style.setProperty('--dest-l', d.light  || '#FDF4EE');
+  r.style.setProperty('--dest-b', d.border || '#ECC99A');
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1669,7 +1666,7 @@ function renderDayHeaderCard() {
   const int  = pts.length<=3?{l:'Leve',c:'int-leve'}:pts.length<=5?{l:'Médio',c:'int-medio'}:{l:'Intenso',c:'int-intenso'};
   const { total, done } = getDayProgress(S.dest, day.n, day.stops);
   const pct = total ? Math.round(done/total*100) : 0;
-  const mapBtnText = S.mapCollapsed ? '▼ Ver mapa' : '▲ Ocultar mapa';
+  const mapBtnText = S.mapCollapsed ? 'Ver mapa ▾' : 'Ocultar ▴';
   let html = `
     <div class="dhc-pill">${dest.emoji} ${dest.name} · Dia ${day.n}</div>
     <div class="dhc-row">
@@ -1684,12 +1681,11 @@ function renderDayHeaderCard() {
   if (day.flight) html += `<div class="flight-strip">✈️ VOO ${day.flight.route} · ${day.flight.dep} → ${day.flight.arr} · ${day.flight.num} · ${day.flight.info}</div>`;
   html += `
     <div class="dhc-progress">
-      <div class="dhc-prog-label">${done} de ${total} atividades concluídas${day.totalDriveEst ? ' · 🚗 '+day.totalDriveEst : ''}</div>
-      <div class="dhc-prog-bar-wrap"><div class="dhc-prog-bar" style="width:${pct}%"></div></div>
-      <div class="dhc-actions">
-        <button class="dhc-btn dhc-btn-route" onclick="openGoogleMaps()">🗺️ Abrir rota do dia</button>
-        <button class="dhc-btn dhc-btn-map" id="dhc-map-btn" onclick="toggleMap()">${mapBtnText}</button>
+      <div class="dhc-prog-row">
+        <span class="dhc-prog-label">${done} de ${total} atividades${day.totalDriveEst ? ' · '+day.totalDriveEst : ''}</span>
+        <button class="dhc-map-link" id="dhc-map-btn" onclick="toggleMap()">${mapBtnText}</button>
       </div>
+      <div class="dhc-prog-bar-wrap"><div class="dhc-prog-bar" style="width:${pct}%"></div></div>
     </div>`;
   document.getElementById('day-header-card').innerHTML = html;
   // update bottom bar destination label
@@ -1757,7 +1753,6 @@ function renderStopCards() {
         <div class="sc-title">${stop.name}</div>
         ${(!isReminder&&!isReturn)?`<button class="sc-done-btn${isDone?' done':''}" onclick="toggleTripActivity('${S.dest}',${day.n},${idx})" aria-label="${isDone?'Desmarcar concluído':'Marcar como concluído'}" title="${isDone?'Clique para desmarcar':'Marcar como feito'}">${isDone?'✓':''}</button>`:''}
       </div>
-      ${isDone?`<div class="sc-done-badge">✅ Concluído</div>`:''}
       ${stop.warn&&!isDone?`<div class="alert-warn">${stop.warn}</div>`:''}
       <div class="sc-details" id="sc-det-${idx}" hidden>
         ${stop.guide?`<p class="sc-guide">${stop.guide}</p>`:''}
@@ -1765,7 +1760,7 @@ function renderStopCards() {
         ${stop.food?`<div class="sc-food">🍴 ${stop.food}</div>`:''}
       </div>
       <div class="sc-actions">
-        ${hasNav&&!isDone?`<button class="sc-btn sc-btn-nav" onclick="navigateToStopByIdx(${idx})" aria-label="Navegar para ${stop.name}">🗺️ Navegar</button>`:''}
+        ${hasNav&&!isDone?`<button class="sc-btn sc-btn-nav" onclick="navigateToStopByIdx(${idx})" aria-label="Navegar para ${stop.name}">Navegar</button>`:''}
         ${hasExtra?`<button class="sc-btn sc-btn-detail" onclick="toggleStopDetail(${idx})" id="sc-det-btn-${idx}" aria-expanded="false">+ Detalhes</button>`:''}
       </div>
     </div>`;
