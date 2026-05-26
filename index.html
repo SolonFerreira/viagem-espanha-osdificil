@@ -6,6 +6,8 @@
 <title>🌍 Os Difícil · Jun 2026</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Supabase SDK — carregado após parsing HTML (defer), disponível no DOMContentLoaded -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 a,button{-webkit-tap-highlight-color:transparent;}
@@ -56,6 +58,7 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 .tab[data-dest="reservas"].active{background:#EEF2FF;color:var(--c-res);font-weight:700;}
 .tab[data-dest="gastro"].active{background:#F5F3FF;color:var(--c-gas);font-weight:700;}
 .tab[data-dest="pretrip"].active{background:#F0F9FF;color:var(--c-pre);font-weight:700;}
+.tab[data-dest="fotos"].active{background:var(--g100);color:var(--g900);font-weight:700;}
 .tab-badge{position:absolute;top:3px;right:3px;width:8px;height:8px;
   border-radius:50%;background:var(--c-red);border:2px solid var(--g0);}
 
@@ -405,6 +408,124 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 /* ── RETURN STOP ── */
 .sc-icon-wrap.is-return{background:var(--dest-l);border-color:var(--dest-b);}
 
+/* ── FOTOS VIEW ── */
+#view-fotos{display:none;overflow-y:auto;padding-bottom:var(--bottom-h);}
+.fotos-header{padding:16px 16px 8px;}
+.fotos-dest-filter{display:flex;gap:6px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none;}
+.fotos-dest-filter::-webkit-scrollbar{display:none;}
+.fdf-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--g200);
+  background:var(--g0);color:var(--g500);font-size:12px;font-weight:600;
+  white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.fdf-btn.active{font-weight:700;border-color:var(--dest-b);
+  background:var(--dest-l);color:var(--dest);}
+.fotos-day-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px 20px;}
+.foto-day-card{border-radius:var(--r-md);overflow:hidden;background:var(--g0);
+  box-shadow:var(--sh-card);cursor:pointer;transition:opacity .15s;}
+.foto-day-card:active{opacity:.75;}
+.fdc-thumb{width:100%;aspect-ratio:1;background:var(--g100);overflow:hidden;position:relative;
+  display:flex;align-items:center;justify-content:center;}
+.fdc-thumb img{width:100%;height:100%;object-fit:cover;}
+.fdc-thumb-empty{font-size:28px;color:var(--g300);}
+.fdc-thumb-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;width:100%;height:100%;}
+.fdc-thumb-grid img{width:100%;height:100%;object-fit:cover;}
+.fdc-info{padding:8px 10px 10px;}
+.fdc-date{font-size:10px;color:var(--g400);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.fdc-title{font-size:13px;font-weight:700;color:var(--g900);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fdc-count{font-size:11px;color:var(--g500);margin-top:2px;}
+/* Day photos view */
+.day-photos-header{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;
+  position:sticky;top:0;background:var(--g50);z-index:10;border-bottom:1px solid var(--g200);}
+.dph-back{background:none;border:none;font-size:20px;color:var(--g700);cursor:pointer;
+  padding:4px;line-height:1;flex-shrink:0;}
+.dph-title{flex:1;font-size:16px;font-weight:800;color:var(--g900);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dph-add-btn{display:flex;align-items:center;gap:4px;padding:7px 14px;
+  background:var(--dest);color:#fff;border:none;border-radius:20px;
+  font-size:12px;font-weight:700;cursor:pointer;transition:opacity .1s;
+  white-space:nowrap;flex-shrink:0;}
+.dph-add-btn:active{opacity:.8;}
+.dph-add-btn.needs-login{background:var(--g100);color:var(--g700);}
+.day-photos-list{display:flex;flex-direction:column;gap:10px;padding:12px 12px 20px;}
+.dp-item{border-radius:var(--r-md);overflow:hidden;background:var(--g0);box-shadow:var(--sh-card);}
+.dp-img{width:100%;max-height:340px;object-fit:cover;display:block;}
+.dp-meta{padding:10px 12px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.dp-caption{font-size:13px;color:var(--g700);line-height:1.45;flex:1;}
+.dp-uploader{font-size:11px;font-weight:600;color:var(--g400);margin-top:3px;}
+.dp-delete-btn{background:none;border:none;font-size:16px;color:var(--g300);cursor:pointer;
+  padding:2px;flex-shrink:0;transition:color .15s;line-height:1;}
+.dp-delete-btn:hover{color:var(--c-red);}
+.dp-empty{text-align:center;padding:48px 20px;color:var(--g400);font-size:14px;line-height:2;}
+.dp-loading{text-align:center;padding:36px 16px;color:var(--g400);font-size:13px;}
+/* Header user chip */
+.header-user{display:flex;align-items:center;padding:0 10px 0 4px;flex-shrink:0;}
+.header-user-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;
+  border:1px solid var(--g200);background:var(--g0);border-radius:20px;
+  font-size:12px;font-weight:600;color:var(--g700);cursor:pointer;
+  transition:all .15s;white-space:nowrap;}
+.header-user-btn:active{background:var(--g100);}
+.header-user-btn.logged-in{background:var(--dest-l);border-color:var(--dest-b);color:var(--dest);}
+/* Day header photo strip */
+.dhc-photos-strip{display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 10px;
+  background:var(--g50);border-radius:8px;cursor:pointer;border:1px solid var(--g200);
+  transition:background .1s;}
+.dhc-photos-strip:active{background:var(--g100);}
+.dhc-photos-label{font-size:12px;font-weight:600;color:var(--g500);flex:1;}
+.dhc-photos-thumbs{display:flex;gap:3px;}
+.dhc-photo-thumb{width:26px;height:26px;border-radius:5px;object-fit:cover;}
+/* ── MODAL OVERLAY ── */
+.modal-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-overlay.open{opacity:1;pointer-events:auto;}
+.modal-sheet{background:var(--g0);border-radius:20px 20px 0 0;
+  width:100%;max-width:480px;padding:20px 20px calc(20px + var(--safe-b));
+  transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  max-height:90dvh;overflow-y:auto;}
+.modal-overlay.open .modal-sheet{transform:translateY(0);}
+.modal-handle{width:36px;height:4px;background:var(--g200);border-radius:2px;margin:0 auto 18px;}
+.modal-title{font-size:17px;font-weight:800;color:var(--g900);margin-bottom:4px;}
+.modal-sub{font-size:13px;color:var(--g500);margin-bottom:18px;line-height:1.5;}
+.modal-label{display:block;font-size:11px;font-weight:700;color:var(--g500);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.modal-input{width:100%;padding:12px 14px;border:1.5px solid var(--g200);
+  border-radius:10px;font-size:15px;font-family:inherit;color:var(--g900);
+  background:var(--g0);outline:none;transition:border-color .15s;-webkit-appearance:none;}
+.modal-input:focus{border-color:var(--dest);}
+.modal-btn-primary{width:100%;min-height:50px;background:var(--dest);color:#fff;
+  border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;
+  margin-top:14px;transition:opacity .1s;}
+.modal-btn-primary:active{opacity:.85;}
+.modal-btn-primary:disabled{opacity:.45;cursor:not-allowed;}
+.modal-btn-secondary{width:100%;min-height:44px;background:none;color:var(--g500);
+  border:1px solid var(--g200);border-radius:12px;font-size:14px;font-weight:600;
+  cursor:pointer;margin-top:8px;}
+.modal-status{font-size:13px;color:var(--g500);margin-top:10px;min-height:18px;
+  line-height:1.45;text-align:center;}
+.modal-status.error{color:var(--c-red);}
+.modal-status.success{color:#166534;}
+/* Upload modal */
+.upload-preview{width:100%;aspect-ratio:16/10;border-radius:10px;background:var(--g100);
+  margin-bottom:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;}
+.upload-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+.upload-preview-ph{font-size:36px;color:var(--g300);}
+.upload-file-btn{width:100%;min-height:44px;background:var(--g50);
+  border:2px dashed var(--g200);border-radius:10px;font-size:14px;font-weight:600;
+  color:var(--g500);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:6px;transition:all .15s;}
+.upload-file-btn:active{background:var(--g100);}
+.upload-progress-wrap{height:4px;background:var(--g100);border-radius:2px;
+  margin-top:10px;overflow:hidden;display:none;}
+.upload-progress-bar{height:100%;background:var(--dest);border-radius:2px;width:0;transition:width .3s;}
+/* Setup banner */
+.setup-banner{margin:20px 16px;padding:16px;background:var(--c-warn-bg);
+  border:1px solid var(--c-warn-bd);border-radius:var(--r-md);font-size:13px;
+  color:var(--c-warn-tx);line-height:1.7;}
+.setup-banner strong{display:block;font-size:14px;font-weight:800;margin-bottom:6px;}
+.setup-code{background:rgba(0,0,0,.07);border-radius:4px;padding:1px 6px;
+  font-family:monospace;font-size:12px;}
+
 /* ── TABLET ── */
 @media(min-width:641px){
   .brand-text{display:block;}
@@ -413,6 +534,12 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   #day-header-card{margin:14px 20px 0;}
   #map-section{margin:12px 20px 0;}
   .dish-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));}
+  .fotos-day-grid{grid-template-columns:repeat(3,1fr);padding:0 20px 20px;}
+  .fotos-dest-filter{padding:0 20px 12px;}
+  .fotos-header{padding:16px 20px 8px;}
+  .day-photos-list{padding:12px 20px 20px;}
+  .modal-overlay{align-items:center;}
+  .modal-sheet{border-radius:16px;max-height:85dvh;}
 }
 
 /* ── DESKTOP ── */
@@ -440,6 +567,7 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
     <span class="brand-text">Os Difícil · Jun 2026</span>
   </a>
   <nav class="dest-tabs" id="destTabs"></nav>
+  <div class="header-user" id="header-user"></div>
 </header>
 
 <div id="overlay" onclick="closeSidebar()"></div>
@@ -471,6 +599,7 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
     <div id="view-reservas"></div>
     <div id="view-gastro"></div>
     <div id="view-pretrip"></div>
+    <div id="view-fotos"></div>
   </main>
 </div>
 
@@ -484,8 +613,103 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   </button>
 </div>
 
+<!-- ═══════ MODAL: LOGIN ═══════ -->
+<div class="modal-overlay" id="auth-modal" onclick="handleOverlayClick(event,'auth-modal')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Entrar no álbum</div>
+    <div class="modal-sub">Digite seu email para receber um link de acesso.<br>Sem senha.</div>
+    <label class="modal-label" for="auth-email">Email</label>
+    <input class="modal-input" id="auth-email" type="email" placeholder="nome@email.com"
+      autocomplete="email" inputmode="email">
+    <button class="modal-btn-primary" id="auth-submit-btn" onclick="handleAuthSubmit()">
+      Enviar link de acesso
+    </button>
+    <div class="modal-status" id="auth-status"></div>
+    <button class="modal-btn-secondary" onclick="closeModal('auth-modal')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══════ MODAL: NOME (primeiro login) ═══════ -->
+<div class="modal-overlay" id="name-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Como você quer aparecer?</div>
+    <div class="modal-sub">Seu nome vai aparecer junto com suas fotos. Só precisa fazer isso uma vez.</div>
+    <label class="modal-label" for="name-input">Nome</label>
+    <input class="modal-input" id="name-input" type="text" placeholder="Ex: Solon"
+      autocomplete="name" maxlength="30">
+    <button class="modal-btn-primary" onclick="handleNameSubmit()">Salvar</button>
+  </div>
+</div>
+
+<!-- ═══════ MODAL: UPLOAD ═══════ -->
+<div class="modal-overlay" id="upload-modal" onclick="handleOverlayClick(event,'upload-modal')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="upload-modal-title">Adicionar foto</div>
+    <input type="file" id="upload-file-input" accept="image/*" style="display:none"
+      onchange="handleFileSelected(event)">
+    <div class="upload-preview" id="upload-preview"
+      onclick="document.getElementById('upload-file-input').click()">
+      <span class="upload-preview-ph">📷</span>
+    </div>
+    <button class="upload-file-btn" onclick="document.getElementById('upload-file-input').click()">
+      Escolher foto da galeria
+    </button>
+    <div class="upload-progress-wrap" id="upload-progress-wrap">
+      <div class="upload-progress-bar" id="upload-progress-bar"></div>
+    </div>
+    <div style="margin-top:14px;">
+      <label class="modal-label" for="upload-caption">Legenda (opcional)</label>
+      <input class="modal-input" id="upload-caption" type="text"
+        placeholder="Ex: Playa del Duque ao pôr do sol" maxlength="120">
+    </div>
+    <button class="modal-btn-primary" id="upload-submit-btn"
+      onclick="handleUploadSubmit()" disabled>Enviar foto</button>
+    <div class="modal-status" id="upload-status"></div>
+    <button class="modal-btn-secondary" onclick="closeModal('upload-modal')">Cancelar</button>
+  </div>
+</div>
+
 <script>
 'use strict';
+// ════════════════════════════════════════════════════════════
+//  SUPABASE CONFIG
+//  ──────────────────────────────────────────────────────────
+//  SETUP (faça isso antes de usar a aba Fotos):
+//
+//  1. Crie um projeto em https://supabase.com
+//  2. Substitua SUPABASE_URL e SUPABASE_ANON_KEY abaixo
+//  3. No SQL Editor do Supabase, execute:
+//
+//  CREATE TABLE trip_photos (
+//    id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+//    dest_id       TEXT NOT NULL,
+//    day_n         INTEGER NOT NULL,
+//    storage_path  TEXT NOT NULL,
+//    public_url    TEXT NOT NULL,
+//    caption       TEXT,
+//    uploader_name TEXT,
+//    uploader_email TEXT,
+//    uploaded_at   TIMESTAMPTZ DEFAULT NOW()
+//  );
+//  ALTER TABLE trip_photos ENABLE ROW LEVEL SECURITY;
+//  CREATE POLICY "ver" ON trip_photos FOR SELECT TO authenticated USING (true);
+//  CREATE POLICY "inserir" ON trip_photos FOR INSERT TO authenticated WITH CHECK (true);
+//  CREATE POLICY "deletar proprio" ON trip_photos FOR DELETE TO authenticated
+//    USING (auth.email() = uploader_email);
+//
+//  4. Em Storage → New bucket: nome "photos", Public ON
+//  5. Em Authentication → Providers → Email: habilitar Magic Link,
+//     desabilitar "Confirm email", Site URL = https://solonferreira.github.io/viagem-espanha-osdificil/
+// ════════════════════════════════════════════════════════════
+const SUPABASE_URL      = 'https://YOUR_PROJECT_ID.supabase.co'; // ← preencher
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';                   // ← preencher
+const SUPABASE_OK       = !SUPABASE_URL.includes('YOUR_PROJECT');
+let   sb                = null; // inicializado no DOMContentLoaded
+let   _selectedFile     = null; // arquivo selecionado para upload
+
 // ════════════════════════════════════════════════════════════
 //  DATA
 // ════════════════════════════════════════════════════════════
@@ -1296,7 +1520,12 @@ for (const [destId, d] of Object.entries(DEST)) {
 // ════════════════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════════════════
-const S = { dest:'tenerife', dayIdx:0, view:'itinerary', resFilter:'all', mapCollapsed:true };
+const S = {
+  dest:'tenerife', dayIdx:0, view:'itinerary', resFilter:'all', mapCollapsed:true,
+  // fotos
+  authUser:null, photosCache:{}, photosView:'overview',
+  photosDestFilter:'tenerife', photosDay:null, uploadTarget:null,
+};
 
 // ════════════════════════════════════════════════════════════
 //  MAP
@@ -1593,6 +1822,398 @@ function applyTheme(destId) {
 }
 
 // ════════════════════════════════════════════════════════════
+//  SUPABASE — AUTH
+// ════════════════════════════════════════════════════════════
+async function initAuth() {
+  if (!sb) return;
+  sb.auth.onAuthStateChange((event, session) => {
+    S.authUser = session?.user || null;
+    renderHeaderUser();
+    if (event === 'SIGNED_IN' && session?.user) {
+      if (!session.user.user_metadata?.name) openModal('name-modal');
+    }
+    if (S.view === 'fotos') renderPhotosView();
+  });
+  const { data:{ session } } = await sb.auth.getSession();
+  S.authUser = session?.user || null;
+  renderHeaderUser();
+}
+
+function renderHeaderUser() {
+  const el = document.getElementById('header-user');
+  if (!el) return;
+  if (!SUPABASE_OK) { el.innerHTML = ''; return; }
+  if (S.authUser) {
+    const name = S.authUser.user_metadata?.name || S.authUser.email.split('@')[0];
+    el.innerHTML = `<button class="header-user-btn logged-in" onclick="handleUserMenuClick()" title="${S.authUser.email}">👤 ${name}</button>`;
+  } else {
+    el.innerHTML = `<button class="header-user-btn" onclick="openModal('auth-modal')">Entrar</button>`;
+  }
+}
+
+function handleUserMenuClick() {
+  const name = S.authUser?.user_metadata?.name || S.authUser?.email;
+  if (confirm(`Sair da conta de ${name}?`)) signOut();
+}
+
+async function signOut() {
+  if (!sb) return;
+  await sb.auth.signOut();
+  S.authUser = null;
+  renderHeaderUser();
+  if (S.view === 'fotos') renderPhotosView();
+}
+
+// Modal helpers
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.classList.add('open');
+  if (id === 'auth-modal') {
+    setModalStatus('auth-status','','');
+    const btn = document.getElementById('auth-submit-btn');
+    if (btn) { btn.disabled=false; btn.textContent='Enviar link de acesso'; }
+  }
+}
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('open');
+}
+function handleOverlayClick(e, id) { if (e.target===e.currentTarget) closeModal(id); }
+function setModalStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'modal-status' + (type?' '+type:'');
+}
+
+async function handleAuthSubmit() {
+  const email = (document.getElementById('auth-email')?.value||'').trim();
+  if (!email || !email.includes('@')) {
+    setModalStatus('auth-status','Por favor insira um email válido.','error');
+    return;
+  }
+  const btn = document.getElementById('auth-submit-btn');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  try {
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options:{ emailRedirectTo: location.origin + location.pathname }
+    });
+    if (error) throw error;
+    setModalStatus('auth-status', `✅ Link enviado para ${email}! Abra o email e clique no link.`, 'success');
+    btn.textContent = 'Link enviado!';
+  } catch(err) {
+    setModalStatus('auth-status','Erro ao enviar. Tente novamente.','error');
+    btn.disabled = false; btn.textContent = 'Enviar link de acesso';
+  }
+}
+
+async function handleNameSubmit() {
+  const name = (document.getElementById('name-input')?.value||'').trim();
+  if (name.length < 2) return;
+  await sb.auth.updateUser({ data:{ name } });
+  if (S.authUser) S.authUser.user_metadata = {...(S.authUser.user_metadata||{}), name};
+  closeModal('name-modal');
+  renderHeaderUser();
+  if (S.view === 'fotos') renderPhotosView();
+}
+
+// ════════════════════════════════════════════════════════════
+//  SUPABASE — PHOTOS DATA
+// ════════════════════════════════════════════════════════════
+async function loadDayPhotos(destId, dayN) {
+  const key = `${destId}:${dayN}`;
+  if (S.photosCache[key] !== undefined) return S.photosCache[key];
+  if (!sb) { S.photosCache[key]=[]; return []; }
+  try {
+    const { data, error } = await sb.from('trip_photos').select('*')
+      .eq('dest_id', destId).eq('day_n', dayN).order('uploaded_at');
+    if (error) throw error;
+    S.photosCache[key] = data||[];
+    return S.photosCache[key];
+  } catch(e) { console.warn('loadDayPhotos error', e); S.photosCache[key]=[]; return []; }
+}
+
+async function uploadPhoto(file, destId, dayN, caption) {
+  if (!sb || !S.authUser) throw new Error('Não autenticado');
+  // Compress/convert to JPEG
+  let blob;
+  try { blob = await compressToJpeg(file); }
+  catch(e) {
+    // Fallback: upload original if canvas can't decode (e.g. HEIC on Android)
+    blob = file;
+  }
+  const ext  = blob.type === 'image/jpeg' ? 'jpg' : (file.name.split('.').pop() || 'jpg');
+  const path = `photos/${destId}/d${dayN}/${crypto.randomUUID()}.${ext}`;
+  const { error:upErr } = await sb.storage.from('photos').upload(path, blob, {
+    contentType: blob.type || 'image/jpeg', cacheControl:'3600'
+  });
+  if (upErr) throw upErr;
+  const { data:{ publicUrl } } = sb.storage.from('photos').getPublicUrl(path);
+  const uploaderName = S.authUser.user_metadata?.name || S.authUser.email.split('@')[0];
+  const { error:dbErr } = await sb.from('trip_photos').insert({
+    dest_id:destId, day_n:dayN, storage_path:path, public_url:publicUrl,
+    caption:caption||null, uploader_name:uploaderName, uploader_email:S.authUser.email
+  });
+  if (dbErr) throw dbErr;
+  delete S.photosCache[`${destId}:${dayN}`]; // invalidar cache
+}
+
+async function deletePhoto(photoId, storagePath) {
+  if (!sb || !S.authUser) throw new Error('Não autenticado');
+  await sb.storage.from('photos').remove([storagePath]);
+  const { error } = await sb.from('trip_photos').delete().eq('id', photoId);
+  if (error) throw error;
+  S.photosCache = {}; // limpar todo o cache
+}
+
+// Canvas compression — converts any image (incl. HEIC on iOS) to JPEG ≤1200px
+function compressToJpeg(file, maxW=1200, quality=0.82) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      let w=img.width, h=img.height;
+      if (w > maxW) { h=Math.round(h*maxW/w); w=maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      canvas.toBlob(b => {
+        URL.revokeObjectURL(url);
+        b ? resolve(b) : reject(new Error('canvas.toBlob falhou'));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Falha ao carregar imagem')); };
+    img.src = url;
+  });
+}
+
+function fmtDate(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+}
+
+// ════════════════════════════════════════════════════════════
+//  SUPABASE — RENDER FOTOS VIEW
+// ════════════════════════════════════════════════════════════
+async function renderPhotosView() {
+  const container = document.getElementById('view-fotos');
+  if (!container || container.style.display==='none') return;
+
+  if (!SUPABASE_OK) {
+    container.innerHTML = `<div class="setup-banner">
+      <strong>📷 Álbum de fotos — configuração necessária</strong>
+      Esta feature precisa de um projeto Supabase.<br>
+      Abra o HTML e preencha <code class="setup-code">SUPABASE_URL</code>
+      e <code class="setup-code">SUPABASE_ANON_KEY</code>.<br>
+      Veja as instruções nos comentários do código (busque por "SUPABASE CONFIG").
+    </div>`;
+    return;
+  }
+
+  if (S.photosView === 'day' && S.photosDay) {
+    await renderDayPhotosView(S.photosDay.destId, S.photosDay.dayN);
+  } else {
+    await renderPhotosOverview();
+  }
+}
+
+async function renderPhotosOverview() {
+  const container = document.getElementById('view-fotos');
+  const destId = S.photosDestFilter;
+  const dest   = DEST[destId];
+  const dests  = ['tenerife','madeira','madrid'];
+
+  function destFilterHtml() {
+    return `<div class="fotos-dest-filter">${dests.map(d => {
+      const dd=DEST[d], active=d===destId;
+      return `<button class="fdf-btn${active?' active':''}"
+        ${active?`style="--dest:${dd.color};--dest-l:${dd.light};--dest-b:${dd.border}"`:''}
+        onclick="setPhotosDestFilter('${d}')">${dd.emoji} ${dd.name}</button>`;
+    }).join('')}</div>`;
+  }
+
+  container.innerHTML = `<div class="fotos-header">
+    <div style="font-size:17px;font-weight:800;color:var(--g900)">📷 Fotos da viagem</div>
+  </div>
+  ${destFilterHtml()}
+  <div class="fotos-day-grid dp-loading" style="padding:24px 16px">Carregando...</div>`;
+
+  const photosByDay = {};
+  await Promise.all(dest.days.map(async day => {
+    photosByDay[day.n] = await loadDayPhotos(destId, day.n);
+  }));
+
+  const gridHtml = dest.days.map(day => {
+    const ps = photosByDay[day.n]||[], c=ps.length;
+    let thumb;
+    if (!c) thumb = '<span class="fdc-thumb-empty">📷</span>';
+    else if (c===1) thumb = `<img src="${ps[0].public_url}" alt="" loading="lazy">`;
+    else thumb = `<div class="fdc-thumb-grid">${ps.slice(0,4).map(p=>`<img src="${p.public_url}" alt="" loading="lazy">`).join('')}</div>`;
+    return `<div class="foto-day-card" onclick="openDayPhotos('${destId}',${day.n})"
+      style="--dest:${dest.color};--dest-l:${dest.light};--dest-b:${dest.border}">
+      <div class="fdc-thumb">${thumb}</div>
+      <div class="fdc-info">
+        <div class="fdc-date">${day.wd} · ${day.date}</div>
+        <div class="fdc-title">${day.title}</div>
+        <div class="fdc-count">${!c?'Sem fotos':c===1?'1 foto':c+' fotos'}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `<div class="fotos-header">
+    <div style="font-size:17px;font-weight:800;color:var(--g900)">📷 Fotos da viagem</div>
+  </div>
+  ${destFilterHtml()}
+  <div class="fotos-day-grid">${gridHtml}</div>`;
+}
+
+async function renderDayPhotosView(destId, dayN) {
+  const container = document.getElementById('view-fotos');
+  const dest = DEST[destId];
+  const day  = dest.days.find(d => d.n===dayN);
+  const isLoggedIn = !!S.authUser;
+  const addBtnHtml = isLoggedIn
+    ? `<button class="dph-add-btn" style="--dest:${dest.color}"
+        onclick="openUploadModal('${destId}',${dayN})">+ Foto</button>`
+    : `<button class="dph-add-btn needs-login"
+        onclick="openModal('auth-modal')">Entrar para adicionar</button>`;
+
+  const headerHtml = `<div class="day-photos-header">
+    <button class="dph-back" onclick="backToPhotosOverview()">←</button>
+    <div class="dph-title">${dest.emoji} Dia ${dayN} · ${day.title}</div>
+    ${addBtnHtml}
+  </div>`;
+
+  container.innerHTML = headerHtml + `<div class="day-photos-list dp-loading">Carregando fotos...</div>`;
+
+  const photos = await loadDayPhotos(destId, dayN);
+
+  let listHtml;
+  if (!photos.length) {
+    listHtml = `<div class="dp-empty">📷<br>Nenhuma foto ainda.<br>Seja o primeiro a marcar este dia!</div>`;
+  } else {
+    const userEmail = S.authUser?.email;
+    listHtml = photos.map(p => {
+      const isOwn = p.uploader_email === userEmail;
+      return `<div class="dp-item">
+        <img class="dp-img" src="${p.public_url}" alt="${p.caption||''}" loading="lazy">
+        <div class="dp-meta">
+          <div style="flex:1">
+            ${p.caption?`<div class="dp-caption">${p.caption}</div>`:''}
+            <div class="dp-uploader">${p.uploader_name||'Anônimo'} · ${fmtDate(p.uploaded_at)}</div>
+          </div>
+          ${isOwn?`<button class="dp-delete-btn" title="Apagar foto"
+            onclick="confirmDeletePhoto('${p.id}','${p.storage_path}')">✕</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  container.innerHTML = headerHtml + `<div class="day-photos-list">${listHtml}</div>`;
+}
+
+// Navigation helpers
+function openDayPhotos(destId, dayN) {
+  S.photosView='day'; S.photosDay={destId,dayN};
+  renderPhotosView(); window.scrollTo({top:0});
+}
+function backToPhotosOverview() {
+  S.photosView='overview'; S.photosDay=null;
+  renderPhotosView(); window.scrollTo({top:0});
+}
+function setPhotosDestFilter(destId) {
+  S.photosDestFilter=destId; S.photosView='overview';
+  renderPhotosView();
+}
+function switchToPhotosDay(destId, dayN) {
+  S.photosView='day'; S.photosDay={destId,dayN}; S.photosDestFilter=destId;
+  S.dest='fotos'; S.view='fotos';
+  showView('fotos'); renderTabs(); renderPhotosView();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ════════════════════════════════════════════════════════════
+//  SUPABASE — UPLOAD MODAL
+// ════════════════════════════════════════════════════════════
+function openUploadModal(destId, dayN) {
+  if (!S.authUser) { openModal('auth-modal'); return; }
+  S.uploadTarget = {destId,dayN};
+  _selectedFile  = null;
+  const dest = DEST[destId], day = dest.days.find(d=>d.n===dayN);
+  const titleEl = document.getElementById('upload-modal-title');
+  if (titleEl) titleEl.textContent = `Foto — Dia ${dayN} · ${day.title}`;
+  const prev = document.getElementById('upload-preview');
+  if (prev) prev.innerHTML = '<span class="upload-preview-ph">📷</span>';
+  const capEl = document.getElementById('upload-caption');
+  if (capEl) capEl.value = '';
+  const subBtn = document.getElementById('upload-submit-btn');
+  if (subBtn) { subBtn.disabled=true; subBtn.textContent='Enviar foto'; }
+  const pw = document.getElementById('upload-progress-wrap');
+  if (pw) pw.style.display='none';
+  const pb = document.getElementById('upload-progress-bar');
+  if (pb) pb.style.width='0';
+  setModalStatus('upload-status','','');
+  const inp = document.getElementById('upload-file-input');
+  if (inp) inp.value='';
+  openModal('upload-modal');
+}
+
+function handleFileSelected(event) {
+  const file = event.target?.files?.[0];
+  if (!file) return;
+  _selectedFile = file;
+  const prev = document.getElementById('upload-preview');
+  if (prev) {
+    const url = URL.createObjectURL(file);
+    prev.innerHTML = `<img src="${url}" alt="Preview">`;
+  }
+  const btn = document.getElementById('upload-submit-btn');
+  if (btn) btn.disabled = false;
+}
+
+async function handleUploadSubmit() {
+  if (!_selectedFile || !S.uploadTarget) return;
+  const btn   = document.getElementById('upload-submit-btn');
+  const pw    = document.getElementById('upload-progress-wrap');
+  const pb    = document.getElementById('upload-progress-bar');
+  btn.disabled=true; btn.textContent='Comprimindo...';
+  if (pw) pw.style.display='block'; if (pb) pb.style.width='30%';
+  setModalStatus('upload-status','','');
+  try {
+    const caption = (document.getElementById('upload-caption')?.value||'').trim();
+    btn.textContent='Enviando...'; if (pb) pb.style.width='60%';
+    await uploadPhoto(_selectedFile, S.uploadTarget.destId, S.uploadTarget.dayN, caption);
+    if (pb) pb.style.width='100%';
+    setModalStatus('upload-status','✅ Foto enviada!','success');
+    btn.textContent='Enviado!';
+    // Fechar e atualizar views
+    setTimeout(() => {
+      closeModal('upload-modal');
+      if (S.view==='fotos' && S.photosView==='day' && S.photosDay &&
+          S.photosDay.destId===S.uploadTarget.destId && S.photosDay.dayN===S.uploadTarget.dayN) {
+        renderPhotosView();
+      }
+      if (S.view==='itinerary') renderDayHeaderCard();
+    }, 1200);
+  } catch(err) {
+    if (pb) pb.style.width='0';
+    setModalStatus('upload-status','Erro: ' + (err.message||'tente novamente'),'error');
+    btn.disabled=false; btn.textContent='Tentar novamente';
+  }
+}
+
+async function confirmDeletePhoto(photoId, storagePath) {
+  if (!confirm('Apagar esta foto?')) return;
+  try {
+    await deletePhoto(photoId, storagePath);
+    if (S.photosView==='day' && S.photosDay) renderPhotosView();
+  } catch(err) { alert('Erro ao apagar: ' + err.message); }
+}
+
+// ════════════════════════════════════════════════════════════
 //  RENDER: TABS
 // ════════════════════════════════════════════════════════════
 function renderTabs() {
@@ -1600,6 +2221,7 @@ function renderTabs() {
     {id:'tenerife',label:'🌋 Tenerife'},{id:'madeira',label:'🌿 Madeira'},
     {id:'madrid',label:'🏛️ Madrid'},{id:'reservas',label:'📋 Reservas'},
     {id:'gastro',label:'🍴 Gastronomia'},{id:'pretrip',label:'✅ Pré-viagem'},
+    {id:'fotos',label:'📷 Fotos'},
   ];
   const ch = getChecked();
   const unchecked = ALL_RES.filter(r => !ch[r.id] && r.prio==='red').length;
@@ -1687,6 +2309,18 @@ function renderDayHeaderCard() {
       </div>
       <div class="dhc-prog-bar-wrap"><div class="dhc-prog-bar" style="width:${pct}%"></div></div>
     </div>`;
+  // Photo strip — usa apenas cache em memória (sem await) para não bloquear render síncrono
+  if (SUPABASE_OK) {
+    const cached = S.photosCache[`${S.dest}:${day.n}`];
+    if (cached && cached.length > 0) {
+      const c=cached.length;
+      const thumbs=cached.slice(0,3).map(p=>`<img class="dhc-photo-thumb" src="${p.public_url}" alt="" loading="lazy">`).join('');
+      html += `<div class="dhc-photos-strip" onclick="switchToPhotosDay('${S.dest}',${day.n})">
+        <div class="dhc-photos-thumbs">${thumbs}</div>
+        <span class="dhc-photos-label">📷 ${c} foto${c>1?'s':''} · ver</span>
+      </div>`;
+    }
+  }
   document.getElementById('day-header-card').innerHTML = html;
   // update bottom bar destination label
   const bb = document.getElementById('bb-dest-name');
@@ -1932,6 +2566,7 @@ function showView(view) {
   document.getElementById('view-reservas').style.display  = view==='reservas'?'block':'none';
   document.getElementById('view-gastro').style.display    = view==='gastro'?'block':'none';
   document.getElementById('view-pretrip').style.display   = view==='pretrip'?'block':'none';
+  document.getElementById('view-fotos').style.display     = view==='fotos'?'block':'none';
   document.getElementById('sidebar').style.display        = view==='itinerary'?'':'none';
   const cw = document.getElementById('day-chips-wrap');
   if (cw) cw.style.display = view==='itinerary'?'':'none';
@@ -1952,6 +2587,9 @@ function switchDest(destId) {
     r.style.setProperty('--dest-l','#F0F9FF');
     r.style.setProperty('--dest-b','#BAE6FD');
     showView('pretrip'); renderPreTrip();
+  } else if (destId==='fotos') {
+    S.dest='fotos'; S.view='fotos';
+    showView('fotos'); renderPhotosView();
   } else {
     S.dest=destId; S.dayIdx=0; S.view='itinerary';
     applyTheme(destId); showView('itinerary');
@@ -1977,7 +2615,12 @@ function closeSidebar()  {}  // no mobile sidebar in v2
 // ════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Inicializar Supabase (SDK carregado via defer, já disponível no DOMContentLoaded)
+  if (SUPABASE_OK && window.supabase) {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+
   applyTheme('tenerife');
   renderTabs();
   renderDayChips();
@@ -1985,6 +2628,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderDayHeaderCard();
   renderStopCards();
   showView('itinerary');
+
+  // Auth — não bloqueia a renderização do itinerário
+  initAuth(); // async sem await intencional: auth é background
   // Map starts collapsed; Leaflet is initialised lazily when user opens it
 });
 </script>
