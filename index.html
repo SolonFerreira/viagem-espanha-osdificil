@@ -465,14 +465,23 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   transition:all .15s;white-space:nowrap;}
 .header-user-btn:active{background:var(--g100);}
 .header-user-btn.logged-in{background:var(--dest-l);border-color:var(--dest-b);color:var(--dest);}
-/* Day header photo strip */
-.dhc-photos-strip{display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 10px;
-  background:var(--g50);border-radius:8px;cursor:pointer;border:1px solid var(--g200);
-  transition:background .1s;}
-.dhc-photos-strip:active{background:var(--g100);}
-.dhc-photos-label{font-size:12px;font-weight:600;color:var(--g500);flex:1;}
-.dhc-photos-thumbs{display:flex;gap:3px;}
-.dhc-photo-thumb{width:26px;height:26px;border-radius:5px;object-fit:cover;}
+/* ── DAY PHOTOS INLINE ── */
+#day-photos-section{padding:0 12px 20px;}
+.dpi-section{background:var(--g0);border-radius:var(--r-md);box-shadow:var(--sh-card);overflow:hidden;}
+.dpi-header{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;border-bottom:1px solid var(--g100);}
+.dpi-title{font-size:13px;font-weight:700;color:var(--g900);}
+.dpi-add-btn{font-size:12px;font-weight:600;padding:5px 12px;border-radius:14px;
+  border:none;background:var(--dest);color:#fff;cursor:pointer;transition:opacity .15s;}
+.dpi-add-btn:active{opacity:.8;}
+.dpi-add-btn.needs-login{background:var(--g100);color:var(--g500);}
+.dpi-loading,.dpi-empty{padding:20px 14px;font-size:13px;color:var(--g400);text-align:center;}
+.dpi-grid{display:flex;flex-direction:column;gap:1px;background:var(--g100);}
+.dpi-item{background:var(--g0);}
+.dpi-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
+.dpi-meta{display:flex;align-items:center;gap:6px;padding:8px 12px;}
+.dpi-caption{font-size:13px;color:var(--g700);flex:1;}
+.dpi-uploader{font-size:11px;color:var(--g400);}
 /* ── MODAL OVERLAY ── */
 .modal-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.45);
   display:flex;align-items:flex-end;justify-content:center;
@@ -595,6 +604,7 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
         </div>
       </div>
       <div id="stop-cards"></div>
+      <div id="day-photos-section"></div>
     </div>
     <div id="view-reservas"></div>
     <div id="view-gastro"></div>
@@ -2192,11 +2202,13 @@ async function handleUploadSubmit() {
     // Fechar e atualizar views
     setTimeout(() => {
       closeModal('upload-modal');
+      // Atualiza seção inline do dia (sempre que estiver no itinerário)
+      if (S.view==='itinerary') renderDayPhotosInline();
+      // Atualiza galeria da aba Fotos se estiver aberta no dia correto
       if (S.view==='fotos' && S.photosView==='day' && S.photosDay &&
           S.photosDay.destId===S.uploadTarget.destId && S.photosDay.dayN===S.uploadTarget.dayN) {
         renderPhotosView();
       }
-      if (S.view==='itinerary') renderDayHeaderCard();
     }, 1200);
   } catch(err) {
     if (pb) pb.style.width='0';
@@ -2209,7 +2221,10 @@ async function confirmDeletePhoto(photoId, storagePath) {
   if (!confirm('Apagar esta foto?')) return;
   try {
     await deletePhoto(photoId, storagePath);
-    if (S.photosView==='day' && S.photosDay) renderPhotosView();
+    // Atualiza a seção inline se estiver no itinerário
+    if (S.view==='itinerary') renderDayPhotosInline();
+    // Atualiza galeria da aba Fotos se estiver aberta
+    if (S.view==='fotos' && S.photosView==='day' && S.photosDay) renderPhotosView();
   } catch(err) { alert('Erro ao apagar: ' + err.message); }
 }
 
@@ -2309,18 +2324,6 @@ function renderDayHeaderCard() {
       </div>
       <div class="dhc-prog-bar-wrap"><div class="dhc-prog-bar" style="width:${pct}%"></div></div>
     </div>`;
-  // Photo strip — usa apenas cache em memória (sem await) para não bloquear render síncrono
-  if (SUPABASE_OK) {
-    const cached = S.photosCache[`${S.dest}:${day.n}`];
-    if (cached && cached.length > 0) {
-      const c=cached.length;
-      const thumbs=cached.slice(0,3).map(p=>`<img class="dhc-photo-thumb" src="${p.public_url}" alt="" loading="lazy">`).join('');
-      html += `<div class="dhc-photos-strip" onclick="switchToPhotosDay('${S.dest}',${day.n})">
-        <div class="dhc-photos-thumbs">${thumbs}</div>
-        <span class="dhc-photos-label">📷 ${c} foto${c>1?'s':''} · ver</span>
-      </div>`;
-    }
-  }
   document.getElementById('day-header-card').innerHTML = html;
   // update bottom bar destination label
   const bb = document.getElementById('bb-dest-name');
@@ -2422,6 +2425,51 @@ function toggleStopDetail(idx) {
   btn.textContent=det.hidden?'+ Detalhes':'− Detalhes';
   btn.setAttribute('aria-expanded', !det.hidden);
 }
+
+// ════════════════════════════════════════════════════════════
+//  FOTOS INLINE — seção ao final do scroll do dia
+// ════════════════════════════════════════════════════════════
+async function renderDayPhotosInline() {
+  const el = document.getElementById('day-photos-section');
+  if (!el || !SUPABASE_OK) return;
+  const dest = DEST[S.dest], day = dest.days[S.dayIdx];
+
+  // Skeleton imediato — não bloqueia
+  el.innerHTML = `<div class="dpi-section">
+    <div class="dpi-header"><span class="dpi-title">📷 Fotos do dia</span></div>
+    <div class="dpi-loading">Carregando fotos...</div>
+  </div>`;
+
+  const photos = await loadDayPhotos(S.dest, day.n);
+
+  const addBtn = S.authUser
+    ? `<button class="dpi-add-btn" onclick="openUploadModal('${S.dest}',${day.n})" style="--dest:${dest.color}">+ Adicionar foto</button>`
+    : `<button class="dpi-add-btn needs-login" onclick="openModal('auth-modal')">Entrar para adicionar</button>`;
+
+  let photosHtml;
+  if (!photos.length) {
+    photosHtml = `<div class="dpi-empty">Nenhuma foto ainda · Seja o primeiro!</div>`;
+  } else {
+    const userEmail = S.authUser?.email;
+    photosHtml = `<div class="dpi-grid">` + photos.map(p => {
+      const isOwn = p.uploader_email === userEmail;
+      return `<div class="dpi-item">
+        <img class="dpi-img" src="${p.public_url}" alt="${p.caption||''}" loading="lazy">
+        <div class="dpi-meta">
+          ${p.caption ? `<span class="dpi-caption">${p.caption}</span>` : ''}
+          <span class="dpi-uploader">${p.uploader_name||'Anônimo'}</span>
+          ${isOwn ? `<button class="dp-delete-btn" title="Apagar" onclick="confirmDeletePhoto('${p.id}','${p.storage_path}')">✕</button>` : ''}
+        </div>
+      </div>`;
+    }).join('') + `</div>`;
+  }
+
+  el.innerHTML = `<div class="dpi-section">
+    <div class="dpi-header"><span class="dpi-title">📷 Fotos do dia</span>${addBtn}</div>
+    ${photosHtml}
+  </div>`;
+}
+
 function navigateToStopByIdx(idx) {
   const day=DEST[S.dest].days[S.dayIdx];
   navigateToStop(day.stops[idx]);
@@ -2595,6 +2643,7 @@ function switchDest(destId) {
     applyTheme(destId); showView('itinerary');
     renderDayChips(); renderSidebar();
     renderDayHeaderCard(); renderStopCards();
+    renderDayPhotosInline(); // fire-and-forget
     if (!S.mapCollapsed) updateMap();
   }
   renderTabs();
@@ -2605,6 +2654,7 @@ function switchDay(idx) {
   S.dayIdx=idx;
   renderDayChips(); renderSidebar();
   renderDayHeaderCard(); renderStopCards();
+  renderDayPhotosInline(); // fire-and-forget
   if (!S.mapCollapsed) updateMap();
   window.scrollTo({ top:0, behavior:'smooth' });
 }
@@ -2627,6 +2677,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderSidebar();
   renderDayHeaderCard();
   renderStopCards();
+  renderDayPhotosInline(); // fire-and-forget
   showView('itinerary');
 
   // Auth — não bloqueia a renderização do itinerário
