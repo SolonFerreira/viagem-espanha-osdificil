@@ -359,6 +359,54 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 .pre-item.is-done .pre-item-label{text-decoration:line-through;color:var(--g400);}
 .pre-item.is-done .pre-item-note{color:var(--g300);}
 
+/* ── DAY CHECKLIST CARD ── */
+.day-checklist-card{background:var(--dest-l);border:1px solid var(--dest-b);
+  border-radius:var(--r-md);padding:12px 14px;margin-bottom:2px;}
+.dcl-title{font-size:12px;font-weight:700;color:var(--dest);margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+  text-transform:uppercase;letter-spacing:.05em;}
+.dcl-toggle{font-size:11px;font-weight:600;color:var(--dest);opacity:.7;}
+.dcl-item{display:flex;align-items:flex-start;gap:10px;padding:6px 0;
+  border-bottom:1px solid var(--dest-b);font-size:13px;color:var(--g700);}
+.dcl-item:last-child{border-bottom:none;}
+.dcl-checkbox{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--dest);
+  background:var(--g0);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;
+  transition:all .15s;}
+.dcl-checkbox.done{background:var(--dest);border-color:var(--dest);}
+.dcl-item.done>span{text-decoration:line-through;color:var(--g400);}
+
+/* ── MEAL PLAN CARD ── */
+.meal-plan-card{background:var(--c-food-bg);border:1px solid var(--c-food-bd);
+  border-radius:var(--r-md);padding:0;margin-bottom:2px;overflow:hidden;}
+.meal-plan-card summary{font-size:12px;font-weight:700;color:var(--c-food-tx);
+  padding:10px 14px;cursor:pointer;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;
+  text-transform:uppercase;letter-spacing:.05em;}
+.meal-plan-card summary::-webkit-details-marker{display:none;}
+.meal-plan-card summary::after{content:'▾';font-size:11px;font-weight:700;}
+.meal-plan-card[open] summary::after{content:'▴';}
+.mpc-body{padding:0 14px 10px;}
+.mpc-food-line{display:flex;gap:8px;align-items:flex-start;padding:5px 0;
+  font-size:13px;color:var(--g700);border-bottom:1px solid var(--c-food-bd);}
+.mpc-food-line:last-child{border-bottom:none;}
+.mpc-food-icon{flex-shrink:0;}
+
+/* ── BUDGET PILL ── */
+.dhc-budget{font-size:11px;font-weight:700;color:#166534;background:#DCFCE7;
+  padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:3px;}
+
+/* ── STOP DURATION ── */
+.sc-dur{font-size:10px;font-weight:600;color:var(--g500);background:var(--g100);
+  padding:1px 6px;border-radius:10px;margin-left:4px;vertical-align:middle;white-space:nowrap;}
+
+/* ── STOP GUIDE TEXT ── */
+.sc-guide{font-size:13px;color:var(--g600,#475569);line-height:1.65;font-style:italic;
+  padding-bottom:8px;border-bottom:1px solid var(--g100);margin-bottom:6px;}
+
+/* ── RETURN STOP ── */
+.sc-icon-wrap.is-return{background:var(--dest-l);border-color:var(--dest-b);}
+
 /* ── TABLET ── */
 @media(min-width:641px){
   .brand-text{display:block;}
@@ -454,22 +502,28 @@ const DEST = {
       { n:1, date:'04 jun', wd:'Quinta', title:'Chegada',
         summary:'Pouso TFN 15:40 → supermercado → check-in → Montaña Amarilla → jantar Los Abrigos',
         flight:{route:'MAD → TFN', dep:'13:50', arr:'15:40', num:'—', info:'2h50 direto'},
+        budgetEst:'€20-30/pess',
+        checklist:[
+          {id:'tf1-carro', text:'Confirmar reserva do carro alugado (TFN Norte)'},
+          {id:'tf1-super', text:'Comprar mantimentos para a semana no supermercado'},
+        ],
         stops:[
           {t:'15:40', name:'Aeroporto TFN', icon:'✈️', cls:'is-transport',
-           lat:28.4827, lng:-16.3415, notes:'Retirar carro. ⚠️ TFN = Tenerife Norte — NÃO é o TFS (Sul)'},
+           lat:28.4827, lng:-16.3415, duration:'~45 min',
+           notes:'Retirar carro. ⚠️ TFN = Tenerife Norte — NÃO é o TFS (Sul)'},
           {t:'16:30', name:'Supermercado Los Cristianos', icon:'🛒', cls:'',
-           lat:28.023, lng:-16.698, driveBefore:'~50 min de carro',
- notes:'Mercadona ou Hiperdino.Comprar café, pão, frios e frutas para todos os dias de Tenerife'},
+           lat:28.023, lng:-16.698, driveBefore:'~50 min de carro', duration:'~45 min',
+           notes:'Mercadona ou Hiperdino. Comprar café, pão, frios e frutas para todos os dias de Tenerife',
+           guide:'O Mercadona em Los Cristianos é perfeito para abastecer para toda a semana — vinhos canários, queijo majorero, papas arrugadas prontas e mojo em frasco. Não esqueça: você vai precisar de café, pão, frios e frutas para os próximos 5 dias de roteiro intenso.'},
           {t:'17:00', name:'Airbnb Palm-Mar', icon:'🏠', cls:'',
            lat:28.023, lng:-16.698, driveBefore:'~5 min de carro',
- notes:'Check-in· Av. el Palm-Mar / C. los Falcones'},
+           notes:'Check-in · Av. el Palm-Mar / C. los Falcones'},
           {t:'17:30', name:'Montaña Amarilla', icon:'🌋', cls:'',
-           lat:28.011, lng:-16.636,
-           driveBefore:'~10 min de carro', notes:'Formação vulcânica amarela icônica. Caminhada curtíssima (<1km). Pôr do sol às 21h30'},
+           lat:28.011, lng:-16.636, driveBefore:'~10 min de carro', duration:'~45 min',
+           notes:'Formação vulcânica amarela icônica. Caminhada curtíssima (<1km). Pôr do sol às 21h30',
+           guide:'A Montaña Amarilla é um cone vulcânico de cor ocre que contrasta dramaticamente com o azul profundo do Atlântico. A subida breve (menos de 1km) recompensa com uma vista panorâmica da costa sul e dos morros vizinhos — um aperitivo perfeito do que Tenerife tem a oferecer.'},
           {t:'19:30', name:'Jantar · Los Abrigos', icon:'🍽️', cls:'is-dinner',
-           lat:28.0235, lng:-16.7065,
-           driveBefore:'~10 min de carro',
-
+           lat:28.0235, lng:-16.7065, driveBefore:'~10 min de carro',
            notes:'Vila de pescadores. Peixe fresco grelhado, papas arrugadas, mojo verde/vermelho. Sem reserva. ~€15-20/pess',
            food:'Peixe grelhado fresco · papas arrugadas · mojo verde e vermelho · vinho local'},
         ],
@@ -481,21 +535,27 @@ const DEST = {
       { n:2, date:'05 jun', wd:'Sexta', title:'Três Praias',
         summary:'Playa del Duque → La Enramada → Las Vistas → jantar El Rincón de Pancho',
         flight:null,
+        budgetEst:'€30-50/pess',
+        checklist:[
+          {id:'tf2-pancho', text:'Ligar El Rincón de Pancho (+34 922 78 73 93) para reservar'},
+        ],
         stops:[
           {t:'9:30',  name:'Playa del Duque', icon:'🏖️', cls:'', lat:28.091, lng:-16.744,
-           notes:'Melhor praia do sul. Mar protegido, +100 vagas de estacionamento. Ideal para manhã inteira'},
+           duration:'~3h',
+           notes:'Melhor praia do sul. Mar protegido, +100 vagas de estacionamento. Ideal para manhã inteira',
+           guide:'Considerada a melhor praia do sul de Tenerife, o Playa del Duque combina areia dourada fina, mar protegido de águas turquesa e uma orla elegante com restaurantes e lojas. Chegue cedo para garantir boa posição — no verão europeu fica movimentada já às 10h.'},
           {t:'15:00', name:'La Enramada', icon:'🏖️', cls:'', lat:28.098, lng:-16.752,
-           driveBefore:'~10 min a pé pela orla',
-
-           notes:'Praia de areia preta vulcânica. 10 min a pé pela orla a partir do Duque'},
+           driveBefore:'~10 min a pé pela orla', duration:'~1h',
+           notes:'Praia de areia preta vulcânica. 10 min a pé pela orla a partir do Duque',
+           guide:'A areia negra vulcânica de La Enramada é uma das marcas registradas das Canárias. Mais tranquila e frequentada por locais, com um bar simples e o contraste fascinante entre a areia escura e o mar turquesa.'},
           {t:'16:30', name:'Las Vistas', icon:'🏖️', cls:'', lat:28.053, lng:-16.724,
-           driveBefore:'~25 min de carro',
-
-           notes:'Praia longa com areia dourada. Vista aberta para o oceano Atlântico'},
+           driveBefore:'~25 min de carro', duration:'~1h30',
+           notes:'Praia longa com areia dourada. Vista aberta para o oceano Atlântico',
+           guide:'Las Vistas é a praia mais longa da costa sul de Tenerife, com 800 metros de areia dourada importada do Saara. O mar aberto e as ondas moderadas são perfeitas para crianças, e o calçadão animado com cafés e sorveterias garante a tarde.'},
+          {t:'18:30', name:'Volta ao apartamento · banho', icon:'🏠', cls:'is-return',
+           notes:'~45 min de pausa para banho e descanso antes do jantar'},
           {t:'20:00', name:'Jantar · El Rincón de Pancho', icon:'🍽️', cls:'is-dinner',
-           lat:28.0519, lng:-16.7161,
-           driveBefore:'~15 min de carro',
-
+           lat:28.0519, lng:-16.7161, driveBefore:'~15 min de carro',
            notes:'Culinária canária autêntica. Rating 4.6 ★ · ~€15-20/pess · +34 922 78 73 93',
            food:'Almogrote · banana assada · papas arrugadas · gofio · ropa vieja'},
         ],
@@ -513,17 +573,24 @@ const DEST = {
       { n:3, date:'06 jun', wd:'Sábado', title:'Whale Watching',
         summary:'Whale watching 3h → Playa El Camisón → jantar Mesón Las Lanzas',
         flight:null,
+        budgetEst:'€60-80/pess',
+        checklist:[
+          {id:'tf3-whale', text:'Confirmar passeio Whale Watch (ticket + ponto de encontro Pantalán 3)'},
+          {id:'tf3-paella', text:'Ligar Mesón Las Lanzas (+34 922 79 11 72) e pedir paella'},
+        ],
         stops:[
           {t:'9:00',  name:'Puerto Colón · Whale Watch', icon:'⛵', cls:'', lat:28.078, lng:-16.736,
-           notes:'Pantalán 3. Barco pequeno ~10 pessoas. Biólogos a bordo. ~3h de passeio. ~€40/pess'},
+           duration:'~3h no barco',
+           notes:'Pantalán 3. Barco pequeno ~10 pessoas. Biólogos a bordo. ~3h de passeio. ~€40/pess',
+           guide:'Puerto Colón é o ponto de partida para os safáris de cetáceos de Tenerife — as águas profundas ao sul da ilha abrigam uma das maiores populações residentes de baleias-piloto do mundo. Você vai partilhar o barco com biólogos marinhos que explicam o comportamento dos animais em tempo real.'},
           {t:'13:00', name:'Playa El Camisón', icon:'🏖️', cls:'', lat:28.053, lng:-16.731,
-           driveBefore:'~10 min de carro',
-
-           notes:'Mar quase de piscina, muito calmo. Perfeito para descanso pós-barco'},
+           driveBefore:'~10 min de carro', duration:'~2h',
+           notes:'Mar quase de piscina, muito calmo. Perfeito para descanso pós-barco',
+           guide:'Um segredo bem guardado: El Camisón tem o mar mais calmo e translúcido da costa sul, protegido por uma pequena falésia que quebra as ondas. Ideal para nadar e descansar depois das emoções do barco — a água parece uma piscina natural.'},
+          {t:'17:30', name:'Volta ao apartamento · banho', icon:'🏠', cls:'is-return',
+           notes:'~1h de descanso antes do jantar'},
           {t:'20:00', name:'Jantar · Mesón Las Lanzas', icon:'🍽️', cls:'is-dinner',
-           lat:28.0596, lng:-16.7286,
-           driveBefore:'~10 min de carro',
-
+           lat:28.0596, lng:-16.7286, driveBefore:'~15 min de carro',
            notes:'Espanhol autêntico. Pedir paella com antecedência ao reservar. Rating 4.5 ★ · ~€15-20/pess',
            food:'Tapas variadas · grelhados · paella (avisar ao reservar) · vinho'},
         ],
@@ -539,27 +606,32 @@ const DEST = {
            how:'Ligar: +34 922 79 11 72', obs:'Mesa para 6 · fecha ter e qua · sábado ✓ · pedir paella'},
         ]
       },
-      { n:4, date:'07 jun', wd:'Domingo', title:'Teide', totalDriveEst:'~2h de carro', totalDriveEst:'~2h de carro',
+      { n:4, date:'07 jun', wd:'Domingo', title:'Teide', totalDriveEst:'~2h de carro',
         summary:'Saída 7h30 → teleférico 3.555m → Roques de García → Vilaflor → jantar El Burgado',
         flight:null,
+        budgetEst:'€50-70/pess',
+        checklist:[
+          {id:'tf4-perm', text:'Imprimir/baixar permissão do cume Teide (reservasparquesnacionales.es)'},
+          {id:'tf4-telf', text:'Confirmar ingresso teleférico online (volcanoteide.com · ~€28/pess)'},
+          {id:'tf4-moch', text:'Preparar lanche e agasalhos (10°C no cume)'},
+        ],
         stops:[
           {t:'—',    name:'🎒 Levar lanche de casa', icon:'🎒', cls:'', lat:28.023, lng:-16.698,
            notes:'Sandes, fruta, água. O restaurante na base do teleférico é muito caro'},
           {t:'8:15', name:'Teleférico do Teide', icon:'🚡', cls:'', lat:28.2544, lng:-16.6258,
-           driveBefore:'~50 min de carro',
-
-           notes:'Sobe ao cume em 8 min: 3.555m altitude. ~10°C no topo — levar agasalho. ~€28/pess. Abre 9h'},
+           driveBefore:'~50 min de carro', duration:'~2h30',
+           notes:'Sobe ao cume em 8 min: 3.555m altitude. ~10°C no topo — levar agasalho. ~€28/pess. Abre 9h',
+           guide:'O teleférico leva você em 8 minutos do cinturão de pinheiros ao pico mais alto da Espanha. A 3.555m, o panorama é superlativo — as outras ilhas Canárias aparecem como pontos no horizonte e as nuvens ficam lá embaixo. Com a permissão especial, você sobe os últimos 200m até a borda da cratera.'},
           {t:'13:00',name:'Roques de García', icon:'🥾', cls:'', lat:28.225, lng:-16.632,
-           driveBefore:'~10 min de carro',
-
-           notes:'Trilha plana de ~3.5km a 2.200m. Formações vulcânicas icônicas da Cañada. Vista para o Teide'},
+           driveBefore:'~10 min de carro', duration:'~1h30',
+           notes:'Trilha plana de ~3.5km a 2.200m. Formações vulcânicas icônicas da Cañada. Vista para o Teide',
+           guide:'A trilha circular dos Roques de García, a 2.200m de altitude, é uma das mais fotogênicas das Canárias. As formações vulcânicas avermelhadas erguem-se do solo acinzentado como esculturas naturais, com o cone perfeito do Teide ao fundo — uma cena que aparece em todos os guias de fotografia da ilha.'},
           {t:'15:30',name:'Vilaflor', icon:'☕', cls:'', lat:28.159, lng:-16.634,
-           driveBefore:'~40 min de carro',
-
-           notes:'Vila mais alta da Espanha (1.400m). Pausa com café e torta no regresso. ~€3-5/pess'},
+           driveBefore:'~40 min de carro', duration:'~45 min',
+           notes:'Vila mais alta da Espanha (1.400m). Pausa com café e torta no regresso. ~€3-5/pess',
+           guide:'Encarapitada a 1.400 metros, Vilaflor ostenta o título de vila mais alta da Espanha e tem o ar mais puro que você vai respirar em toda a viagem. A breve pausa num café da praça central, com torta de almendras e café canário, é um ritual obrigatório no regresso do Teide.'},
           {t:'20:00',name:'Jantar · El Burgado', icon:'🍽️', cls:'is-dinner', lat:28.0521, lng:-16.7176,
            driveBefore:'~30 min de carro',
-
            notes:'Mediterrâneo. Peixe fresco. Abre todos os dias ✓. Domingos têm show de flamenco ao vivo! ~€15-20/pess',
            food:'Peixe fresco · arroz de marisco · grelhados · flamenco ao vivo (domingos)'},
         ],
@@ -577,34 +649,40 @@ const DEST = {
            how:'Ligar: +34 822 14 39 13', obs:'Mesa para 6 · domingo tem flamenco ao vivo'},
         ]
       },
-      { n:5, date:'08 jun', wd:'Segunda', title:'Norte da Ilha', totalDriveEst:'~3h de carro', totalDriveEst:'~3h de carro',
+      { n:5, date:'08 jun', wd:'Segunda', title:'Norte da Ilha', totalDriveEst:'~3h de carro',
         summary:'Abama → Los Gigantes → Masca → Garachico → Drago Milenário (~200km)',
         flight:null,
+        budgetEst:'€40-60/pess',
+        checklist:[
+          {id:'tf5-gps', text:'Verificar e atualizar GPS (estrada de Masca é muito sinuosa)'},
+          {id:'tf5-mirador', text:'Mirador Garachico FECHADO às segundas — reservar restaurante alternativo'},
+        ],
         stops:[
           {t:'8:55', name:'Mirante Abama (TF-47)', icon:'👁️', cls:'', lat:28.172, lng:-16.805,
-           notes:'Parada rápida de 5 min. Vista aérea completa do resort e costa sul. Não descer'},
+           duration:'~5 min',
+           notes:'Parada rápida de 5 min. Vista aérea completa do resort e costa sul. Não descer',
+           guide:'Uma parada relâmpago que vale muito: do mirante junto à TF-47, você vê o icônico resort Abama e a costa sul de Tenerife num ângulo aéreo, com o oceano Atlântico estendendo-se infinitamente à esquerda.'},
           {t:'9:05', name:'Los Gigantes · Falésias', icon:'🏔️', cls:'', lat:28.244, lng:-16.843,
-           driveBefore:'~10 min de carro',
-
-           notes:'Falésias de 600m de altura. Mirante espetacular + porto pintoresco. Barco turístico opcional ~€15'},
+           driveBefore:'~10 min de carro', duration:'~1h',
+           notes:'Falésias de 600m de altura. Mirante espetacular + porto pintoresco. Barco turístico opcional ~€15',
+           guide:'As falésias de Los Gigantes são uma das paisagens mais dramáticas de Tenerife — paredes vulcânicas verticais de até 600 metros mergulham diretamente no mar escuro. O contraste entre o negro da rocha basáltica e o azul profundo do Atlântico é de tirar o fôlego, especialmente vistos do pequeno porto colorido.'},
           {t:'10:25',name:'Masca', icon:'🏘️', cls:'', lat:28.305, lng:-16.84,
-           driveBefore:'~25 min de carro',
-
+           driveBefore:'~25 min de carro', duration:'~1h',
            notes:'Aldeia em gorge vulcânico dramático. ⚠️ Estrada muito sinuosa — GPS atualizado, dirigir devagar',
-           warn:'⚠️ Estrada sinuosa e estreita — dirigir com cuidado'},
+           warn:'⚠️ Estrada sinuosa e estreita — dirigir com cuidado',
+           guide:'Masca é o "segredo mais fotografado" de Tenerife — uma aldeia aninhada numa garganta vulcânica abrupta, acessível por uma estrada de curvas que parece um videogame. A recompensa: uma das vistas mais selvagens do arquipélago, com casas de pedra dispersas entre palmeiras e dragas-milenários.'},
           {t:'13:00',name:'El Caletón · Garachico', icon:'🌊', cls:'', lat:28.374, lng:-16.766,
-           driveBefore:'~45 min de carro',
-
+           driveBefore:'~45 min de carro', duration:'~1h30',
            notes:'Piscinas naturais de lava. ~€4 entrada. ⚠️ Mirador de Garachico FECHADO às segundas',
-           warn:'⚠️ Mirador de Garachico FECHADO às segundas — buscar restaurante no centro histórico'},
+           warn:'⚠️ Mirador de Garachico FECHADO às segundas — buscar restaurante no centro histórico',
+           guide:'Garachico foi a vila mais próspera de Tenerife até ser destruída por uma erupção vulcânica em 1706. A lava solidificada formou piscinas naturais perfeitas — El Caletón — onde o oceano entra em cascatas entre as rochas negras. Nadar aqui é uma experiência única.'},
           {t:'15:30',name:'Drago Milenário · Icod de los Vinos', icon:'🌳', cls:'', lat:28.367, lng:-16.722,
-           driveBefore:'~15 min de carro',
-
-           notes:'Dracaena draco com mais de 1.000 anos. Símbolo das Canárias. ~€5. Abre até 18h'},
+           driveBefore:'~15 min de carro', duration:'~45 min',
+           notes:'Dracaena draco com mais de 1.000 anos. Símbolo das Canárias. ~€5. Abre até 18h',
+           guide:'O Drago Milenário é a árvore-símbolo das Canárias: um Dracaena draco com mais de 1.000 anos de idade e uma copa que parece uma explosão verde esférica. Contemplar este ser vivo que já era centenário quando Colombo chegou à América é uma experiência emocionante de escala humana.'},
           {t:'20:00',name:'Jantar · Los Abrigos', icon:'🍽️', cls:'is-dinner', lat:28.023, lng:-16.698,
            driveBefore:'~1h de carro',
-
-           notes:'Orla de pescadores.Jantar leve após dia longo. Sem reserva. ~€15-20/pess',
+           notes:'Orla de pescadores. Jantar leve após dia longo. Sem reserva. ~€15-20/pess',
            food:'Peixe grelhado simples · papas arrugadas · sem reserva'},
         ],
         foodLines:[
@@ -619,20 +697,24 @@ const DEST = {
       { n:6, date:'09 jun', wd:'Terça', title:'Partida para Madeira',
         summary:'El Camisón → La Laguna UNESCO → Aeroporto TFN → voo 16:05 para Funchal',
         flight:{route:'TFN → FNC', dep:'16:05', arr:'17:25', num:'Binter NT4152', info:'Direto 1h20 · ⚠️ TFN = Tenerife Norte, NÃO TFS'},
+        budgetEst:'€20-30/pess',
+        checklist:[
+          {id:'tf6-checkout', text:'Check-out antes das 10h — bagagens no carro'},
+          {id:'tf6-carro', text:'Devolver carro em TFN Norte (não confundir com TFS Sul)'},
+          {id:'tf6-embarque', text:'Binter NT4152 · 16:05 · chegar 2h antes'},
+        ],
         stops:[
           {t:'até 10h',name:'Check-out Airbnb', icon:'🏠', cls:'', lat:28.023, lng:-16.698,
            notes:'Bagagens no carro. Devolver as chaves'},
           {t:'10:00', name:'Playa El Camisón', icon:'🏖️', cls:'', lat:28.053, lng:-16.731,
-           driveBefore:'~5 min de carro',
-
-           notes:'Último banhoem Tenerife. Mar muito calmo e protegido'},
+           driveBefore:'~5 min de carro', duration:'~1h',
+           notes:'Último banho em Tenerife. Mar muito calmo e protegido'},
           {t:'13:30', name:'La Laguna · Patrimônio UNESCO', icon:'🏛️', cls:'', lat:28.4894, lng:-16.3165,
-           driveBefore:'~1h de carro',
-
-           notes:'Ex-capital das Canárias. Patrimônio Mundial UNESCO. 1h15 de passeio a pé. A 15 min do TFN'},
+           driveBefore:'~1h de carro', duration:'~1h15',
+           notes:'Ex-capital das Canárias. Patrimônio Mundial UNESCO. 1h15 de passeio a pé. A 15 min do TFN',
+           guide:'San Cristóbal de La Laguna foi a primeira cidade colonial espanhola planejada segundo um grid urbano regular — um modelo exportado depois para toda a América. Hoje Patrimônio Mundial UNESCO, seu centro histórico é um labirinto de ruas empedradas com casas coloridas e igrejas barrocas. A 15 minutos do aeroporto, é a despedida perfeita de Tenerife.'},
           {t:'15:00', name:'Aeroporto TFN · partida', icon:'✈️', cls:'is-transport', lat:28.4827, lng:-16.3415,
            driveBefore:'~15 min de carro',
-
            notes:'⚠️ GPS: "Aeropuerto Tenerife Norte". Devolver carro. Voo 16:05 → Funchal 17:25'},
         ],
         foodLines:[
@@ -655,22 +737,25 @@ const DEST = {
       { n:1, date:'09 jun', wd:'Terça', title:'Chegada a Funchal',
         summary:'FNC 17:25 → supermercado → check-in → jantar Zona Velha',
         flight:null,
+        budgetEst:'€20-30/pess',
+        checklist:[
+          {id:'md1-apt', text:'Comunicar hora de chegada ao anfitrião Caires (PIN 6004)'},
+        ],
         stops:[
           {t:'17:25',name:'Aeroporto FNC', icon:'✈️', cls:'is-transport', lat:32.6942, lng:-16.7783,
-           notes:'Retirar carro. 25 min até o centro de Funchal'},
+           duration:'~30 min', notes:'Retirar carro. 25 min até o centro de Funchal'},
           {t:'18:00',name:'Pingo Doce · Funchal', icon:'🛒', cls:'', lat:32.651, lng:-16.9093,
-           driveBefore:'~25 min de carro',
-
-           notes:'Rua Dr. Fernão de Ornelas. 5 min a pé do apartamento. Comprar mantimentos para os 10 dias'},
+           driveBefore:'~25 min de carro', duration:'~45 min',
+           notes:'Rua Dr. Fernão de Ornelas. 5 min a pé do apartamento. Comprar mantimentos para os 10 dias',
+           guide:'O Pingo Doce da Rua Dr. Fernão de Ornelas é a melhor opção para abastecer para os 10 dias — poncha em garrafa, vinho da Madeira Blandy, ginja, mel de cana, queijo da ilha e o inevitável bolo do caco. Cinco minutos a pé do apartamento.'},
           {t:'18:30',name:'Apartamento Caires', icon:'🏠', cls:'', lat:32.6505, lng:-16.9082,
            driveBefore:'~5 min a pé',
-
            notes:'R. do Infante Santo 11 · Sé, Funchal · PIN 6004 · check-in (avisar chegada ~18h)'},
           {t:'20:00',name:'Jantar · Restaurante Galeria', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9032,
            driveBefore:'~5 min a pé',
-
            notes:'Zona Velha · Rua Santa Maria. Madeirense tradicional. Rating 4.6 ★ · ~€15-20/pess · sem reserva',
-           food:'Peixe-espada preto com banana · lapas grelhadas · bolo do caco · poncha'},
+           food:'Peixe-espada preto com banana · lapas grelhadas · bolo do caco · poncha',
+           guide:'O Restaurante Galeria fica na Rua Santa Maria, a artéria principal da Zona Velha de Funchal, onde casas de pedra com portas pintadas por artistas locais formam um dos bairros mais pitorescos da ilha. Peça o peixe-espada preto com banana da Madeira — prato emblemático que combina o inusitado com o saboroso — e um copinho de poncha para entrar no espírito madeirense.'},
         ],
         foodLines:[
           {i:'🍽️', t:'Jantar: Restaurante Galeria · Zona Velha · peixe-espada preto · ~€15-20/pess'},
@@ -680,27 +765,33 @@ const DEST = {
       { n:2, date:'10 jun', wd:'Quarta', title:'Funchal Cidade',
         summary:'Mercado dos Lavradores → Teleférico → Monte Palace → Tobogãs → jantar Dona Joana',
         flight:null,
+        budgetEst:'€50-70/pess',
+        checklist:[
+          {id:'md2-telf', text:'Comprar ingresso teleférico online (madeiracablecar.com · ~€20/pess)'},
+          {id:'md2-monte', text:'Comprar ingresso Monte Palace (montepalacemadeira.com · ~€12/pess)'},
+        ],
         stops:[
           {t:'9:00', name:'Mercado dos Lavradores', icon:'🛒', cls:'', lat:32.6487, lng:-16.9041,
+           duration:'~45 min',
            notes:'Desde 1940. Peixe-espada preto, flores tropicais. ⚠️ NÃO comprar frutas no 1º piso (preços inflacionados). Fecha domingo',
-           warn:'⚠️ Não comprar frutas no 1º piso — preços inflacionados para turistas'},
+           warn:'⚠️ Não comprar frutas no 1º piso — preços inflacionados para turistas',
+           guide:'O Mercado dos Lavradores é o coração pulsante de Funchal desde 1940 — um pavilhão art déco com azulejos portugueses nas paredes onde mulheres de trajes tradicionais vendem flores tropicais absurdas e o famoso peixe-espada preto. É um espetáculo visual e olfativo para não perder.'},
           {t:'10:30',name:'Teleférico do Funchal', icon:'🚡', cls:'', lat:32.6472, lng:-16.9024,
-           driveBefore:'~5 min a pé',
-
-           notes:'15-18 min de subida. Vista panorâmica da baía do Funchal. ~€20 ida e volta. Abre 8h45'},
+           driveBefore:'~5 min a pé', duration:'~45 min',
+           notes:'15-18 min de subida. Vista panorâmica da baía do Funchal. ~€20 ida e volta. Abre 8h45',
+           guide:'O teleférico do Funchal faz em 15 minutos o mesmo percurso que os antigos carros de bois levavam horas. A vista da cabine suspensa é progressivamente mais deslumbrante a cada metro de altitude ganho sobre os jardins, igrejas e a baía azul de Funchal.'},
           {t:'11:00',name:'Monte Palace Tropical Garden', icon:'🌺', cls:'', lat:32.6756, lng:-16.9005,
-           driveBefore:'~2 min do teleférico',
-
-           notes:'70.000m² de jardins. Koi gigantes, coleção de minerais, arte asiática. ~€12/pess. Rating 4.7 ★. Abre 9h-18h'},
+           driveBefore:'~2 min a pé do teleférico', duration:'~1h30',
+           notes:'70.000m² de jardins. Koi gigantes, coleção de minerais, arte asiática. ~€12/pess. Rating 4.7 ★. Abre 9h-18h',
+           guide:'O Monte Palace é um dos jardins tropicais mais extraordinários da Europa — 70.000m² de vegetação luxuriante com koi gigantes importados do Japão, coleções de minerais e arte africana, e plantas que parecem saídas de um romance de ficção científica. Suba cedo para aproveitar a frescura da manhã.'},
           {t:'14:30',name:'Tobogãs do Monte (opcional)', icon:'🛷', cls:'', lat:32.6474, lng:-16.9032,
-           driveBefore:'~15 min a pé',
-
+           driveBefore:'~15 min a pé', duration:'~30 min',
            notes:'~€30/carrinho para 2 pessoas. 2km guiados por carreiros com trajes tradicionais. Alternativa: teleférico de regresso'},
           {t:'20:00',name:'Jantar · Dona Joana', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
            driveBefore:'~10 min a pé',
-
            notes:'Muito frequentado por locais. R. Dr. Fernão de Ornelas 26. ~€15-20/pess',
-           food:'Peixe-espada preto com banana da Madeira · sopa de tomate · lapas grelhadas · bolo do caco'},
+           food:'Peixe-espada preto com banana da Madeira · sopa de tomate · lapas grelhadas · bolo do caco',
+           guide:'A Dona Joana é o restaurante favorito dos locais do Funchal — sem frescuras, sem turistas, com o melhor peixe-espada preto de cebolada da cidade. A Rua Dr. Fernão de Ornelas, nº 26, é discreta e quase impossível de encontrar sem o endereço exato.'},
         ],
         foodLines:[
           {i:'☕', t:'Bica na estação do teleférico antes de subir · ~€2/pess'},
@@ -717,23 +808,28 @@ const DEST = {
       { n:3, date:'11 jun', wd:'Quinta', title:'Levada dos Balcões',
         summary:'Ribeiro Frio → Levada dos Balcões PR11 (3km plana) → tarde Funchal → jantar A Tendinha',
         flight:null,
+        budgetEst:'€30-50/pess',
+        checklist:[
+          {id:'md3-levada', text:'Fazer reserva gratuita Levada Balcões PR11 (gov.madeira.pt/simplifica)'},
+        ],
         stops:[
           {t:'8:30', name:'Ribeiro Frio · ponto de partida', icon:'☕', cls:'', lat:32.7327, lng:-16.8879,
-           notes:'860m de altitude. Estacionar no largo. Victor\'s Bar para café antes de partir'},
+           duration:'~30 min',
+           notes:'860m de altitude. Estacionar no largo. Victor\'s Bar para café antes de partir',
+           guide:'A 860 metros de altitude, Ribeiro Frio é um oásis fresco de laurissilva — a floresta endêmica da Madeira, vestígio de uma vegetação que cobriu a Europa antes das glaciações. O Victor\'s Bar é o lugar certo para o café com bolo de mel antes de partir para a levada.'},
           {t:'9:00', name:'Levada dos Balcões · PR11', icon:'🥾', cls:'', lat:32.7351, lng:-16.886,
-           driveBefore:'~5 min a pé',
-
+           driveBefore:'~5 min a pé', duration:'~1h30',
            notes:'3km ida e volta, totalmente PLANA na beira da levada. Floresta Laurissilva (UNESCO). Bar a meio. Miradouro no final. Rating 4.7 ★',
-           warn:'⚠️ Chegar antes das 11h — fica muito lotado. Reserva obrigatória e gratuita'},
+           warn:'⚠️ Chegar antes das 11h — fica muito lotado. Reserva obrigatória e gratuita',
+           guide:'A PR11 é uma das levadas mais democráticas da Madeira: 3km totalmente planos à beira d\'água, na sombra de faias e cedros da floresta Laurissilva classificada pela UNESCO. No final, o miradouro abre para um vale profundo onde os curvados pinheiros da Madeira fazem uma cena impossível de esquecer.'},
           {t:'14:00',name:'Funchal · tarde', icon:'🏙️', cls:'', lat:32.651, lng:-16.9093,
-           driveBefore:'~40 min de carro',
-
-           notes:'Regresso.Descanso no apartamento ou passeio pelas Portas Pintadas da Rua Santa Maria'},
+           driveBefore:'~40 min de carro', duration:'~2h',
+           notes:'Regresso. Descanso no apartamento ou passeio pelas Portas Pintadas da Rua Santa Maria'},
           {t:'20:00',name:'Jantar · A Tendinha', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
            driveBefore:'~5 min a pé',
-
-           notes:'Melhor custo-benefíciodo Funchal. Comida caseira madeirense. Frequentado por locais. ~€10-15/pess',
-           food:'Prato do dia caseiro madeirense · sopa · vinho da casa'},
+           notes:'Melhor custo-benefício do Funchal. Comida caseira madeirense. Frequentado por locais. ~€10-15/pess',
+           food:'Prato do dia caseiro madeirense · sopa · vinho da casa',
+           guide:'A Tendinha é o segredo mais bem guardado do Funchal — frequentada 90% por locais, serve a cozinha madeirense mais honesta da cidade. O prato do dia (carne de vinha d\'alhos, bacalhau ou peixe com arroz de legumes) sai por menos de €15 e chega na mesa em travessa de barro.'},
         ],
         foodLines:[
           {i:'☕', t:'Café em Victor\'s Bar · Ribeiro Frio · ~€3-5/pess'},
@@ -748,26 +844,31 @@ const DEST = {
       { n:4, date:'12 jun', wd:'Sexta', title:'Ponta de São Lourenço',
         summary:'Caniçal → PR8 (1,5km ida) → almoço Caniçal → Zona Velha Funchal',
         flight:null,
+        budgetEst:'€40-60/pess',
+        checklist:[
+          {id:'md4-pr8', text:'Fazer reserva obrigatória PR8 (gov.madeira.pt/simplifica · €4,50/pess)'},
+          {id:'md4-cedo', text:'Chegar cedo (antes das 9h) — vagas de estacionamento escassas'},
+        ],
         stops:[
           {t:'8:30', name:'Caniçal · padaria', icon:'☕', cls:'', lat:32.7397, lng:-16.7331,
-           notes:'Vila de pescadores no extremo leste da Madeira. Café e bolo do caco na padaria local antes da trilha'},
+           duration:'~20 min',
+           notes:'Vila de pescadores no extremo leste da Madeira. Café e bolo do caco na padaria local antes da trilha',
+           guide:'Caniçal é a vila mais oriental da Madeira, um lugar de pescadores no extremo da ilha. A padaria local serve bolo do caco quentinho com manteiga de alho — o café da manhã canônico madeirense — por €2, o que é um luxo de simplicidade.'},
           {t:'9:00', name:'Ponta de São Lourenço · PR8', icon:'🥾', cls:'', lat:32.7434, lng:-16.701,
-           driveBefore:'~5 min de carro',
-
+           driveBefore:'~5 min de carro', duration:'~1h30',
            notes:'Ponta mais oriental da Madeira. Paisagem árida e dramática. Fazer 1,5-2km ida (30-40 min) e voltar. €4,50/pess. Rating 4.8 ★',
-           warn:'⚠️ Vento forte frequente — levar casaco mesmo no verão. Reserva obrigatória'},
+           warn:'⚠️ Vento forte frequente — levar casaco mesmo no verão. Reserva obrigatória',
+           guide:'A Ponta de São Lourenço é o mais dramático contraste da Madeira: enquanto o resto da ilha é exuberantemente verde, esta língua de terra arenosa parece transplantada das Canárias, com falésias riscadas de ocre e vermelho despencando sobre o mar turquesa. A trilha até o miradouro recompensa com vistas em 360° do Atlântico.'},
           {t:'12:00',name:'Almoço · tasca Caniçal', icon:'🍽️', cls:'is-lunch', lat:32.7397, lng:-16.7331,
-           driveBefore:'~5 min a pé',
-
+           driveBefore:'~5 min a pé', duration:'~1h',
            notes:'Atum fresco e peixe-espada direto dos pescadores. Autêntico e barato. ~€12-15/pess'},
           {t:'14:30',name:'Funchal · Zona Velha', icon:'🏙️', cls:'', lat:32.651, lng:-16.9093,
-           driveBefore:'~40 min de carro',
-
-           notes:'Portas Pintadas da Rua Santa Maria. Comprinha, artesanato, poncha'},
+           driveBefore:'~40 min de carro', duration:'~2h',
+           notes:'Portas Pintadas da Rua Santa Maria. Comprinha, artesanato, poncha',
+           guide:'A Zona Velha foi revitalizada pelo projeto Portas Pintadas, onde artistas locais transformaram cada porta de madeira em obra de arte única. Perder-se pelos becos entre a Alfândega Velha e a Sé de Funchal é o passeio favorito dos que já conhecem o Funchal turístico.'},
           {t:'20:00',name:'Jantar · Restaurante Galeria', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
            driveBefore:'~5 min a pé',
-
-           notes:'Lapas,bacalhau, sopa de tomate, bolo do caco. ~€15-20/pess',
+           notes:'Lapas, bacalhau, sopa de tomate, bolo do caco. ~€15-20/pess',
            food:'Lapas grelhadas · bacalhau · sopa de tomate · bolo do caco com manteiga de alho'},
         ],
         foodLines:[
@@ -783,23 +884,31 @@ const DEST = {
       { n:5, date:'13 jun', wd:'Sábado', title:'Whale Watching + Lido',
         summary:'Whale watching 3h → petisco Zona Velha → Lido Público → jantar espetada Santo António',
         flight:null,
+        budgetEst:'€80-100/pess',
+        checklist:[
+          {id:'md5-whale', text:'Confirmar Whale Watch Madeira (lobosonda.com · ~€50/pess)'},
+          {id:'md5-espe', text:'Ligar Santo António espetada (+351 291 941 866)'},
+        ],
         stops:[
           {t:'9:00', name:'Marina do Funchal · Whale Watch', icon:'⛵', cls:'', lat:32.6457, lng:-16.9109,
-           notes:'~3h no oceano. Baleias-piloto e golfinhos residentes. Biólogo marinho a bordo. ~€50/pess'},
+           duration:'~3h no barco',
+           notes:'~3h no oceano. Baleias-piloto e golfinhos residentes. Biólogo marinho a bordo. ~€50/pess',
+           guide:'As águas profundas ao largo do Funchal são o habitat das baleias-piloto residentes da Madeira — ao contrário de Tenerife, aqui os cetáceos vivem permanentemente, o que garante avistamentos em 99% dos passeios. A Lobosonda tem biólogos marinhos a bordo e hidrofone para escutar os cliques das baleias.'},
           {t:'13:00',name:'Zona Velha · petisco', icon:'☕', cls:'', lat:32.6479, lng:-16.9041,
-           driveBefore:'~15 min a pé',
-
+           driveBefore:'~15 min a pé', duration:'~45 min',
            notes:'Rua Santa Maria. Café, sumo, sandes ou bolo do caco. ~€5-8/pess'},
           {t:'14:00',name:'Lido Público · Funchal', icon:'🌊', cls:'', lat:32.6356, lng:-16.9339,
-           driveBefore:'~20 min de carro',
-
+           driveBefore:'~20 min de carro', duration:'~2h',
            notes:'Acesso ao mar em plataformas de rocha natural. Gratuito. Abre 9h30',
-           warn:'⚠️ Mar pode ter ondulação — usar sempre a escada para entrar e sair'},
+           warn:'⚠️ Mar pode ter ondulação — usar sempre a escada para entrar e sair',
+           guide:'O Lido Público do Funchal é a piscina natural mais movimentada da ilha — plataformas de pedra negra vulcânica sobre o mar aberto, por onde as ondas entram em cascata formando piscinas de água salgada constantemente renovada. Completamente gratuito e amado pelos funchalenses.'},
+          {t:'18:00',name:'Volta ao apartamento · banho', icon:'🏠', cls:'is-return',
+           notes:'~1h de descanso após dia longo (barco + Lido)'},
           {t:'20:00',name:'Jantar · Santo António', icon:'🍽️', cls:'is-dinner', lat:32.6474, lng:-16.9749,
            driveBefore:'~20 min de carro',
-
-           notes:'Estreito Câmarade Lobos (20 min). A referência da espetada desde 1966. Abre todos os dias. ~€15-20/pess · +351 291 941 866',
-           food:'Espetada no pau de louro · milho frito · bolo do caco · poncha · pudim de maracujá'},
+           notes:'Estreito Câmara de Lobos (20 min). A referência da espetada desde 1966. Abre todos os dias. ~€15-20/pess · +351 291 941 866',
+           food:'Espetada no pau de louro · milho frito · bolo do caco · poncha · pudim de maracujá',
+           guide:'A Santo António é um ícone desde 1966: uma adega rústica de teto baixo onde a espetada — cubos de carne perfumada com louro espetados num galho de loureiro e grelhados sobre carvão vivo — chega à mesa fumegante. Companhia obrigatória: milho frito, bolo do caco e uma jarra de poncha.'},
         ],
         foodLines:[
           {i:'☕', t:'Café pós-barco no porto da Marina · ~€5/pess'},
@@ -817,25 +926,26 @@ const DEST = {
       { n:6, date:'14 jun', wd:'Domingo', title:'Norte · Santana + Porto da Cruz',
         summary:'Santana (casas típicas) → Engenho Porto da Cruz → Miradouro Portela → jantar',
         flight:null,
+        budgetEst:'€30-50/pess',
         stops:[
           {t:'9:00', name:'Santana · casas típicas', icon:'🏘️', cls:'', lat:32.8055, lng:-16.8826,
-           notes:'Ícone da Madeira: casas tradicionais de telhado de colmo até o chão. Parada 45-60 min. Queijada e café'},
+           duration:'~1h',
+           notes:'Ícone da Madeira: casas tradicionais de telhado de colmo até o chão. Parada 45-60 min. Queijada e café',
+           guide:'As casas de Santana são as mais fotografadas da Madeira: construções medievais de madeira com telhado de colmo que se estende até o chão, pintadas de vermelho e branco. Mais do que museu, algumas são habitadas ainda hoje — um presente da arquitetura vernacular europeia em pleno século XXI.'},
           {t:'10:30',name:'Engenho · Porto da Cruz', icon:'🍷', cls:'', lat:32.7742, lng:-16.828,
-           driveBefore:'~20 min de carro',
-
-           notes:'Única destilaria de aguardente a vapor ativa do mundo. Desde 1942. Visita GRATUITA. Prova de poncha e aguardente. Abre dom 10h-17h ✓'},
+           driveBefore:'~20 min de carro', duration:'~1h',
+           notes:'Única destilaria de aguardente a vapor ativa do mundo. Desde 1942. Visita GRATUITA. Prova de poncha e aguardente. Abre dom 10h-17h ✓',
+           guide:'O Engenho do Porto da Cruz é a última destilaria de aguardente a vapor ativa do mundo — toda a produção de poncha da ilha passou historicamente por aqui. A visita guiada pelo mecanismo de vapor de 1942 e a degustação de poncha e aguardente num copo de barro são completamente gratuitas e inesquecíveis.'},
           {t:'12:30',name:'Almoço · Porto da Cruz', icon:'🍽️', cls:'is-lunch', lat:32.7742, lng:-16.828,
-           driveBefore:'~5 min a pé',
-
+           driveBefore:'~5 min a pé', duration:'~1h',
            notes:'Tascas de pescadores junto ao porto. Peixe do dia muito fresco. ~€12-15/pess'},
           {t:'15:00',name:'Miradouro da Portela', icon:'👁️', cls:'', lat:32.7697, lng:-16.8609,
-           driveBefore:'~15 min de carro',
-
-           notes:'662m de altitude. Vista esplêndida do vale do Machico e litoral norte. Bar com café. Parada 30 min'},
+           driveBefore:'~15 min de carro', duration:'~30 min',
+           notes:'662m de altitude. Vista esplêndida do vale do Machico e litoral norte. Bar com café. Parada 30 min',
+           guide:'A 662 metros de altitude, o Miradouro da Portela é o posto de observação mais dramático do nordeste da Madeira: o vale profundo do Machico, o litoral norte e, nos dias claros, a ilha do Porto Santo à distância. O bar ali serve o melhor café do interior da ilha.'},
           {t:'20:00',name:'Jantar · A Tendinha', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
            driveBefore:'~45 min de carro',
-
-           notes:'Comida caseira madeirense. Muito frequentadopor locais. ~€10-15/pess',
+           notes:'Comida caseira madeirense. Muito frequentado por locais. ~€10-15/pess',
            food:'Prato do dia · sopa de légumes · vinho da casa'},
         ],
         foodLines:[
@@ -847,28 +957,33 @@ const DEST = {
         ],
         res:[]
       },
-      { n:7, date:'15 jun', wd:'Segunda', title:'Paul da Serra + Porto Moniz', totalDriveEst:'~3h30 de carro', totalDriveEst:'~3h30 de carro',
+      { n:7, date:'15 jun', wd:'Segunda', title:'Paul da Serra + Porto Moniz', totalDriveEst:'~3h30 de carro',
         summary:'Paul da Serra (planalto 1.500m) → piscinas vulcânicas Porto Moniz → costa sul',
         flight:null,
+        budgetEst:'€40-60/pess',
+        checklist:[
+          {id:'md7-lanche', text:'Preparar lanche de casa (sem estabelecimentos no Paul da Serra)'},
+          {id:'md7-gps', text:'GPS para Porto Moniz — estradas de montanha sinuosas'},
+        ],
         stops:[
           {t:'—',    name:'🎒 Levar lanche de casa', icon:'🎒', cls:'', lat:32.6505, lng:-16.9082,
            notes:'Sem estabelecimentos no planalto do Paul da Serra'},
           {t:'8:30', name:'Paul da Serra · planalto', icon:'🏔️', cls:'', lat:32.7333, lng:-17.05,
-           driveBefore:'~50 min de carro',
-
-           notes:'1.500m de altitude. Maior planalto da Madeira. Aerogeradores, nuvens baixas, paisagem mística de outro mundo. Rating 4.7 ★'},
+           driveBefore:'~50 min de carro', duration:'~1h',
+           notes:'1.500m de altitude. Maior planalto da Madeira. Aerogeradores, nuvens baixas, paisagem mística de outro mundo. Rating 4.7 ★',
+           guide:'O Paul da Serra é o planalto mais alto e vasto da Madeira — 17km² de paisagem aberta a 1.500m, coberta por urze, samambaias e enormes aerogeradores. As nuvens baixas e o vento constante criam uma atmosfera de outro mundo, completamente diferente das florestas exuberantes do resto da ilha.'},
           {t:'10:00',name:'Porto Moniz · piscinas vulcânicas', icon:'🌊', cls:'', lat:32.8686, lng:-17.1706,
-           driveBefore:'~25 min de carro',
-
-           notes:'Piscinas naturais de lava na costa noroeste. ~€3-5 entrada. Ondas entram pelas rochas. Abre 9h-19h. Rating 4.7 ★'},
+           driveBefore:'~25 min de carro', duration:'~2h',
+           notes:'Piscinas naturais de lava na costa noroeste. ~€3-5 entrada. Ondas entram pelas rochas. Abre 9h-19h. Rating 4.7 ★',
+           guide:'As piscinas naturais de Porto Moniz são o fenômeno geológico mais fotogênico da Madeira: lava basáltica solidificada formou um labirinto de piscinas junto ao oceano, por onde as ondas do Atlântico Norte entram em espetáculos de espuma branca. A água é constantemente renovada pelas marés e temperada pelo sol.'},
           {t:'13:00',name:'Almoço · Porto Moniz', icon:'🍽️', cls:'is-lunch', lat:32.8686, lng:-17.1706,
-           driveBefore:'~5 min a pé',
-
+           driveBefore:'~5 min a pé', duration:'~1h',
            notes:'Restaurante junto às piscinas. Peixe na lenha, atum, lapas grelhadas. ~€15-20/pess'},
+          {t:'17:00',name:'Volta ao apartamento · banho', icon:'🏠', cls:'is-return',
+           notes:'~1h de descanso após dia longo com 3h30 de carro'},
           {t:'20:00',name:'Jantar · Zona Velha Funchal', icon:'🍽️', cls:'is-dinner', lat:32.6479, lng:-16.9041,
            driveBefore:'~1h15 de carro',
-
-           notes:'Jantar leve após dia longo.Regresso pela ER101 costa sul (~1h). ~€15-20/pess',
+           notes:'Jantar leve após dia longo. Regresso pela ER101 costa sul (~1h). ~€15-20/pess',
            food:'Tapas leves · vinho da Madeira · bolo do caco'},
         ],
         foodLines:[
@@ -878,26 +993,32 @@ const DEST = {
         ],
         res:[]
       },
-      { n:8, date:'16 jun', wd:'Terça', title:'Pico do Arieiro', totalDriveEst:'~1h de carro', totalDriveEst:'~1h de carro',
+      { n:8, date:'16 jun', wd:'Terça', title:'Pico do Arieiro', totalDriveEst:'~1h de carro',
         summary:'Arieiro ao amanhecer (saída 5h30) → Ribeiro Frio → tarde livre → jantar Vila do Peixe',
         flight:null,
+        budgetEst:'€40-60/pess',
+        checklist:[
+          {id:'md8-webcam', text:'Verificar webcam do Arieiro antes de sair: visitmadeira.pt'},
+          {id:'md8-casaco', text:'Levar casaco e agasalho (10°C no cume)'},
+        ],
         stops:[
           {t:'5:30 ou 8:00',name:'Pico do Arieiro · 1.818m', icon:'🌄', cls:'', lat:32.7356, lng:-16.9287,
+           duration:'~2h',
            notes:'3º pico mais alto da Madeira. Acima das nuvens no verão — pôr do sol acima das nuvens. Bar no cume. Levar casaco ~10°C. Rating 4.8 ★',
-           warn:'⚠️ Verificar webcam antes de sair: visitmadeira.pt — cume pode estar encoberto'},
+           warn:'⚠️ Verificar webcam antes de sair: visitmadeira.pt — cume pode estar encoberto',
+           guide:'O Pico do Arieiro a 1.818m — acima das nuvens na maioria dos dias de verão. Chegar ao amanhecer (5h30) é uma experiência transcendental: o mar de nuvens cor de laranja se estende infinitamente abaixo enquanto o primeiro sol ilumina os outros picos. O bar no cume serve o melhor café da ilha.'},
           {t:'10:00',name:'Ribeiro Frio · regresso', icon:'☕', cls:'', lat:32.7327, lng:-16.8879,
-           driveBefore:'~15 min de carro',
-
-           notes:'Victor\'s Bar para café e lanche no regresso. ~€8-12/pess'},
+           driveBefore:'~15 min de carro', duration:'~45 min',
+           notes:'Victor\'s Bar para café e lanche no regresso. ~€8-12/pess',
+           guide:'O Victor\'s Bar em Ribeiro Frio é um clássico obrigatório do regresso do Arieiro — uma merenda pós-amanhecer numa esplanada de floresta laurissilva, com o riacho correndo ao lado e o frescor da altitude a 860 metros.'},
           {t:'13:00',name:'Funchal · tarde livre', icon:'🏙️', cls:'', lat:32.651, lng:-16.9093,
-           driveBefore:'~35 min de carro',
-
-           notes:'Descanso. Passeio pelas Portas Pintadasda Rua Santa Maria. Últimas compras de artesanato'},
+           driveBefore:'~35 min de carro', duration:'~2h',
+           notes:'Descanso. Passeio pelas Portas Pintadas da Rua Santa Maria. Últimas compras de artesanato'},
           {t:'20:00',name:'Jantar · Vila do Peixe', icon:'🍽️', cls:'is-dinner', lat:32.6474, lng:-16.9749,
            driveBefore:'~15 min de carro',
-
            notes:'Câmara de Lobos (15 min). Bancada de peixe vivo — você escolhe e é grelhado na hora. Vista da baía. ~€20-25/pess',
-           food:'Peixe escolhido na bancada · grelhado na hora · salada · vinho · vista da baía'},
+           food:'Peixe escolhido na bancada · grelhado na hora · salada · vinho · vista da baía',
+           guide:'O Vila do Peixe em Câmara de Lobos é provavelmente o restaurante de peixe mais espetacular da Madeira: você escolhe o seu peixe diretamente na bancada refrigerada e ele chega grelhado na hora com azeite e alho. A vista da baía ao entardecer, com os barcos dos pescadores coloridos, é de uma beleza quase absurda.'},
         ],
         foodLines:[
           {i:'☕', t:'Bar do cume do Arieiro · ~€5-8/pess'},
@@ -910,22 +1031,27 @@ const DEST = {
       { n:9, date:'17 jun', wd:'Quarta', title:"Blandy's + Câmara de Lobos",
         summary:"Blandy's Wine Lodge → compras Funchal → Câmara de Lobos → jantar BeerHouse",
         flight:null,
+        budgetEst:'€50-70/pess',
+        checklist:[
+          {id:'md9-blandy', text:"Reservar Blandy's Wine Lodge (blandyswinelodge.com · ~€18-20/pess)"},
+        ],
         stops:[
           {t:'10:00',name:"Blandy's Wine Lodge", icon:'🍷', cls:'', lat:32.6479, lng:-16.9107,
-           notes:'Adega histórica fundada em 1811. Tour guiado + degustação de 3 vinhos Madeira. ~€18-20/pess. Abre 10h todos os dias. Rating 4.5 ★'},
+           duration:'~1h30',
+           notes:'Adega histórica fundada em 1811. Tour guiado + degustação de 3 vinhos Madeira. ~€18-20/pess. Abre 10h todos os dias. Rating 4.5 ★',
+           guide:"A Blandy's é a mais antiga e nobre das adegas de vinho Madeira — fundada em 1811 por uma família britânica que descobriu que o vinho enriquecido com aguardente e 'cozido' pelo calor do oceano desenvolvia sabores complexíssimos. O tour pelos tonéis de carvalho centenários e a degustação de 3 vinhos é uma masterclass de 90 minutos."},
           {t:'12:00',name:'Funchal · compras', icon:'🛒', cls:'', lat:32.651, lng:-16.9093,
-           driveBefore:'~10 min a pé',
-
+           driveBefore:'~10 min a pé', duration:'~1h',
            notes:'Bordados madeirenses, poncha, mel de cana, queijo. Rua Dr. Fernão de Ornelas'},
           {t:'14:00',name:'Câmara de Lobos · porto', icon:'⚓', cls:'', lat:32.6474, lng:-16.9749,
-           driveBefore:'~15 min de carro',
-
-           notes:'Vila de pescadores histórica. Barcos coloridos, murais de azulejo, estátua de Churchill (pescou aqui em 1950), capelas'},
+           driveBefore:'~15 min de carro', duration:'~1h',
+           notes:'Vila de pescadores histórica. Barcos coloridos, murais de azulejo, estátua de Churchill (pescou aqui em 1950), capelas',
+           guide:'Câmara de Lobos é um dos poucos lugares do mundo com direito à lenda de que Winston Churchill pescou aqui pessoalmente — em 1950, quando era Primeiro-Ministro. O porto é um espetáculo de cores: barcos de madeira pintados de azul, verde e vermelho, e pescadores que consertam redes como há 500 anos.'},
           {t:'20:00',name:'Jantar · BeerHouse', icon:'🍽️', cls:'is-dinner', lat:32.6474, lng:-16.9749,
            driveBefore:'~5 min a pé',
-
            notes:'Especialidade: peixe-espada de cebolada. Vista da baía de Câmara de Lobos. Abre todos os dias. ~€20-25/pess',
-           food:'Peixe-espada de cebolada · imperial gelada · vista da baía'},
+           food:'Peixe-espada de cebolada · imperial gelada · vista da baía',
+           guide:'O BeerHouse tem a melhor combinação de peixe-espada de cebolada e vista da baía da Madeira — uma esplanada voltada para o porto histórico onde o pôr do sol transforma os barcos numa pintura. O peixe-espada de cebolada — fatiado com cebola, vinagre, louro e azeite — é o clássico que os madeirenses comem em casa toda semana.'},
         ],
         foodLines:[
           {i:'🥪', t:'Sandes de bolo do caco · ~€5-8/pess'},
@@ -940,22 +1066,26 @@ const DEST = {
       { n:10, date:'18 jun', wd:'Quinta', title:'Cabo Girão + Despedida',
         summary:'Cabo Girão 580m → Câmara de Lobos → tarde livre → jantar de despedida Santo António',
         flight:null,
+        budgetEst:'€30-50/pess',
+        checklist:[
+          {id:'md10-malas', text:'Fazer as malas para Madrid — check-out amanhã de manhã'},
+        ],
         stops:[
           {t:'9:30', name:'Cabo Girão · plataforma de vidro', icon:'🏔️', cls:'', lat:32.6566, lng:-17.0044,
-           notes:'Uma das falésias mais altas da Europa: 580m. Plataforma de vidro sobre o abismo. ~€5/pess. Abre 9h-20h. Rating 4.5 ★'},
+           duration:'~45 min',
+           notes:'Uma das falésias mais altas da Europa: 580m. Plataforma de vidro sobre o abismo. ~€5/pess. Abre 9h-20h. Rating 4.5 ★',
+           guide:'A 580 metros sobre o mar, o Cabo Girão é uma das maiores falésias marítimas da Europa — e tem a invenção aterrorizante de uma plataforma de vidro transparente na borda. Olhar para baixo e ver os minúsculos campos de cultivo e o oceano lá embaixo é uma das experiências mais vertiginosas da ilha.'},
           {t:'11:00',name:'Câmara de Lobos · último passeio', icon:'⚓', cls:'', lat:32.6474, lng:-16.9749,
-           driveBefore:'~10 min de carro',
-
+           driveBefore:'~10 min de carro', duration:'~45 min',
            notes:'Último passeio no porto histórico. Poncha de despedida com os pescadores'},
           {t:'13:00',name:'Funchal · tarde livre', icon:'🏙️', cls:'', lat:32.651, lng:-16.9093,
-           driveBefore:'~15 min de carro',
-
-           notes:'Descanso. Últimas compras.Fazer as malas para Madrid'},
+           driveBefore:'~15 min de carro', duration:'~2h',
+           notes:'Descanso. Últimas compras. Fazer as malas para Madrid'},
           {t:'20:00',name:'Jantar de Despedida · Santo António', icon:'🍽️', cls:'is-dinner', lat:32.6474, lng:-16.9749,
            driveBefore:'~15 min de carro',
-
            notes:'O jantar icônico da Madeira. Estreito Câmara de Lobos. Desde 1966. Abre todos os dias. ~€15-20/pess · +351 291 941 866',
-           food:'Espetada no pau de louro · milho frito · bolo do caco · poncha · pudim de maracujá 🍮'},
+           food:'Espetada no pau de louro · milho frito · bolo do caco · poncha · pudim de maracujá 🍮',
+           guide:'É o jantar simbólico da despedida: de volta à adega de 1966 no Estreito de Câmara de Lobos, o local onde a espetada madeirense nasceu enquanto receita de restaurante. Desta vez, sabendo que é o último jantar na ilha, cada garfada de carne perfumada de louro, cada gole de poncha e o pudim de maracujá de sobremesa ganham um peso emocional diferente.'},
         ],
         foodLines:[
           {i:'☕', t:'Bar do Cabo Girão · ~€3-5/pess'},
@@ -970,16 +1100,21 @@ const DEST = {
       { n:11, date:'19 jun', wd:'Sexta', title:'Partida para Madrid',
         summary:'Check-out → café final na Zona Velha → Aeroporto FNC → voo 12:40 para Madrid',
         flight:{route:'FNC → MAD', dep:'12:40', arr:'19:10', num:'—', info:'1 escala · 5h30 total'},
+        budgetEst:'€10-20/pess',
+        checklist:[
+          {id:'md11-checkout', text:'Check-out antes das 11h — devolver chaves (PIN 6004)'},
+          {id:'md11-carro', text:'Devolver carro no Aeroporto FNC'},
+          {id:'md11-embarque', text:'Voo 12:40 FNC→MAD — chegar 2h antes'},
+        ],
         stops:[
           {t:'até 11h',name:'Check-out Apartamento Caires', icon:'🏠', cls:'', lat:32.6505, lng:-16.9082,
            notes:'R. do Infante Santo 11 · PIN 6004 · devolver chaves até 11h'},
           {t:'11:00',name:'Café final · Zona Velha', icon:'☕', cls:'', lat:32.6479, lng:-16.9041,
-           driveBefore:'~5 min a pé',
-
-           notes:'Último café da Madeira na Rua Santa Maria. ~€5/pess'},
+           driveBefore:'~5 min a pé', duration:'~30 min',
+           notes:'Último café da Madeira na Rua Santa Maria. ~€5/pess',
+           guide:'O último café na Zona Velha de Funchal — um ritual de despedida que os viajantes sensatos nunca pulam. Sente-se na calçada da Rua Santa Maria, peça uma bica dupla e uma torrada com manteiga de alho, e olhe as portas pintadas por artistas enquanto o sol da manhã aquece as pedras pela última vez.'},
           {t:'11:30',name:'Aeroporto FNC · partida', icon:'✈️', cls:'is-transport', lat:32.6942, lng:-16.7783,
            driveBefore:'~25 min de carro',
-
            notes:'Devolver carro. Voo 12:40 → MAD 19:10. 1 escala. 5h30 total'},
         ],
         foodLines:[
@@ -1001,18 +1136,24 @@ const DEST = {
       { n:1, date:'19 jun', wd:'Quinta', title:'Chegada a Madrid',
         summary:'FNC 19:10 → metrô L8 → hotel → jantar Calle Cava Baja',
         flight:null,
+        budgetEst:'€25-40/pess',
+        checklist:[
+          {id:'ma1-hotel', text:'Confirmar endereço e check-in do hotel (La Latina/Sol/Ópera)'},
+          {id:'ma1-metro', text:'Comprar bilhete metrô L8 no aeroporto (€3 suplemento + €1,50)'},
+        ],
         stops:[
           {t:'19:10',name:'Aeroporto MAD (Barajas)', icon:'✈️', cls:'is-transport', lat:40.4983, lng:-3.5676,
-           notes:'Metrô L8 → Nuevos Ministerios (12 min) + baldeação → La Latina (~25 min total). Suplemento €3 + bilhete €1,50. Táxi ~€35'},
+           duration:'~45 min',
+           notes:'Metrô L8 → Nuevos Ministerios (12 min) + baldeação → La Latina (~25 min total). Suplemento €3 + bilhete €1,50. Táxi ~€35',
+           guide:'O Aeroporto de Barajas (MAD) é um dos maiores da Europa — o terminal T4 é uma obra de arquitetura de Rafael Moneo. O metrô L8 parte da T4 e leva direto a Nuevos Ministerios, onde baldeação para qualquer linha rumo ao centro. Táxi é mais cômodo por ~€35.'},
           {t:'20:15',name:'Hotel · La Latina / Sol / Ópera', icon:'🏨', cls:'', lat:40.4153, lng:-3.7003,
            driveBefore:'~40 min (metrô L8)',
-
            notes:'A confirmar. Sem carro necessário — toda Madrid a pé e metrô'},
           {t:'21:00',name:'Jantar · Calle Cava Baja', icon:'🍽️', cls:'is-dinner', lat:40.4131, lng:-3.7084,
            driveBefore:'~5 min a pé',
-
            notes:'A rua de tapas mais autêntica de Madrid. Estratégia: 2-3 bares em sequência para provar tudo. ~€20-25/pess',
-           food:'Taberna La Concha (vermute caseiro) · ou Casa Lucio (huevos estrellados, ~€25-30/pess)'},
+           food:'Taberna La Concha (vermute caseiro) · ou Casa Lucio (huevos estrellados, ~€25-30/pess)',
+           guide:'A Calle Cava Baja é a maior concentração de bares de tapas autênticos de Madrid — uma rua estreita e animada do bairro de La Latina onde a estratégia certa é o "txikiteo": entrar em 2-3 bares em sequência, pedir um par de tapas e uma caña em cada. Taberna La Concha serve o melhor vermute da rua; Casa Lucio ao lado é o clássico dos huevos estrellados.'},
         ],
         foodLines:[
           {i:'🍽️', t:'Jantar: bar crawl Cava Baja · 2-3 bares em sequência · ~€20-25/pess'},
@@ -1026,27 +1167,34 @@ const DEST = {
       { n:2, date:'20 jun', wd:'Sexta', title:'Madrid · Dia Completo',
         summary:'Prado (3h) → Retiro → Azotea Bellas Artes → Plaza Mayor → Mercado San Miguel',
         flight:null,
+        budgetEst:'€50-80/pess',
+        checklist:[
+          {id:'ma2-prado', text:'Comprar ingresso Prado online (museodelprado.es · ~€15/pess)'},
+          {id:'ma2-sapatos', text:'Verificar que todos têm sapatos confortáveis — +15km a pé hoje'},
+        ],
         stops:[
           {t:'10:00',name:'Museo del Prado', icon:'🏛️', cls:'', lat:40.4138, lng:-3.6922,
+           duration:'~3h',
            notes:'Um dos maiores museus de arte do mundo. Velázquez, Goya, Rubens, El Greco. Mínimo 2-3h. ~€15/pess. Rating 4.7 ★',
-           warn:'⚠️ Proibido fotografar as obras · comprar ingresso online para evitar fila'},
+           warn:'⚠️ Proibido fotografar as obras · comprar ingresso online para evitar fila',
+           guide:'O Prado é um dos três maiores museus de arte do mundo — mas o que o torna único é sua concentração extraordinária: Velázquez (Las Meninas), Goya (Saturno Devorando o Filho, Os Fuzilamentos de Maio), El Greco e Rubens num único andar. Veja o mapa e faça uma rota antes de entrar — tentar ver tudo é impossível em 3 horas.'},
           {t:'13:30',name:'Parque del Retiro', icon:'🌳', cls:'', lat:40.4153, lng:-3.6835,
-           driveBefore:'~10 min a pé',
-
-           notes:'125 hectares no coração de Madrid. Pérgola das Rosas, lago com barquinhos (~€6/30 min). Totalmente gratuito. Rating 4.8 ★'},
+           driveBefore:'~10 min a pé', duration:'~2h',
+           notes:'125 hectares no coração de Madrid. Pérgola das Rosas, lago com barquinhos (~€6/30 min). Totalmente gratuito. Rating 4.8 ★',
+           guide:'O Retiro é o Central Park de Madrid — 125 hectares de jardins formais com lago com barquinhos de remo e pérgolas de rosas. Nos fins de semana é o ponto de encontro da cidade inteira: músicos, mágicos, velhinhos jogando xadrez e famílias nos gramados. O lago com barquinhos é obrigatório se tiver crianças.'},
           {t:'16:00',name:'Azotea Círculo Bellas Artes', icon:'🏙️', cls:'', lat:40.4183, lng:-3.6965,
-           driveBefore:'~20 min a pé',
-
-           notes:'7º andar. Vista 360° de Madrid + Serra Guadarrama ao fundo. €4 entrada. Abre 10h todos os dias'},
+           driveBefore:'~20 min a pé', duration:'~1h',
+           notes:'7º andar. Vista 360° de Madrid + Serra Guadarrama ao fundo. €4 entrada. Abre 10h todos os dias',
+           guide:'A azotea do Círculo de Bellas Artes é o melhor miradouro pago de Madrid: do 7º andar de um dos mais belos edifícios da Gran Vía, a vista em 360° abrange desde o Retiro até a Serra de Guadarrama, com a Gran Vía estendida como uma fita dourada aos seus pés. Por €4, é o investimento mais rentável do dia.'},
           {t:'19:00',name:'Plaza Mayor', icon:'🏛️', cls:'', lat:40.4155, lng:-3.7074,
-           driveBefore:'~10 min a pé',
-
-           notes:'Praça barroca do séc. XVII. Arcos, fachadas vermelhas icônicas. 400 anos de história de Madri. Rating 4.6 ★'},
+           driveBefore:'~10 min a pé', duration:'~45 min',
+           notes:'Praça barroca do séc. XVII. Arcos, fachadas vermelhas icônicas. 400 anos de história de Madri. Rating 4.6 ★',
+           guide:'A Plaza Mayor é o teatro barroco do cotidiano madrileno desde 1619 — uma praça fechada de tijolos vermelhos com 237 janelas simétricas, onde já aconteceram touradas e autos-de-fé. Ao entardecer, quando a luz laranja bate nas fachadas vermelhas, a magia histórica ainda funciona.'},
           {t:'20:30',name:'Jantar · Mercado de San Miguel', icon:'🍽️', cls:'is-dinner', lat:40.4153, lng:-3.709,
            driveBefore:'~3 min a pé',
-
            notes:'Mercado gourmet de 1916. 20+ bancas. Jamón, frutos do mar, tapas, vinho. Abre até meia-noite. ~€20-25/pess',
-           food:'Jamón ibérico de bellota · ostras · croquetas · boquerones · vermute · vinho'},
+           food:'Jamón ibérico de bellota · ostras · croquetas · boquerones · vermute · vinho',
+           guide:'O Mercado de San Miguel de 1916 é o templo do turismo gastronômico de Madrid — 20+ bancas de alta qualidade com jamón ibérico de bellota cortado na hora, ostras à vista, boquerones em vinagre e croquetas de jamón. O segredo é chegar às 20h (antes do rush) e fazer um circuito pelas bancas antes de escolher onde ficar.'},
         ],
         foodLines:[
           {i:'☕', t:'Café interno no Prado · ~€5-8/pess'},
@@ -1063,21 +1211,28 @@ const DEST = {
       { n:3, date:'21 jun', wd:'Sábado', title:'Última Manhã + Partida',
         summary:'Palácio Real → Templo de Debod → almoço final Cava Baja → Aeroporto MAD → Brasil',
         flight:{route:'MAD → Brasil', dep:'a confirmar', arr:'—', num:'—', info:'Verificar horário exato do voo'},
+        budgetEst:'€40-60/pess',
+        checklist:[
+          {id:'ma3-palacio', text:'Comprar ingresso Palácio Real online (patrimonionacional.es · ~€14/pess)'},
+          {id:'ma3-voo', text:'Verificar horário exato do voo de regresso ao Brasil'},
+          {id:'ma3-checkout', text:'Check-out do hotel antes de sair'},
+        ],
         stops:[
           {t:'10:00',name:'Palácio Real', icon:'🏰', cls:'', lat:40.418, lng:-3.7143,
-           notes:'Maior palácio da Europa Ocidental. 3.418 salas, ~30 abertas ao público. ~€14/pess. Abre 10h-18h sábado ✓. Rating 4.7 ★'},
+           duration:'~2h',
+           notes:'Maior palácio da Europa Ocidental. 3.418 salas, ~30 abertas ao público. ~€14/pess. Abre 10h-18h sábado ✓. Rating 4.7 ★',
+           guide:'O Palácio Real de Madrid é o maior palácio da Europa Ocidental em área — 3.418 salas, das quais ~30 abertas ao público. A coleção de armaduras, os afrescos do teto da Sala do Trono e a farmácia real do século XVIII são os destaques. Compre ingresso online — as filas presenciais podem demorar mais de 1 hora.'},
           {t:'12:00',name:'Templo de Debod', icon:'🏛️', cls:'', lat:40.4241, lng:-3.7178,
-           driveBefore:'~5 min a pé',
-
-           notes:'Templo egípcio de 2.000 anos. Presenteado pelo Egito à Espanha em 1968. Totalmente gratuito. Vista panorâmica de Madrid. Fecha segunda (sábado ✓)'},
+           driveBefore:'~5 min a pé', duration:'~30 min',
+           notes:'Templo egípcio de 2.000 anos. Presenteado pelo Egito à Espanha em 1968. Totalmente gratuito. Vista panorâmica de Madrid. Fecha segunda (sábado ✓)',
+           guide:'O Templo de Debod é uma das histórias mais extraordinárias da arqueologia moderna: um templo egípcio de 2.000 anos desmontado pedra por pedra no Vale do Nilo e presenteado pelo Egito à Espanha. Instalado num parque de Madrid, é um anacronismo encantador — e a vista da cidade ao pôr do sol atrás do templo é uma das fotos mais icônicas de Madrid.'},
           {t:'13:30',name:'Almoço final · Cava Baja', icon:'🍽️', cls:'is-lunch', lat:40.4131, lng:-3.7084,
-           driveBefore:'~20 min a pé',
-
+           driveBefore:'~20 min a pé', duration:'~1h30',
            notes:'A última refeição da viagem. Ritual madrileno: huevos estrellados, croquetas, patatas bravas, sangria. ~€20-25/pess',
-           food:'Huevos estrellados · croquetas de jamón · patatas bravas · sangria · café'},
+           food:'Huevos estrellados · croquetas de jamón · patatas bravas · sangria · café',
+           guide:'O almoço final na Cava Baja é um ritual de encerramento: huevos estrellados com jamón (ovos fritos sobre batatas fritas com chouriço — simples e perfeito), croquetas crocantes e uma jarra de sangria. É a comida que Madrid faz melhor — honesta, generosa, feita com produtos de qualidade sem pretensão.'},
           {t:'15:30+',name:'Aeroporto MAD · regresso Brasil', icon:'✈️', cls:'is-transport', lat:40.4983, lng:-3.5676,
            driveBefore:'~45 min (metrô L8)',
-
            notes:'Metrô L8 ou táxi. Verificar horário exato do voo para o Brasil'},
         ],
         foodLines:[
@@ -1361,6 +1516,32 @@ function togglePretripCheck(itemId) {
 }
 
 // ════════════════════════════════════════════════════════════
+//  TRANSIT ICON
+// ════════════════════════════════════════════════════════════
+function transitIcon(str) {
+  if (!str) return '🚗';
+  const s = str.toLowerCase();
+  if (s.includes('a pé') || s.includes('andando')) return '🚶';
+  if (s.includes('metrô') || s.includes('metro') || s.includes('ônibus') || s.includes('bus')) return '🚇';
+  return '🚗';
+}
+
+// ════════════════════════════════════════════════════════════
+//  DAY CHECKLIST (localStorage: "dayChecklist")
+// ════════════════════════════════════════════════════════════
+function getDayChecklistState() {
+  try { return JSON.parse(localStorage.getItem('dayChecklist')||'{}'); } catch { return {}; }
+}
+function makeDayChecklistKey(destId, dayN, itemId) { return `${destId}:d${dayN}:${itemId}`; }
+function toggleDayChecklistItem(destId, dayN, itemId) {
+  const d = getDayChecklistState();
+  const k = makeDayChecklistKey(destId, dayN, itemId);
+  if (d[k]) delete d[k]; else d[k] = true;
+  localStorage.setItem('dayChecklist', JSON.stringify(d));
+  renderStopCards();
+}
+
+// ════════════════════════════════════════════════════════════
 //  TRIP ACTIVITY PROGRESS (localStorage: "tripProgress")
 //  NOTE: localStorage persists only within the same device and
 //  browser. Progress is NOT synced between devices or users.
@@ -1493,7 +1674,10 @@ function renderDayHeaderCard() {
     <div class="dhc-pill">${dest.emoji} ${dest.name} · Dia ${day.n}</div>
     <div class="dhc-row">
       <div class="dhc-title">${day.title}</div>
-      <span class="dhc-intensity ${int.c}">${int.l}</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+        <span class="dhc-intensity ${int.c}">${int.l}</span>
+        ${day.budgetEst?`<span class="dhc-budget">💰 ${day.budgetEst}</span>`:''}
+      </div>
     </div>
     <div class="dhc-date">${day.wd}, ${day.date}</div>
     <div class="dhc-summary">${day.summary}</div>`;
@@ -1525,26 +1709,58 @@ function badgeHtml(prio) {
 }
 function renderStopCards() {
   const dest=DEST[S.dest], day=dest.days[S.dayIdx], ch=getChecked(), tp=getTripProgress();
-  let html = day.stops.map((stop, idx) => {
-    const hasNav      = stop.lat && stop.lng && !stop.name.startsWith('🎒');
-    const hasExtra    = stop.notes || stop.food;
+  const dcls = getDayChecklistState();
+  let html = '';
+
+  // 1. Day checklist card (if day has curated items)
+  if (day.checklist && day.checklist.length) {
+    const total = day.checklist.length;
+    const done  = day.checklist.filter(it => dcls[makeDayChecklistKey(S.dest, day.n, it.id)]).length;
+    html += `<div class="day-checklist-card">
+      <div class="dcl-title">📋 Antes de sair <span class="dcl-toggle">${done}/${total} ✓</span></div>`;
+    day.checklist.forEach(it => {
+      const k    = makeDayChecklistKey(S.dest, day.n, it.id);
+      const done = !!dcls[k];
+      html += `<div class="dcl-item${done?' done':''}">
+        <div class="dcl-checkbox${done?' done':''}" onclick="toggleDayChecklistItem('${S.dest}',${day.n},'${it.id}')">${done?'✓':''}</div>
+        <span>${it.text}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  // 2. Meal plan card (foodLines promoted to top, collapsible)
+  if (day.foodLines && day.foodLines.length) {
+    html += `<details class="meal-plan-card" open>
+      <summary>🍽️ Plano de refeições</summary>
+      <div class="mpc-body">`;
+    html += day.foodLines.map(f=>`<div class="mpc-food-line"><span class="mpc-food-icon">${f.i}</span><span>${f.t}</span></div>`).join('');
+    html += '</div></details>';
+  }
+
+  // 3. Stop cards
+  html += day.stops.map((stop, idx) => {
+    const isReturn    = stop.cls === 'is-return';
+    const hasNav      = stop.lat && stop.lng && !stop.name.startsWith('🎒') && !isReturn;
+    const hasExtra    = stop.notes || stop.food || stop.guide;
     const isReminder  = stop.name.startsWith('🎒');
     const tripKey     = makeTripKey(S.dest, day.n, stop);
-    const isDone      = !isReminder && !!tp[tripKey];
-    // Transit connector shown above this card (driveBefore field, if present)
-    const transit = (!isReminder && stop.driveBefore && idx > 0)
-      ? `<div class="transit-row"><span class="transit-dot"></span><span>🚗 ${stop.driveBefore}</span></div>`
+    const isDone      = !isReminder && !isReturn && !!tp[tripKey];
+    const icon        = transitIcon(stop.driveBefore);
+    const transit     = (!isReminder && stop.driveBefore && idx > 0)
+      ? `<div class="transit-row"><span class="transit-dot"></span><span>${icon} ${stop.driveBefore}</span></div>`
       : '';
     return transit + `<div class="stop-card${isDone?' is-done':''}">
       <div class="sc-header">
-        <div class="sc-time">${stop.t||'—'}</div>
+        <div class="sc-time">${stop.t||'—'}${stop.duration?`<span class="sc-dur">${stop.duration}</span>`:''}</div>
         <div class="sc-icon-wrap ${stop.cls||''}">${stop.icon}</div>
         <div class="sc-title">${stop.name}</div>
-        ${!isReminder?`<button class="sc-done-btn${isDone?' done':''}" onclick="toggleTripActivity('${S.dest}',${day.n},${idx})" aria-label="${isDone?'Desmarcar concluído':'Marcar como concluído'}" title="${isDone?'Clique para desmarcar':'Marcar como feito'}">${isDone?'✓':''}</button>`:''}
+        ${(!isReminder&&!isReturn)?`<button class="sc-done-btn${isDone?' done':''}" onclick="toggleTripActivity('${S.dest}',${day.n},${idx})" aria-label="${isDone?'Desmarcar concluído':'Marcar como concluído'}" title="${isDone?'Clique para desmarcar':'Marcar como feito'}">${isDone?'✓':''}</button>`:''}
       </div>
       ${isDone?`<div class="sc-done-badge">✅ Concluído</div>`:''}
       ${stop.warn&&!isDone?`<div class="alert-warn">${stop.warn}</div>`:''}
       <div class="sc-details" id="sc-det-${idx}" hidden>
+        ${stop.guide?`<p class="sc-guide">${stop.guide}</p>`:''}
         ${stop.notes?`<p class="sc-notes">${stop.notes}</p>`:''}
         ${stop.food?`<div class="sc-food">🍴 ${stop.food}</div>`:''}
       </div>
@@ -1555,6 +1771,7 @@ function renderStopCards() {
     </div>`;
   }).join('');
 
+  // 4. Reservas block (unchanged)
   if (day.res.length) {
     html += '<div class="day-res-block"><div class="day-res-title">📋 Reservas deste dia</div>';
     html += day.res.map(r => {
@@ -1566,11 +1783,6 @@ function renderStopCards() {
           <div class="res-obs">${r.obs}</div>
         </div></div>`;
     }).join('');
-    html += '</div>';
-  }
-  if (day.foodLines&&day.foodLines.length) {
-    html += '<div class="food-block"><div class="food-block-title">🍽️ Alimentação do dia</div>';
-    html += day.foodLines.map(f=>`<div class="food-line"><span class="food-line-icon">${f.i}</span><span>${f.t}</span></div>`).join('');
     html += '</div>';
   }
   document.getElementById('stop-cards').innerHTML = html;
