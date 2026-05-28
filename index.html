@@ -359,6 +359,13 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 .pre-item-note{font-size:11px;color:var(--g500);margin-top:2px;line-height:1.45;}
 .pre-item.is-done .pre-item-label{text-decoration:line-through;color:var(--g400);}
 .pre-item.is-done .pre-item-note{color:var(--g300);}
+.pre-item.is-highlight{border-left:2px solid var(--c-orange);padding-left:12px;}
+.pre-item.is-info{background:var(--g50);gap:8px;}
+.pre-item.is-info .pre-item-label{font-weight:500;color:var(--g500);font-size:13px;}
+.pre-info-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--c-pre);flex-shrink:0;margin-top:1px;opacity:.7;}
+.pre-item.is-optional .pre-item-label::after{content:' · recomendado';font-size:11px;
+  color:var(--g400);font-weight:400;}
 
 /* ── DAY CHECKLIST CARD ── */
 .day-checklist-card{background:var(--dest-l);border:1px solid var(--dest-b);
@@ -1650,19 +1657,20 @@ function toggleCheck(id) {
 const PRETRIP_CATEGORIES = [
   { id:'documentos', icon:'📄', label:'Documentos', items:[
     {id:'doc-passaportes',   label:'Passaportes válidos de todos os viajantes', note:'Validade mínima de 6 meses além da data de retorno'},
-    {id:'doc-rgs',           label:'RGs de todos (reserva dentro da Europa)', note:'Espanha e Portugal aceitam RG brasileiro'},
+    {id:'doc-rgs',           label:'RG como documento secundário (opcional)', note:'Passaporte é o documento principal de entrada. RG pode ser levado como complemento, não substitui o passaporte.'},
     {id:'doc-cnh',           label:'CNH válida para aluguel de carro', note:'PID (Permissão Internacional) recomendado'},
     {id:'doc-reservas-hosp', label:'Confirmações de hospedagem salvas/impressas', note:'Airbnb Tenerife + Apt. Caires Madeira + hotel Madrid'},
     {id:'doc-voos',          label:'Confirmação e e-ticket de todos os voos', note:'Brasil → MAD → TFN → FNC → MAD → Brasil'},
     {id:'doc-seguro',        label:'Seguro viagem contratado para todos', note:'Cobertura médica, extravio de bagagem e cancelamento'},
     {id:'doc-autoriza',      label:'Autorização de viagem para menores (se necessário)', note:'Verificar exigência com a companhia aérea'},
-    {id:'doc-comprov',       label:'Comprovantes de renda e endereço (reserva)', note:'Pode ser pedido na imigração'},
+    {id:'doc-comprov',       label:'Comprovantes de meios financeiros para imigração', note:'Extrato bancário recente, limite do cartão internacional, saldo Wise/Revolut/Nomad ou dinheiro em espécie. Pode ser solicitado na imigração para comprovar capacidade de custear a viagem.'},
+    {id:'doc-etias',         label:'ETIAS — não aplicável para junho/2026', note:'Não requerido para esta viagem, salvo mudança oficial futura.', type:'info'},
   ]},
   { id:'financeiro', icon:'💳', label:'Financeiro', items:[
     {id:'fin-cartao-inter',  label:'Cartão habilitado para uso internacional', note:'Avisar o banco sobre os países e datas da viagem'},
     {id:'fin-limite',        label:'Limite do cartão verificado', note:'Considerar: carro, hospedagens e experiências podem bloquear valor'},
     {id:'fin-euros',         label:'Euros em espécie para emergências', note:'Mínimo €50-100 por pessoa'},
-    {id:'fin-iof',           label:'IOF e taxas de câmbio comparados', note:'Cartão crédito vs débito vs conta internacional'},
+    {id:'fin-iof',           label:'IOF e taxas de câmbio', note:'Recomendado comparar cartão crédito vs débito vs conta internacional antes de viajar.', optional:true},
     {id:'fin-wise',          label:'Conta internacional configurada (Wise, Revolut ou Nomad)', note:'Opcional — menor IOF e câmbio mais justo'},
     {id:'fin-rateio',        label:'Método de rateio do grupo combinado', note:'App de divisão de despesas (Splitwise, etc.)'},
   ]},
@@ -1672,6 +1680,7 @@ const PRETRIP_CATEGORIES = [
     {id:'con-whatsapp',      label:'WhatsApp funcionando com o novo número/chip', note:'Testar antes de embarcar'},
     {id:'con-mapas',         label:'Mapas offline baixados', note:'Google Maps → baixar área offline: Tenerife, Madeira, Madrid'},
     {id:'con-apps',          label:'Apps essenciais instalados', note:'Google Maps, Waze, Translate, conversor de moeda, clima'},
+    {id:'con-teste',         label:'Tudo de conectividade testado antes do embarque', note:'Validar eSIM/chip, roaming ou plano de dados antes de sair do Brasil ou ainda no aeroporto de chegada.'},
   ]},
   { id:'transporte', icon:'🚗', label:'Transporte e Carro', items:[
     {id:'trans-carro',       label:'Aluguel de carro confirmado (Tenerife e Madeira)', note:'Verificar inclusão de seguro total (CDW/full cover)'},
@@ -1679,6 +1688,7 @@ const PRETRIP_CATEGORIES = [
     {id:'trans-regras',      label:'Regras de trânsito locais revisadas', note:'Espanha e Portugal: cinto traseiro, velocidade, álcool zero'},
     {id:'trans-estac',       label:'Regras de estacionamento entendidas', note:'Zonas azuis/laranjas em Funchal e sul de Tenerife'},
     {id:'trans-combustivel', label:'Tipo de combustível do carro alugado verificado', note:'Confirmar gasolina, diesel ou elétrico ao retirar'},
+    {id:'trans-cartao-fisico',label:'Cartão físico confirmado para retirada do carro', note:'Locadoras podem exigir cartão físico em nome do motorista principal para caução.'},
     {id:'trans-portagens',   label:'Portagens automáticas em Portugal (Via Verde)', note:'Cartão internacional aceito na maioria das praças'},
   ]},
   { id:'hospedagem', icon:'🏠', label:'Hospedagens', items:[
@@ -1698,12 +1708,12 @@ const PRETRIP_CATEGORIES = [
   ]},
   { id:'saude', icon:'💊', label:'Saúde e Farmácia', items:[
     {id:'sau-remedios',      label:'Remédios de uso contínuo suficientes para toda a viagem', note:'Incluir dias extras de segurança'},
-    {id:'sau-receitas',      label:'Receitas médicas traduzidas (inglês ou espanhol)', note:'Para remédios controlados ou de uso regular'},
+    {id:'sau-receitas',      label:'Receitas e informações médicas disponíveis', note:'Importante para medicamentos controlados ou de uso contínuo.'},
     {id:'sau-seguro-cob',    label:'Cobertura do seguro saúde confirmada', note:'Incluindo emergências, hospitalização e repatriação'},
     {id:'sau-farmacia',      label:'Kit de farmácia básico preparado', note:'Analgésico, antidiarreico, antialérgico, band-aid, termômetro'},
     {id:'sau-protetor',      label:'Protetor solar FPS 50+ para Tenerife e Madeira', note:'Sol atlântico é intenso mesmo com nuvens'},
   ]},
-  { id:'criancas', icon:'👨‍👩‍👧', label:'Crianças e Família', items:[
+  { id:'criancas', icon:'👨‍👩‍👧', label:'Crianças e Família', collapsed:true, items:[
     {id:'cri-docs',          label:'Documentos das crianças válidos', note:'Passaporte ou RG conforme destino'},
     {id:'cri-autoriza',      label:'Autorização notarial de viagem (se exigida)', note:'Verificar regras com a companhia aérea e destinos'},
     {id:'cri-roupas',        label:'Roupas adequadas para variação de temperatura', note:'Teide/Arieiro: ~10°C · praias: roupa de banho'},
@@ -1723,7 +1733,7 @@ const PRETRIP_CATEGORIES = [
     {id:'pen-contas',        label:'Contas e boletos pagos durante o período de ausência', note:'Débito automático ou pagamento antecipado'},
     {id:'pen-malas',         label:'Malas prontas e pesadas dentro do limite', note:'Verificar peso máximo da companhia aérea'},
     {id:'pen-pet',           label:'Animais domésticos sob cuidado de alguém de confiança', note:'Se aplicável'},
-    {id:'pen-transp-aero',   label:'Transporte até o aeroporto confirmado', note:'Horário com folga mínima de 3h para voo internacional'},
+    {id:'pen-transp-aero',   label:'Transporte até o aeroporto confirmado', note:'Horário com folga mínima de 3h para voo internacional', highlight:true},
     {id:'pen-revisao-final', label:'Revisar este checklist completo 24h antes de embarcar', note:'Última verificação — não pular!'},
   ]},
 ];
@@ -2514,30 +2524,46 @@ function renderGastro() {
 //  RENDER: PRÉ-VIAGEM
 // ════════════════════════════════════════════════════════════
 function renderPreTrip() {
-  const checked  = getPretripChecked();
-  const allItems = PRETRIP_CATEGORIES.flatMap(c => c.items);
-  const total    = allItems.length;
-  const done     = allItems.filter(i => checked[i.id]).length;
-  const pct      = total ? Math.round(done/total*100) : 0;
+  const checked      = getPretripChecked();
+  // Excluir itens informativos (type:'info') do progresso
+  const checkItems   = PRETRIP_CATEGORIES.flatMap(c => c.items.filter(i => !i.type));
+  const total        = checkItems.length;
+  const done         = checkItems.filter(i => checked[i.id]).length;
+  const pct          = total ? Math.round(done/total*100) : 0;
   let html = `<div class="pre-view">
     <div class="view-title">✅ Pré-viagem</div>
     <div class="view-sub">Checklist completo · marque conforme for preparando</div>
     <div class="pre-progress-wrap"><div class="pre-progress-bar" style="width:${pct}%"></div></div>
     <div class="pre-progress-label">${done} de ${total} itens concluídos · ${pct}%</div>`;
   PRETRIP_CATEGORIES.forEach(cat => {
-    const catDone = cat.items.filter(i => checked[i.id]).length;
-    const allDone = catDone === cat.items.length;
+    const checkable   = cat.items.filter(i => !i.type);
+    const catDone     = checkable.filter(i => checked[i.id]).length;
+    const allDone     = checkable.length > 0 && catDone === checkable.length;
+    // Iniciar colapsado se cat.collapsed e nenhum item marcado
+    const startOpen   = !cat.collapsed || checkable.some(i => checked[i.id]);
     html += `<div class="pre-category">
-      <div class="pre-cat-hd" onclick="togglePreCategory('${cat.id}')" aria-expanded="true" id="pre-cat-hd-${cat.id}">
+      <div class="pre-cat-hd" onclick="togglePreCategory('${cat.id}')" aria-expanded="${startOpen}" id="pre-cat-hd-${cat.id}">
         <span class="pre-cat-icon">${cat.icon}</span>
         <span class="pre-cat-label">${cat.label}</span>
-        <span class="pre-cat-count${allDone?' has-all':''}">${catDone}/${cat.items.length}</span>
+        <span class="pre-cat-count${allDone?' has-all':''}">${catDone}/${checkable.length}</span>
         <span class="pre-cat-chev">▼</span>
       </div>
-      <div class="pre-items" id="pre-items-${cat.id}">`;
+      <div class="pre-items" id="pre-items-${cat.id}"${startOpen?'':' style="display:none"'}>`;
     cat.items.forEach(item => {
-      const isDone = !!checked[item.id];
-      html += `<div class="pre-item${isDone?' is-done':''}">
+      if (item.type === 'info') {
+        // Item informativo — sem checkbox
+        html += `<div class="pre-item is-info">
+          <div class="pre-info-icon">ℹ</div>
+          <div class="pre-item-body">
+            <div class="pre-item-label">${item.label}</div>
+            ${item.note?`<div class="pre-item-note">${item.note}</div>`:''}
+          </div>
+        </div>`;
+        return;
+      }
+      const isDone      = !!checked[item.id];
+      const extraClass  = (item.highlight?' is-highlight':'') + (item.optional?' is-optional':'');
+      html += `<div class="pre-item${isDone?' is-done':''}${extraClass}">
         <div class="pre-check${isDone?' done':''}" onclick="togglePretripCheck('${item.id}')">${isDone?'✓':''}</div>
         <div class="pre-item-body">
           <div class="pre-item-label">${item.label}</div>
