@@ -735,7 +735,7 @@ const DEST = {
     name:'Tenerife', emoji:'🌋', tab:'🌋 Tenerife',
     dates:'04–09 jun', nights:'5 noites',
     color:'#C2632A', light:'#FDF4EE', border:'#ECC99A',
-    mapCenter:[28.18,-16.70], mapZoom:10,
+    mapCenter:[28.18,-16.70], mapZoom:10, baseLat:28.023, baseLng:-16.698,
     base:'Airbnb Palm-Mar · Av. el Palm-Mar / C. los Falcones · Carro alugado em TFN',
     days:[
       { n:1, date:'04 jun', wd:'Quinta', title:'Chegada',
@@ -970,7 +970,7 @@ const DEST = {
     name:'Madeira', emoji:'🌿', tab:'🌿 Madeira',
     dates:'09–19 jun', nights:'10 noites',
     color:'#16A34A', light:'#F0FDF4', border:'#BBF7D0',
-    mapCenter:[32.72,-16.95], mapZoom:10,
+    mapCenter:[32.72,-16.95], mapZoom:10, baseLat:32.6505, baseLng:-16.9082,
     base:'Apt. Caires · R. do Infante Santo 11, Sé, Funchal · Booking #6335.075.321 · PIN 6004 · check-in 14h / check-out 11h',
     days:[
       { n:1, date:'09 jun', wd:'Terça', title:'Chegada a Funchal',
@@ -1369,7 +1369,7 @@ const DEST = {
     name:'Madrid', emoji:'🏛️', tab:'🏛️ Madrid',
     dates:'19–21 jun', nights:'2 noites',
     color:'#DC2626', light:'#FEF2F2', border:'#FECACA',
-    mapCenter:[40.416,-3.705], mapZoom:14,
+    mapCenter:[40.416,-3.705], mapZoom:14, baseLat:40.4153, baseLng:-3.7003,
     base:'Hotel a confirmar · La Latina, Sol ou Ópera · Metrô L8 aeroporto → Nuevos Ministerios → La Latina · Suplemento €3 + €1,50',
     days:[
       { n:1, date:'19 jun', wd:'Quinta', title:'Chegada a Madrid',
@@ -1563,7 +1563,23 @@ function updateMap() {
   const dest = DEST[S.dest], day = dest.days[S.dayIdx];
   const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
   if (!pts.length) { leafMap.setView(dest.mapCenter, dest.mapZoom); setTimeout(() => leafMap.invalidateSize(), 120); return; }
-  const latlngs = pts.map(p => [p.lat, p.lng]);
+
+  // Marcador 🏠 da hospedagem como ponto de partida (quando o dia não começa no aeroporto)
+  const origin = getDayOrigin(dest, day);
+  let latlngs = pts.map(p => [p.lat, p.lng]);
+  if (origin) {
+    const [oLat, oLng] = origin.split(',').map(Number);
+    const homeIcon = L.divIcon({
+      className: '',
+      html: `<div style="font-size:22px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))">🏠</div>`,
+      iconAnchor: [11, 22]
+    });
+    const homeMarker = L.marker([oLat, oLng], { icon: homeIcon }).addTo(leafMap);
+    homeMarker.bindPopup('<b>Ponto de partida</b><br>Hospedagem do grupo');
+    mapLayers.push(homeMarker);
+    latlngs = [[oLat, oLng], ...latlngs];
+  }
+
   const line = L.polyline(latlngs, { color:dest.color, weight:3, opacity:.65, dashArray:'8,5' }).addTo(leafMap);
   mapLayers.push(line);
   pts.forEach((stop, i) => {
@@ -1599,6 +1615,12 @@ function toggleMap() {
 // ════════════════════════════════════════════════════════════
 //  NAVIGATION URLS
 // ════════════════════════════════════════════════════════════
+function getDayOrigin(dest, day) {
+  if (!dest.baseLat || !dest.baseLng) return null;
+  const firstNav = day.stops.find(s => s.lat && s.lng && !s.name.startsWith('🎒'));
+  if (!firstNav || firstNav.cls === 'is-transport') return null;
+  return `${dest.baseLat},${dest.baseLng}`;
+}
 function buildGoogleMapsUrl() {
   const dest = DEST[S.dest], day = dest.days[S.dayIdx];
   const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
@@ -1611,10 +1633,12 @@ function buildGoogleMapsUrl() {
     if (!n) n = dest.name;
     return encodeURIComponent(`${n} ${dest.name}`);
   }
-  if (pts.length === 1) return `https://www.google.com/maps/dir/?api=1&destination=${toName(pts[0])}&travelmode=driving`;
+  const origin = getDayOrigin(dest, day);
+  const op = origin ? `&origin=${origin}` : '';
+  if (pts.length === 1) return `https://www.google.com/maps/dir/?api=1${op}&destination=${toName(pts[0])}&travelmode=driving`;
   const dst = toName(pts[pts.length-1]);
   const wp  = pts.slice(0,-1).map(toName).join('|');
-  let url = `https://www.google.com/maps/dir/?api=1&destination=${dst}&travelmode=driving`;
+  let url = `https://www.google.com/maps/dir/?api=1${op}&destination=${dst}&travelmode=driving`;
   if (wp) url += `&waypoints=${wp}`;
   return url;
 }
@@ -1622,7 +1646,9 @@ function buildWazeUrl() {
   const dest = DEST[S.dest], day = dest.days[S.dayIdx];
   const pts  = day.stops.filter(s => s.lat && s.lng && !s.name.startsWith('🎒'));
   if (!pts.length) return null;
-  return `https://waze.com/ul?ll=${pts[0].lat},${pts[0].lng}&navigate=yes&zoom=17`;
+  const origin = getDayOrigin(dest, day);
+  const fromParam = origin ? `&from=${origin}` : '';
+  return `https://waze.com/ul?ll=${pts[0].lat},${pts[0].lng}${fromParam}&navigate=yes&zoom=17`;
 }
 function openGoogleMaps() { const u=buildGoogleMapsUrl(); if(u) window.open(u,'_blank'); }
 function openWaze()        { const u=buildWazeUrl();        if(u) window.open(u,'_blank'); }
