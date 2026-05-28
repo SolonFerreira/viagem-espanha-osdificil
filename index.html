@@ -288,19 +288,61 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   border-radius:var(--r-md);border:1px solid var(--c-warn-bd);}
 .alerts-box-title{font-size:13px;font-weight:700;color:var(--c-warn-tx);margin-bottom:8px;}
 .alert-line{font-size:12px;color:var(--c-warn-tx);padding:3px 0;line-height:1.5;}
-.gastro-section{margin-bottom:24px;}
-.gastro-hd{font-size:14px;font-weight:800;padding:8px 0;
-  border-bottom:2px solid;margin-bottom:12px;}
-.dish-grid{display:grid;grid-template-columns:1fr;gap:10px;}
-.dish-card{padding:12px;background:var(--g0);border-radius:var(--r-sm);
-  border-left:3px solid;box-shadow:var(--sh-card);}
-.dish-name{font-size:13px;font-weight:700;color:var(--g900);margin-bottom:4px;}
-.dish-desc{font-size:12px;color:var(--g700);line-height:1.45;margin-bottom:6px;}
-.dish-where{font-size:11px;font-weight:600;}
-.strategy-box{margin-top:20px;padding:14px 16px;background:var(--g0);
-  border-radius:var(--r-md);border:1px solid var(--g200);box-shadow:var(--sh-card);}
-.strategy-box-title{font-size:13px;font-weight:700;color:var(--g900);margin-bottom:10px;}
-.strategy-line{font-size:12px;color:var(--g700);line-height:1.8;}
+/* ── GASTRONOMIA ── */
+.gastro-view{max-width:720px;}
+.gastro-editorial{font-size:12px;color:var(--g500);font-style:italic;
+  margin:-4px 0 14px;line-height:1.5;}
+.gastro-filters{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+.gastro-filter-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:1px;align-items:center;}
+.gastro-filter-row::-webkit-scrollbar{display:none;}
+.gastro-filter-label{font-size:10px;font-weight:700;color:var(--g400);
+  flex-shrink:0;line-height:1;width:60px;text-transform:uppercase;letter-spacing:.04em;}
+.gf-chip{padding:5px 10px;border-radius:14px;border:1px solid var(--g200);
+  background:var(--g0);font-size:11px;font-weight:500;color:var(--g700);
+  cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.gf-chip.active{background:var(--g900);color:#fff;border-color:var(--g900);}
+.gastro-count{font-size:12px;color:var(--g400);margin-bottom:10px;}
+.gastro-empty{text-align:center;padding:40px 20px;color:var(--g400);font-size:13px;}
+/* Restaurant cards */
+.rst-card{background:var(--g0);border-radius:var(--r-md);box-shadow:var(--sh-card);
+  margin-bottom:8px;overflow:hidden;border-left:3px solid var(--g200);}
+.rst-card.prio-alta{border-left-color:var(--c-green);}
+.rst-card.prio-boa{border-left-color:var(--g300);}
+.rst-card.prio-alt{border-left-color:var(--g100);opacity:.82;}
+.rst-card.cat-cautela{border-left-color:var(--c-orange);}
+.rst-header{display:flex;align-items:flex-start;gap:8px;padding:11px 14px 7px;cursor:pointer;}
+.rst-name{flex:1;font-size:14px;font-weight:700;color:var(--g900);line-height:1.3;}
+.rst-price{font-size:12px;font-weight:700;color:var(--g500);flex-shrink:0;padding-top:1px;}
+.rst-chev{font-size:10px;color:var(--g400);flex-shrink:0;margin-top:3px;transition:transform .2s;}
+.rst-card.open .rst-chev{transform:rotate(180deg);}
+.rst-meta{display:flex;gap:4px;flex-wrap:wrap;padding:0 14px 9px;}
+.rst-chip{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;white-space:nowrap;}
+.rst-chip.dest-tf{background:var(--c-tf-l);color:var(--c-tf);}
+.rst-chip.dest-md{background:var(--c-md-l);color:var(--c-md);}
+.rst-chip.dest-ma{background:var(--c-ma-l);color:var(--c-ma);}
+.rst-chip.cat{background:var(--g100);color:var(--g700);}
+.rst-chip.bdg-reservar{background:#EFF6FF;color:#1D4ED8;}
+.rst-chip.bdg-grupo{background:#F5F3FF;color:#6D28D9;}
+.rst-chip.bdg-poncha{background:#FEF3C7;color:#92400E;}
+.rst-chip.bdg-prio{background:#F0FDF4;color:#166534;}
+.rst-chip.bdg-cautela{background:#FFF7ED;color:#C2410C;}
+.rst-body{padding:10px 14px 12px;display:none;border-top:1px solid var(--g100);}
+.rst-card.open .rst-body{display:block;}
+.rst-row{display:flex;gap:8px;margin-bottom:5px;}
+.rst-row-label{font-size:10px;font-weight:700;color:var(--g400);
+  flex-shrink:0;width:76px;text-transform:uppercase;letter-spacing:.03em;padding-top:2px;}
+.rst-row-val{font-size:12px;color:var(--g700);line-height:1.5;flex:1;}
+.rst-obs{font-size:11px;color:var(--g500);margin-top:7px;padding:6px 8px;
+  background:var(--g50);border-radius:6px;line-height:1.5;}
+.rst-maps-btn{margin-top:10px;padding:7px 14px;border-radius:14px;border:none;
+  background:#1A73E8;color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:inline-block;}
+/* Anti-trap */
+.antitrap-box{margin-top:20px;padding:14px 16px;background:var(--c-warn-bg);
+  border:1px solid var(--c-warn-bd);border-radius:var(--r-md);}
+.antitrap-title{font-size:13px;font-weight:700;color:var(--c-warn-tx);margin-bottom:8px;}
+.antitrap-list{font-size:12px;color:var(--c-warn-tx);line-height:1.9;}
+.antitrap-rule{margin-top:10px;font-size:12px;color:var(--c-warn-tx);font-style:italic;
+  padding:8px;background:rgba(255,255,255,.45);border-radius:6px;line-height:1.5;}
 
 
 /* ── TRANSIT CONNECTOR ── */
@@ -1489,35 +1531,180 @@ const DEST = {
 // ────────────────────────────────────────────────────────────
 //  GASTRONOMIA DATA
 // ────────────────────────────────────────────────────────────
-const GASTRO = [
-  { dest:'tenerife', label:'Culinária Canária', color:'#EA580C', dishes:[
-    {name:'Papas arrugadas con mojo',desc:'Batatas cozidas em água salgada + mojo verde ou vermelho. Acompanhamento universal de Tenerife.',where:'Qualquer restaurante local'},
-    {name:'Almogrote',desc:'Pasta cremosa de queijo curado picante. Ótima para passar no pão.',where:'El Rincón de Pancho'},
-    {name:'Gofio',desc:'Farinha de cereais tostados, base milenar da cozinha canária. Denso e saboroso.',where:'El Rincón de Pancho'},
-    {name:'Ropa vieja',desc:'Ensopado rico de grão-de-bico com carne de vitela desfiada.',where:'Guachinche local'},
-    {name:'Espetada canária',desc:'Carne em espeto de louro grelhado. Acompanha milho frito.',where:'Guachinche local'},
-    {name:'Bienmesabe',desc:'Sobremesa cremosa de amêndoa moída com mel e ovo. Clássico das Canárias.',where:'Qualquer confeitaria'},
-    {name:'Poncha canária',desc:'Aguardente de cana com mel. Diferente da madeirense — mais doce.',where:'Qualquer bar local'},
-  ]},
-  { dest:'madeira', label:'Culinária Madeirense', color:'#16A34A', dishes:[
-    {name:'Peixe-espada preto com banana',desc:'Filé escuro com banana frita e molho de maracujá. O prato mais icônico da Madeira.',where:'Dona Joana · Zona Velha'},
-    {name:'Espetada no pau de louro',desc:'Carne bovina em espeto de pau de louro grelhada ao carvão. Perfume único.',where:'Santo António · Estreito CL'},
-    {name:'Lapas grelhadas',desc:'Molusco grelhado com limão, manteiga de alho e ervas. Petisco obrigatório.',where:'Qualquer restaurante de peixe'},
-    {name:'Bolo do caco',desc:'Pão de batata-doce grelhado na chapa com manteiga de alho. Comer em tudo.',where:'Padarias e restaurantes'},
-    {name:'Poncha madeirense',desc:'Aguardente de cana + mel de cana + limão. Porto da Cruz tem a mais autêntica.',where:'Engenho Porto da Cruz'},
-    {name:'Vinho da Madeira',desc:'Vinho fortificado centenário com notas de caramelo e noz. Tour completo na Blandy\'s.',where:"Blandy's Wine Lodge"},
-    {name:'Pudim de maracujá',desc:'Sobremesa clássica: flan cremoso de maracujá tropical. Leve e refrescante.',where:'Santo António · Estreito CL'},
-    {name:'Queijada da Madeira',desc:'Pastelzinho de queijo fresco suave. Clássico das padarias de Santana.',where:'Padarias de Santana'},
-  ]},
-  { dest:'madrid', label:'Tapas Madrilenas', color:'#DC2626', dishes:[
-    {name:'Huevos estrellados',desc:'Ovos fritos no azeite sobre batatas crocantes, gema cremosa. O prato mais icônico de Madrid.',where:'Casa Lucio · Cava Baja 35'},
-    {name:'Jamón ibérico de bellota',desc:'Presunto de porco ibérico alimentado exclusivamente com bolotas. O melhor do mundo.',where:'Mercado San Miguel'},
-    {name:'Croquetas de jamón',desc:'Croquete cremoso de presunto ibérico. Cada bar madrileno tem a sua receita secreta.',where:'Qualquer bar da Cava Baja'},
-    {name:'Patatas bravas',desc:'Batatas fritas com molho picante de tomate e aioli. Em qualquer bar por ~€4-6.',where:'Qualquer bar local'},
-    {name:'Boquerones',desc:'Anchovas fritas crocantes ou marinadas em vinagre com alho e salsa.',where:'Cava Baja'},
-    {name:'Vermute (Vermuteo)',desc:'Aperitivo ritual das 12h. A Taberna La Concha faz o próprio com laranja e especiarias.',where:'Taberna La Concha · Cava Baja'},
-    {name:'Sangria',desc:'Caro na Plaza Mayor, mas vale uma jarra grande dividida entre os 6 na primeira noite.',where:'Plaza Mayor'},
-  ]},
+const RESTAURANTS = [
+  // ── TENERIFE ──
+  {id:'tf-pancho',   dest:'tenerife', name:'El Rincón de Pancho',    region:'Los Cristianos',            cat:'jantar',   price:'€€',  priority:'alta', badges:['reservar'],
+   ocasiao:'Jantar canário clássico no sul da ilha',
+   pedir:'Papas arrugadas, almogrote, gofio, carnes, pratos canários',
+   porque:'Opção canária/castelhana bem localizada, sem cara de luxo e coerente com o roteiro',
+   obs:'Bom para o Dia 2 — manter reserva por telefone'},
+  {id:'tf-cordero',  dest:'tenerife', name:'Restaurante El Cordero',  region:'San Miguel / Arona',        cat:'especial', price:'€€',  priority:'alta', badges:['grupo'],
+   ocasiao:'Almoço ou jantar em grupo com clima rústico',
+   pedir:'Carnes na brasa, papas arrugadas, mojo, queijo assado',
+   porque:'Guachinche grande, comida canária, ambiente diferente do turístico padrão',
+   obs:'Pode ser mais turístico do que um guachinche raiz — ainda assim boa experiência'},
+  {id:'tf-lanzas',   dest:'tenerife', name:'Mesón Las Lanzas',        region:'Playa de las Américas',     cat:'jantar',   price:'€€',  priority:'boa',  badges:[],
+   ocasiao:'Jantar espanhol / paella no sul',
+   pedir:'Paella, carnes, vinho da casa',
+   porque:'Opção conhecida, prática e bem localizada na zona turística',
+   obs:'Candidato, não escolha obrigatória — depende da noite'},
+  {id:'tf-abrigos',  dest:'tenerife', name:'Los Abrigos — zona de peixe', region:'Los Abrigos',          cat:'jantar',   price:'€€',  priority:'alta', badges:[],
+   ocasiao:'Peixe e frutos do mar em vila pesqueira',
+   pedir:'Peixe fresco do dia, camarões, lapas, vinho branco',
+   porque:'Vila pesqueira com lógica gastronômica sólida, próxima do sul da ilha',
+   obs:'Escolher restaurante com cardápio simples e movimento local — evitar os de fachada bonita'},
+  {id:'tf-tabaiba',  dest:'tenerife', name:'Guachinche Tabaiba',      region:'Adeje',                     cat:'casual',   price:'€',   priority:'boa',  badges:[],
+   ocasiao:'Comida canária sem sair muito da zona turística',
+   pedir:'Carne assada, papas, mojo, gofio',
+   porque:'Guachinche próximo de Costa Adeje, opção autêntica acessível',
+   obs:'Confirmar horário antes de ir — guachinches têm horários irregulares'},
+  {id:'tf-burgado',  dest:'tenerife', name:'El Burgado',              region:'Buenavista del Norte',      cat:'cautela',  price:'€€€', priority:'alt',  badges:[],
+   ocasiao:'Vista para o mar — só se fizer sentido logístico',
+   pedir:'Apenas se estiver passando pelo norte',
+   porque:'Localização bonita próxima de Punta de Teno',
+   obs:'Avaliações inconsistentes e risco de pagar pela vista, não pela comida'},
+  // ── MADEIRA ──
+  {id:'md-taberna',  dest:'madeira',  name:'Taberna Madeira',          region:'Funchal · Zona Velha',      cat:'jantar',   price:'€€',  priority:'alta', badges:[],
+   ocasiao:'Jantar regional na Zona Velha de Funchal',
+   pedir:'Petiscos madeirenses, peixe, carnes, milho frito',
+   porque:'Tradicional, simples e bem localizado — sem pretensão',
+   obs:'Boa opção para primeira ou segunda noite em Funchal'},
+  {id:'md-tasquinha',dest:'madeira',  name:'A Tasquinha',              region:'Funchal',                   cat:'jantar',   price:'€€',  priority:'alta', badges:['reservar','grupo'],
+   ocasiao:'Comida madeirense familiar e sem rodeios',
+   pedir:'Espetada, escabeche, milho frito',
+   porque:'Familiar, tradicional e sem proposta de luxo',
+   obs:'Reservar para 6 pessoas — costuma lotar'},
+  {id:'md-casanad',  dest:'madeira',  name:'Casa Madeirense',          region:'Estrada Monumental',        cat:'jantar',   price:'€€',  priority:'boa',  badges:[],
+   ocasiao:'Jantar tradicional bem localizado',
+   pedir:'Peixe, marisco, pratos madeirenses',
+   porque:'Casa tradicional com boa reputação e localização prática',
+   obs:'Verificar funcionamento mais perto da viagem'},
+  {id:'md-espetadas',dest:'madeira',  name:'Casa das Espetadas',       region:'Funchal',                   cat:'jantar',   price:'€€',  priority:'boa',  badges:[],
+   ocasiao:'Espetada sem sair de Funchal',
+   pedir:'Espetada, bolo do caco, milho frito',
+   porque:'Tradicional e prática — boa alternativa dentro da cidade',
+   obs:'Alternativa se não quiserem dirigir para Câmara de Lobos'},
+  {id:'md-portao',   dest:'madeira',  name:'O Portão',                 region:'Funchal · Zona Velha',      cat:'jantar',   price:'€€',  priority:'boa',  badges:[],
+   ocasiao:'Noite fácil e bem localizada em Funchal',
+   pedir:'Peixe, pratos portugueses, vinho',
+   porque:'Localização prática, proposta segura',
+   obs:'Pode ter cara turística — usar quando a Zona Velha for o plano da noite'},
+  {id:'md-tendinha', dest:'madeira',  name:'A Tendinha',               region:'Funchal',                   cat:'casual',   price:'€',   priority:'boa',  badges:[],
+   ocasiao:'Almoço simples sem transformar tudo em evento',
+   pedir:'Prato do dia, sandes, petiscos',
+   porque:'Simples e barato — alivia o orçamento em dias de muita atividade',
+   obs:'Bom para os dias de trilha quando almoço é pausa, não destino'},
+  {id:'md-santoant', dest:'madeira',  name:'Restaurante Santo António', region:'Estreito de Câmara de Lobos', cat:'especial', price:'€€', priority:'alta', badges:['reservar','grupo'],
+   ocasiao:'Jantar de espetada — o clássico da ilha',
+   pedir:'Espetada em pau de louro, milho frito, bolo do caco',
+   porque:'Clássico da Madeira, ótimo para grupo — comida coerente e sem frescura',
+   obs:'Reservar para 6 pessoas — uma das paradas mais obrigatórias da viagem'},
+  {id:'md-asvides',  dest:'madeira',  name:'As Vides',                 region:'Estreito de Câmara de Lobos', cat:'especial', price:'€€', priority:'alta', badges:['grupo'],
+   ocasiao:'Alternativa forte para espetada',
+   pedir:'Espetada, milho frito, vinho local',
+   porque:'Tradição forte na espetada madeirense — muito bem avaliado',
+   obs:'Bom plano B ao Santo António se este estiver sem vaga'},
+  {id:'md-lobos',    dest:'madeira',  name:'Taberna dos Lobos',        region:'Câmara de Lobos',           cat:'jantar',   price:'€€',  priority:'boa',  badges:[],
+   ocasiao:'Peixe/marisco com vista em Câmara de Lobos',
+   pedir:'Peixe do dia, marisco, lapas',
+   porque:'Câmara de Lobos + comida portuguesa e frutos do mar = encaixe natural',
+   obs:'Bom em dia de passeio pela região — não programar como destino isolado'},
+  {id:'md-petisco',  dest:'madeira',  name:'Taberna do Petisco',       region:'Santa Cruz',                cat:'especial', price:'€€',  priority:'alta', badges:[],
+   ocasiao:'Almoço ou jantar no leste da ilha',
+   pedir:'Bolo do caco, lapas, marisco, picado',
+   porque:'Porções generosas, comida local e boa reputação — encaixe perfeito em dia de Machico',
+   obs:'Excelente para o dia de Machico e Santa Cruz'},
+  {id:'md-casco',    dest:'madeira',  name:'O Casco',                  region:'Machico',                   cat:'jantar',   price:'€€',  priority:'boa',  badges:[],
+   ocasiao:'Almoço prático no leste',
+   pedir:'Peixe, pratos portugueses',
+   porque:'Alternativa prática em Machico, boa reputação local',
+   obs:'Validar horário no dia — horários de almoço em Machico podem ser curtos'},
+  {id:'md-lilys',    dest:'madeira',  name:"Lily's Restaurant",        region:'Machico / Santa Cruz',      cat:'casual',   price:'€€',  priority:'alt',  badges:[],
+   ocasiao:'Refeição familiar simples no leste',
+   pedir:'Pratos do dia, peixe, carne',
+   porque:'Opção de apoio na região leste',
+   obs:'Usar se encaixar melhor na rota do dia'},
+  {id:'md-engenho',  dest:'madeira',  name:'Engenhos do Norte',        region:'Porto da Cruz',             cat:'poncha',   price:'€',   priority:'boa',  badges:['poncha'],
+   ocasiao:'Parada de bebida/experiência ligada ao rum da ilha',
+   pedir:'Poncha, rum, bebida local',
+   porque:'Experiência ligada à cana e produção de rum — mais visita do que refeição',
+   obs:'Complementar a refeição em outro lugar na região'},
+  {id:'md-poncha1',  dest:'madeira',  name:'Taberna da Poncha',        region:'Serra de Água',             cat:'poncha',   price:'€',   priority:'alta', badges:['poncha'],
+   ocasiao:'Parada clássica de estrada entre norte e sul',
+   pedir:'Poncha tradicional',
+   porque:'Uma das paradas mais clássicas de qualquer roteiro pela ilha',
+   obs:'⚠️ Não dirigir depois de beber poncha — combinar quem fica sóbrio'},
+  {id:'md-andre',    dest:'madeira',  name:'A Venda do André',         region:'Quinta Grande',             cat:'poncha',   price:'€',   priority:'alta', badges:['poncha'],
+   ocasiao:'Poncha local num contexto verdadeiro',
+   pedir:'Poncha regional',
+   porque:'Muito citada como favorita de locais — fora do circuito óbvio',
+   obs:'Boa parada de estrada no trajeto do sul'},
+  {id:'md-vendanova',dest:'madeira',  name:'Venda Nova',               region:'Madeira',                   cat:'poncha',   price:'€',   priority:'boa',  badges:['poncha'],
+   ocasiao:'Poncha simples de parada',
+   pedir:'Poncha',
+   porque:'Parada clássica reconhecida',
+   obs:'Usar como alternativa no trajeto'},
+  {id:'md-lombo',    dest:'madeira',  name:'Poncha do Lombo Doutor',   region:'Madeira',                   cat:'poncha',   price:'€',   priority:'boa',  badges:['poncha'],
+   ocasiao:'Fim de tarde com poncha fora do circuito principal',
+   pedir:'Poncha',
+   porque:'Tradicional e fora do circuito mais óbvio de turistas',
+   obs:'Validar rota antes de incluir — pode não caber em todos os dias'},
+  {id:'md-reiponcha',dest:'madeira',  name:'Rei da Poncha',            region:'Funchal',                   cat:'poncha',   price:'€',   priority:'boa',  badges:['poncha'],
+   ocasiao:'Provar ponchas sem sair do centro de Funchal',
+   pedir:'Poncha tradicional e sabores variados',
+   porque:'Prático, central e divertido para o grupo',
+   obs:'Mais turístico — útil para noite em Funchal sem querer sair muito'},
+  {id:'md-mercearia',dest:'madeira',  name:'Mercearia Dona Mécia',     region:'Funchal',                   cat:'poncha',   price:'€€',  priority:'boa',  badges:[],
+   ocasiao:'Fim de tarde leve — vinho e petiscos',
+   pedir:'Vinho, petiscos, bebidas',
+   porque:'Ambiente agradável, bom para pausa entre atividades',
+   obs:'Bom para noite sem jantar pesado'},
+  {id:'md-postrilha',dest:'madeira',  name:'Restaurante pós-trilha',   region:'Santana / Norte',           cat:'casual',   price:'€',   priority:'alt',  badges:[],
+   ocasiao:'Almoço depois de trilha no norte',
+   pedir:'Prato do dia, sopa, peixe, carne',
+   porque:'Flexibilidade — escolher lugar cheio de locais com menu curto',
+   obs:'Dica: qualquer restaurante simples, cheio de locais, com 3-4 pratos no menu'},
+  // ── MADRID ──
+  {id:'ma-toni',     dest:'madrid',   name:'Casa Toni',                region:'Centro / Cortes',           cat:'casual',   price:'€',   priority:'alta', badges:[],
+   ocasiao:'Tapas raiz no coração de Madrid',
+   pedir:'Chorizo frito, oreja, calamares, berinjela frita',
+   porque:'Simples, local, barato e tradicional — sem tentativa de agradar turista',
+   obs:'Pode ser caótico e barulhento — esse é o charme'},
+  {id:'ma-revuelta', dest:'madrid',   name:'Casa Revuelta',            region:'La Latina / Centro',        cat:'casual',   price:'€',   priority:'alta', badges:[],
+   ocasiao:'Parada rápida de tapas com cardápio forte e curto',
+   pedir:'Bacalao rebozado, torreznos',
+   porque:'Clássico madrilenho — cardápio curtíssimo e tudo bem feito',
+   obs:'Ir sem expectativa de jantar longo — é tapa, não restaurante'},
+  {id:'ma-concha',   dest:'madrid',   name:'Taberna La Concha',        region:'La Latina',                 cat:'jantar',   price:'€€',  priority:'alta', badges:[],
+   ocasiao:'Vermute e tapas à noite em La Latina',
+   pedir:'Vermute, tapas da casa',
+   porque:'Bom equilíbrio entre turístico e autêntico — equipe simpática',
+   obs:'Melhor à noite, quando o ambiente esquenta'},
+  {id:'ma-ardosa',   dest:'madrid',   name:'Bodega de la Ardosa',      region:'Malasaña',                  cat:'especial', price:'€€',  priority:'alta', badges:[],
+   ocasiao:'Vermute, tortilla e croquetas numa taberna histórica',
+   pedir:'Tortilla, croquetas, salmorejo, vermute',
+   porque:'Taberna histórica — experiência madrilenha genuína e densa',
+   obs:'Pode lotar rápido — evitar horário de pico (13h-15h e 20h-22h)'},
+  {id:'ma-musa',     dest:'madrid',   name:'La Musa Latina',           region:'La Latina',                 cat:'jantar',   price:'€€',  priority:'boa',  badges:['grupo'],
+   ocasiao:'Jantar fácil e agradável em La Latina',
+   pedir:'Tapas e pratos para dividir em grupo',
+   porque:'Seguro, agradável e bem localizado — sem surpresas negativas',
+   obs:'Menos raiz, mais confortável — bom para o grupo quando não há energia para explorar'},
+  {id:'ma-labra',    dest:'madrid',   name:'Casa Labra',               region:'Sol',                       cat:'casual',   price:'€',   priority:'boa',  badges:[],
+   ocasiao:'Lanche/tapa rápido perto de Sol',
+   pedir:'Croqueta de bacalhau, bacalao frito',
+   porque:'Histórico, barato e prático — bom para pausa',
+   obs:'Não tratar como jantar principal — é parada, não restaurante'},
+  {id:'ma-abuelo',   dest:'madrid',   name:'La Casa del Abuelo',       region:'Centro',                    cat:'cautela',  price:'€€',  priority:'alt',  badges:[],
+   ocasiao:'Gambas clássicas se estiver passando perto',
+   pedir:'Gambas al ajillo',
+   porque:'Clássico famoso — vale se encaixar na rota',
+   obs:'Pode ser turístico e decepcionante — ir com expectativa calibrada'},
+  {id:'ma-sangines',dest:'madrid',    name:'Chocolatería San Ginés',   region:'Centro',                    cat:'casual',   price:'€',   priority:'boa',  badges:[],
+   ocasiao:'Sobremesa / parada cultural de madrugada',
+   pedir:'Churros com chocolate',
+   porque:'Experiência clássica e intransferível — a turística justificada',
+   obs:'Não é refeição, é parada cultural — melhor tarde da noite'},
 ];
 
 // ────────────────────────────────────────────────────────────
@@ -1539,6 +1726,8 @@ for (const [destId, d] of Object.entries(DEST)) {
 // ════════════════════════════════════════════════════════════
 const S = {
   dest:'tenerife', dayIdx:0, view:'itinerary', resFilter:'all', mapCollapsed:true,
+  // gastro
+  gastroCity:'all', gastroCat:'all', gastroPrio:'all',
   // fotos
   authUser:null, photosCache:{}, photosView:'overview',
   photosDestFilter:'tenerife', photosDay:null, uploadTarget:null,
@@ -2562,35 +2751,98 @@ function renderReservas() {
 //  RENDER: GASTRONOMIA
 // ════════════════════════════════════════════════════════════
 function renderGastro() {
-  let html=`<div style="max-width:720px">
-    <div class="view-title">🍴 Guias Gastronômicos</div>
-    <div class="view-sub">Pratos obrigatórios · €15-25/pess/jantar</div>`;
-  GASTRO.forEach(g => {
-    html+=`<div class="gastro-section">
-      <div class="gastro-hd" style="color:${g.color};border-color:${g.color}">${DEST[g.dest].emoji} ${DEST[g.dest].name} · ${g.label}</div>
-      <div class="dish-grid">`;
-    g.dishes.forEach(d => {
-      html+=`<div class="dish-card" style="border-left-color:${g.color}">
-        <div class="dish-name">${d.name}</div>
-        <div class="dish-desc">${d.desc}</div>
-        <div class="dish-where" style="color:${g.color}">📍 ${d.where}</div>
+  const city = S.gastroCity, cat = S.gastroCat, prio = S.gastroPrio;
+
+  const filtered = RESTAURANTS.filter(r =>
+    (city==='all' || r.dest===city) &&
+    (cat ==='all' || r.cat ===cat)  &&
+    (prio==='all' || r.priority===prio)
+  );
+
+  function chips(key, opts, cur) {
+    return opts.map(([v,l]) =>
+      `<button class="gf-chip${cur===v?' active':''}" onclick="setGastroFilter('${key}','${v}')">${l}</button>`
+    ).join('');
+  }
+
+  const html_city = chips('city',[['all','Todos'],['tenerife','🌋 Tenerife'],['madeira','🌿 Madeira'],['madrid','🏛️ Madrid']], city);
+  const html_cat  = chips('cat', [['all','Todos'],['casual','Casual'],['jantar','Jantar bom'],['especial','Especial'],['poncha','Poncha/bar'],['cautela','⚠️ Cautela']], cat);
+  const html_prio = chips('prio',[['all','Todas'],['alta','🔴 Alta'],['boa','Boa opção'],['alt','Alternativa']], prio);
+
+  let html = `<div class="gastro-view">
+    <div class="view-title">🍴 Gastronomia</div>
+    <div class="view-sub">Comida boa, local e sem pega-turista</div>
+    <p class="gastro-editorial">Curadoria focada em autenticidade, custo-benefício e experiência real. Não é uma lista de restaurantes de luxo.</p>
+    <div class="gastro-filters">
+      <div class="gastro-filter-row"><span class="gastro-filter-label">Cidade</span>${html_city}</div>
+      <div class="gastro-filter-row"><span class="gastro-filter-label">Tipo</span>${html_cat}</div>
+      <div class="gastro-filter-row"><span class="gastro-filter-label">Prioridade</span>${html_prio}</div>
+    </div>
+    <div class="gastro-count">${filtered.length} lugar${filtered.length!==1?'es':''}</div>`;
+
+  if (!filtered.length) {
+    html += `<div class="gastro-empty">Nenhum resultado — ajuste os filtros.</div>`;
+  } else {
+    const CAT_LBL  = {casual:'Casual',jantar:'Jantar bom',especial:'Especial s/ luxo',poncha:'Poncha/bar',cautela:'⚠️ Cautela'};
+    const DEST_CLS = {tenerife:'dest-tf',madeira:'dest-md',madrid:'dest-ma'};
+    const DEST_LBL = {tenerife:'Tenerife',madeira:'Madeira',madrid:'Madrid'};
+    const BDG_MAP  = {reservar:['bdg-reservar','Reservar'],grupo:['bdg-grupo','Grupo'],poncha:['bdg-poncha','Poncha']};
+
+    filtered.forEach(r => {
+      const prioClass = r.cat==='cautela' ? 'cat-cautela' : {alta:'prio-alta',boa:'prio-boa',alt:'prio-alt'}[r.priority]||'';
+      const badgesHtml = (r.badges||[]).map(b => {
+        const [cls,lbl] = BDG_MAP[b]||['bdg-prio',b];
+        return `<span class="rst-chip ${cls}">${lbl}</span>`;
+      }).join('');
+      const mapsQ = encodeURIComponent(r.name+' '+r.region);
+      html += `<div class="rst-card ${prioClass}" id="rst-${r.id}">
+        <div class="rst-header" onclick="toggleRestCard('${r.id}')">
+          <div class="rst-name">${r.name}</div>
+          <span class="rst-price">${r.price}</span>
+          <span class="rst-chev">▼</span>
+        </div>
+        <div class="rst-meta">
+          <span class="rst-chip ${DEST_CLS[r.dest]}">${DEST_LBL[r.dest]} · ${r.region}</span>
+          <span class="rst-chip cat">${CAT_LBL[r.cat]||r.cat}</span>
+          ${r.priority==='alta'?'<span class="rst-chip bdg-prio">🔴 Alta prioridade</span>':''}
+          ${badgesHtml}
+        </div>
+        <div class="rst-body">
+          <div class="rst-row"><span class="rst-row-label">Ocasião</span><span class="rst-row-val">${r.ocasiao}</span></div>
+          <div class="rst-row"><span class="rst-row-label">O que pedir</span><span class="rst-row-val">${r.pedir}</span></div>
+          <div class="rst-row"><span class="rst-row-label">Por que entrou</span><span class="rst-row-val">${r.porque}</span></div>
+          ${r.obs?`<div class="rst-obs">💬 ${r.obs}</div>`:''}
+          <button class="rst-maps-btn" onclick="window.open('https://www.google.com/maps/search/${mapsQ}','_blank')">🗺 Abrir no Maps</button>
+        </div>
       </div>`;
     });
-    html+='</div></div>';
-  });
-  html+=`<div class="strategy-box">
-    <div class="strategy-box-title">💰 Estratégia de alimentação</div>
-    <div class="strategy-line">
-      ☕ <strong>Café da manhã</strong> — Apartamento (comprar no supermercado) → <strong>€0</strong><br>
-      🥤 <strong>Petiscos</strong> — Bares e cafés nas paradas → <strong>€5-12/pess</strong><br>
-      🍽️ <strong>Jantar</strong> — Restaurante local com reserva → <strong>€15-25/pess</strong><br><br>
-      <strong>Custo médio diário: €20-37/pess</strong><br><br>
-      🛒 <strong>Compras no 1º dia:</strong><br>
-      · Tenerife → Mercadona/Hiperdino em Los Cristianos<br>
-      · Madeira → Pingo Doce · Rua Dr. Fernão de Ornelas
+  }
+
+  html += `<div class="antitrap-box">
+    <div class="antitrap-title">🚨 Como evitar pega-turista</div>
+    <div class="antitrap-list">Sinais de alerta:<br>
+      · Cardápio enorme em muitos idiomas<br>
+      · Fotos grandes de comida na porta<br>
+      · Promoter chamando na rua<br>
+      · Localização premium com comida genérica<br>
+      · Paella servida em qualquer horário e lugar<br>
+      · Restaurante vazio em rua muito turística<br>
+      · Nota alta com avaliações muito genéricas
     </div>
+    <div class="antitrap-rule">"Se o lugar tem cardápio curto, pratos locais, movimento de moradores e não tenta vender demais, tende a ser melhor."</div>
   </div></div>`;
-  document.getElementById('view-gastro').innerHTML=html;
+
+  document.getElementById('view-gastro').innerHTML = html;
+}
+function setGastroFilter(key, val) {
+  if (key==='city') S.gastroCity=val;
+  else if (key==='cat') S.gastroCat=val;
+  else if (key==='prio') S.gastroPrio=val;
+  renderGastro();
+}
+function toggleRestCard(id) {
+  const c = document.getElementById('rst-'+id);
+  if (c) c.classList.toggle('open');
 }
 
 
