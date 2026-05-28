@@ -345,6 +345,30 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   padding:8px;background:rgba(255,255,255,.45);border-radius:6px;line-height:1.5;}
 
 
+/* ── SABORES LOCAIS (dish cards) ── */
+.dish-section{margin-top:24px;border-top:1px solid var(--g100);padding-top:20px;}
+.dish-section-title{font-size:15px;font-weight:700;color:var(--g900);margin-bottom:4px;}
+.dish-section-intro{font-size:12px;color:var(--g500);font-style:italic;
+  margin-bottom:14px;line-height:1.5;}
+.dish-list{display:flex;flex-direction:column;gap:8px;}
+.dish-card{background:var(--g0);border-radius:var(--r-md);box-shadow:var(--sh-card);
+  overflow:hidden;border-left:3px solid var(--g200);}
+.dish-card.dest-tf{border-left-color:var(--c-tf);}
+.dish-card.dest-md{border-left-color:var(--c-md);}
+.dish-card.dest-ma{border-left-color:var(--c-ma);}
+.dish-header{display:flex;align-items:center;gap:8px;padding:10px 14px 5px;}
+.dish-emoji{font-size:18px;flex-shrink:0;line-height:1;}
+.dish-name{font-size:13px;font-weight:700;color:var(--g900);flex:1;line-height:1.3;}
+.dish-desc{font-size:12px;color:var(--g700);padding:0 14px 8px;line-height:1.5;}
+.dish-rows{padding:8px 14px 10px;display:flex;flex-direction:column;gap:5px;
+  border-top:1px solid var(--g100);}
+.dish-row{display:flex;gap:8px;}
+.dish-row-lbl{font-size:10px;font-weight:700;color:var(--g400);
+  flex-shrink:0;width:68px;text-transform:uppercase;letter-spacing:.03em;padding-top:2px;}
+.dish-row-val{font-size:12px;color:var(--g700);line-height:1.5;flex:1;}
+.dish-warn{font-size:11px;color:var(--c-warn-tx);background:var(--c-warn-bg);
+  padding:5px 10px;border-radius:5px;margin:0 14px 10px;line-height:1.5;}
+
 /* ── TRANSIT CONNECTOR ── */
 .transit-row{display:flex;align-items:center;gap:5px;padding:0 14px 0 72px;
   color:var(--g300);font-size:10px;font-weight:500;line-height:1;
@@ -1707,6 +1731,116 @@ const RESTAURANTS = [
 ];
 
 // ────────────────────────────────────────────────────────────
+//  PRATOS TÍPICOS (sabores locais)
+// ────────────────────────────────────────────────────────────
+const DISHES = [
+  // ── TENERIFE ──
+  {id:'tf-papas',  dest:'tenerife', name:'Papas arrugadas',       emoji:'🥔',
+   desc:'Batatas pequenas cozidas em bastante sal até ficarem com casca enrugada.',
+   como:'Com mojo verde e/ou mojo vermelho à parte.',
+   porque:'Um dos acompanhamentos mais clássicos das Canárias — aparece em quase toda mesa.',
+   provar:'Los Abrigos, El Rincón de Pancho, guachinches'},
+  {id:'tf-mojo',   dest:'tenerife', name:'Mojo',                  emoji:'🫙',
+   desc:'Molho tradicional canário, verde (coentro/ervas) ou vermelho (pimentão, alho, especiarias).',
+   como:'Com batatas, peixe ou carnes.',
+   porque:'A assinatura de sabor das Canárias — diz muito sobre onde se está.',
+   provar:'Qualquer restaurante tradicional em Tenerife'},
+  {id:'tf-almog',  dest:'tenerife', name:'Almogrote',             emoji:'🧀',
+   desc:'Pasta intensa de queijo curado, típica das Canárias.',
+   como:'Com pão, como entrada.',
+   porque:'Simples, forte e muito local — diferente de qualquer coisa fora das ilhas.',
+   provar:'El Rincón de Pancho, restaurantes canários'},
+  {id:'tf-gofio',  dest:'tenerife', name:'Gofio',                 emoji:'🌾',
+   desc:'Farinha torrada de cereais — alimento histórico das ilhas Canárias.',
+   como:'Misturado em caldos, cremes, sobremesas ou acompanhamentos.',
+   porque:'Ajuda a entender a cozinha canária raiz e sua história.',
+   provar:'Guachinches e restaurantes canários'},
+  {id:'tf-peixe',  dest:'tenerife', name:'Peixe fresco do dia',   emoji:'🐟',
+   desc:'Peixes locais grelhados ou assados, preparados de forma simples.',
+   como:'Com papas arrugadas, mojo, salada ou legumes.',
+   porque:'Funciona muito bem nas vilas pesqueiras do sul — fresco e sem muita elaboração.',
+   provar:'Los Abrigos'},
+  // ── MADEIRA ──
+  {id:'md-espe',   dest:'madeira',  name:'Espetada em pau de louro', emoji:'🥩',
+   desc:'Carne bovina em cubos grandes, assada em espeto de louro sobre carvão vivo.',
+   como:'Com milho frito, bolo do caco e salada.',
+   porque:'Um dos pratos mais identitários da Madeira — vale o trajeto até o Estreito.',
+   provar:'Santo António, As Vides, Casa das Espetadas'},
+  {id:'md-caco',   dest:'madeira',  name:'Bolo do caco',          emoji:'🫓',
+   desc:'Pão tradicional da Madeira — achatado, macio, com casca levemente tostada.',
+   como:'Com manteiga de alho como entrada, ou em sandes.',
+   porque:'Aparece em quase todos os momentos bons da ilha — simples e barato.',
+   provar:'Funchal, Caniçal, Porto da Cruz, Câmara de Lobos'},
+  {id:'md-pespada',dest:'madeira',  name:'Peixe-espada preto c/ banana', emoji:'🐠',
+   desc:'Peixe típico da ilha servido com banana frita.',
+   como:'Com batata, legumes ou milho frito.',
+   porque:'A combinação parece estranha no papel, mas é um clássico madeirense.',
+   provar:'Dona Joana, Restaurante Galeria'},
+  {id:'md-lapas',  dest:'madeira',  name:'Lapas grelhadas',       emoji:'🦪',
+   desc:'Moluscos grelhados na chapa com alho, manteiga e limão.',
+   como:'Na própria concha, como entrada.',
+   porque:'Gosto forte de mar — combina com poncha ou vinho branco.',
+   provar:'Câmara de Lobos, Caniçal, Taberna do Petisco'},
+  {id:'md-milho',  dest:'madeira',  name:'Milho frito',           emoji:'🌽',
+   desc:'Cubos de milho cozido e depois frito.',
+   como:'Acompanhamento de espetada, peixe ou carnes.',
+   porque:'Acompanhamento clássico madeirense — vale pedir junto da espetada.',
+   provar:'Santo António, As Vides, restaurantes tradicionais'},
+  {id:'md-poncha', dest:'madeira',  name:'Poncha',                emoji:'🍹',
+   desc:'Aguardente de cana, mel e limão — bebida tradicional da ilha.',
+   como:'Tradicional ou com variações de fruta (maracujá, laranja, tangerina).',
+   porque:'Parte da cultura da ilha — mais forte do que parece à primeira dose.',
+   provar:'Taberna da Poncha, A Venda do André, Rei da Poncha, Engenhos do Norte',
+   warn:'🚗 Combinar motorista sóbrio quando houver poncha no roteiro.'},
+  {id:'md-picado', dest:'madeira',  name:'Picado madeirense',     emoji:'🍖',
+   desc:'Carne em cubos para compartilhar, com batata frita, molho e palitos.',
+   como:'Informal, servido no centro da mesa para dividir.',
+   porque:'Bom para grupo — aparece em restaurantes familiares e casuais.',
+   provar:'Taberna do Petisco, restaurantes casuais'},
+  {id:'md-vinho',  dest:'madeira',  name:'Vinho Madeira',         emoji:'🍷',
+   desc:'Vinho fortificado histórico da ilha — único no mundo pelo processo de envelhecimento.',
+   como:'Em degustações guiadas, como aperitivo ou com sobremesa.',
+   porque:'Parte importante da história econômica e cultural da Madeira.',
+   provar:"Blandy's Wine Lodge, Churchill's, bares de Funchal"},
+  // ── MADRID ──
+  {id:'ma-bacalao',dest:'madrid',   name:'Bacalao rebozado',      emoji:'🐟',
+   desc:'Bacalhau empanado e frito, servido como tapa no balcão.',
+   como:'Em pedaços simples, quente, sem aparato.',
+   porque:'Clássico rápido de taberna madrilenha — cartão de visita da casa.',
+   provar:'Casa Revuelta, Casa Labra'},
+  {id:'ma-tortilla',dest:'madrid',  name:'Tortilla española',     emoji:'🥚',
+   desc:'Omelete espessa de batata e ovo — às vezes com centro cremoso.',
+   como:'Em fatias, quente ou à temperatura ambiente.',
+   porque:'Uma boa tortilla diz muito sobre a qualidade da casa.',
+   provar:'Bodega de la Ardosa'},
+  {id:'ma-vermut', dest:'madrid',   name:'Vermut de grifo',       emoji:'🥃',
+   desc:'Vermute servido direto do barril, em copo baixo com laranja ou azeitona.',
+   como:'Como ritual de fim de tarde, antes do jantar.',
+   porque:'Prática quase obrigatória em Madrid — o momento certo da Cava Baja.',
+   provar:'Taberna La Concha, Bodega de la Ardosa, Cava Baja'},
+  {id:'ma-croquetas',dest:'madrid', name:'Croquetas',             emoji:'🍘',
+   desc:'Croquetes cremosos — normalmente de jamón, bacalhau ou frango.',
+   como:'Como tapa ou porção para dividir.',
+   porque:'Simples, popular, ótimo com vermute ou cerveja.',
+   provar:'Bodega de la Ardosa, Casa Labra, tabernas tradicionais'},
+  {id:'ma-gambas', dest:'madrid',   name:'Gambas al ajillo',      emoji:'🦐',
+   desc:'Camarões em azeite quente com alho, servidos fervendo.',
+   como:'Em panelinha quente, com pão para aproveitar o azeite.',
+   porque:'Clássico espanhol — direto e bem executado quando o produto é bom.',
+   provar:'La Casa del Abuelo'},
+  {id:'ma-bocadi', dest:'madrid',   name:'Bocadillo de calamares',emoji:'🥪',
+   desc:'Sanduíche simples de lula frita.',
+   como:'Pão branco, lula empanada, limão ou maionese à parte.',
+   porque:'Clássico popular perto da Plaza Mayor — barato e direto.',
+   provar:'Bares próximos à Plaza Mayor'},
+  {id:'ma-churros',dest:'madrid',   name:'Churros com chocolate', emoji:'🍫',
+   desc:'Massa frita com chocolate quente espesso.',
+   como:'Como sobremesa, café tardio ou parada de madrugada.',
+   porque:'Parada cultural, não exatamente uma refeição — melhor à noite.',
+   provar:'Chocolatería San Ginés'},
+];
+
+// ────────────────────────────────────────────────────────────
 //  ALL RESERVATIONS (flattened for the Reservas view)
 // ────────────────────────────────────────────────────────────
 const ALL_RES = [];
@@ -2778,6 +2912,34 @@ function renderGastro() {
       </div>`;
     });
   }
+
+  // ── SABORES LOCAIS ──
+  const DEST_DISH_CLS = {tenerife:'dest-tf',madeira:'dest-md',madrid:'dest-ma'};
+  const DEST_DISH_LBL = {tenerife:'🌋 Tenerife',madeira:'🌿 Madeira',madrid:'🏛️ Madrid'};
+  const filteredDishes = DISHES.filter(d => city==='all' || d.dest===city);
+  html += `<div class="dish-section">
+    <div class="dish-section-title">🍽️ Sabores locais</div>
+    <div class="dish-section-intro">Use esta seção para saber o que pedir. A ideia não é provar tudo, mas reconhecer os pratos que realmente fazem sentido em cada lugar.</div>
+    <div class="dish-list">`;
+  filteredDishes.forEach(d => {
+    const dc = DEST_DISH_CLS[d.dest]||'';
+    const dl = DEST_DISH_LBL[d.dest]||d.dest;
+    html += `<div class="dish-card ${dc}">
+      <div class="dish-header">
+        <span class="dish-emoji">${d.emoji}</span>
+        <span class="dish-name">${d.name}</span>
+        <span class="rst-chip ${dc}" style="font-size:10px;padding:2px 7px;flex-shrink:0;">${dl}</span>
+      </div>
+      <div class="dish-desc">${d.desc}</div>
+      <div class="dish-rows">
+        <div class="dish-row"><span class="dish-row-lbl">Como vem</span><span class="dish-row-val">${d.como}</span></div>
+        <div class="dish-row"><span class="dish-row-lbl">Por que</span><span class="dish-row-val">${d.porque}</span></div>
+        <div class="dish-row"><span class="dish-row-lbl">Provar em</span><span class="dish-row-val">${d.provar}</span></div>
+      </div>
+      ${d.warn?`<div class="dish-warn">${d.warn}</div>`:''}
+    </div>`;
+  });
+  html += `</div></div>`;
 
   html += `<div class="antitrap-box">
     <div class="antitrap-title">🚨 Como evitar pega-turista</div>
