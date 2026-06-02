@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>🌍 Os Difícil · Jun 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <!-- Supabase SDK — carregado após parsing HTML (defer), disponível no DOMContentLoaded -->
@@ -624,6 +627,183 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   .modal-sheet{border-radius:16px;max-height:85dvh;}
 }
 
+/* ══════════════════════════════════════════════════════════
+   CONHECENDO OS LUGARES — editorial Atlântico (scoped)
+   ══════════════════════════════════════════════════════════ */
+#view-conhecendo{
+  display:none;overflow-y:auto;padding-bottom:var(--bottom-h);
+  --atl-basalt:#14110d;--atl-ink:#211d17;--atl-parchment:#f6f0e3;
+  --atl-parchment-2:#efe7d5;--atl-cream:#fbf7ee;--atl-line:#d8ccb3;
+  --atl-muted:#6e6552;--atl-tf:#c0552f;--atl-md:#2f6b4f;
+  --atl-gold:#caa244;--atl-accent:var(--atl-tf);
+  font-family:'Spectral',Georgia,serif;
+  background:var(--atl-parchment);color:var(--atl-ink);font-size:18px;line-height:1.7;
+}
+#view-conhecendo .atl-section{display:none;animation:atl-fade .55s ease}
+#view-conhecendo .atl-section.active{display:block}
+@keyframes atl-fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+/* ── internal nav ── */
+#view-conhecendo .atl-nav{
+  position:sticky;top:var(--header-h);z-index:200;
+  background:rgba(20,17,13,.95);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+#view-conhecendo .atl-nav-inner{
+  padding:.55rem 1rem;display:flex;gap:.25rem;overflow-x:auto;scrollbar-width:none;
+}
+#view-conhecendo .atl-nav-inner::-webkit-scrollbar{display:none}
+#view-conhecendo .atl-nav-btn{
+  font-family:'Fraunces',serif;font-size:.83rem;font-weight:500;letter-spacing:.04em;
+  background:none;border:none;color:#cabfa8;cursor:pointer;
+  padding:.38rem .82rem;border-radius:40px;transition:.2s;text-transform:uppercase;
+  white-space:nowrap;flex-shrink:0;
+}
+#view-conhecendo .atl-nav-btn:hover{color:#fff}
+#view-conhecendo .atl-nav-btn.active{background:var(--atl-accent);color:#fff}
+/* ── subnav ── */
+#view-conhecendo .subnav{
+  position:sticky;top:calc(var(--header-h) + 44px);z-index:50;
+  background:var(--atl-parchment-2);
+  border-top:1px solid var(--atl-line);border-bottom:1px solid var(--atl-line);padding:.45rem 0;
+}
+#view-conhecendo .subnav .wrap{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding:0 1rem}
+#view-conhecendo .subnav .wrap::-webkit-scrollbar{display:none}
+#view-conhecendo .subnav a{
+  flex:0 0 auto;font-family:'Fraunces',serif;font-size:.8rem;font-weight:500;
+  color:var(--atl-muted);text-decoration:none;padding:.38rem .8rem;border-radius:30px;white-space:nowrap;transition:.2s;
+}
+#view-conhecendo .subnav a:hover{color:var(--atl-ink)}
+#view-conhecendo .subnav a.on{background:var(--atl-accent);color:#fff}
+/* ── layout utils ── */
+#view-conhecendo .wrap{max-width:1080px;margin:0 auto;padding:0 1.4rem}
+#view-conhecendo .reading{max-width:740px}
+#view-conhecendo .twocol{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+#view-conhecendo .anchor{scroll-margin-top:155px}
+#view-conhecendo .divider{height:1px;background:var(--atl-line);margin:2.5rem 0}
+#view-conhecendo .pin{color:var(--atl-accent);font-weight:600;font-family:'Fraunces',serif}
+/* ── typography ── */
+#view-conhecendo h1,#view-conhecendo h2,#view-conhecendo h3,#view-conhecendo h4{
+  font-family:'Fraunces',serif;font-weight:600;line-height:1.05;letter-spacing:-.01em;
+}
+#view-conhecendo h2.title{font-size:clamp(1.7rem,4vw,2.6rem);margin-bottom:1rem}
+#view-conhecendo p.big{font-size:1.1rem}
+#view-conhecendo p+p{margin-top:1rem}
+#view-conhecendo .lead-drop::first-letter{
+  font-family:'Fraunces',serif;font-weight:600;float:left;font-size:3.8rem;line-height:.72;
+  padding:.35rem .5rem .1rem 0;color:var(--atl-accent);
+}
+#view-conhecendo .eyebrow{
+  font-family:'Fraunces',serif;text-transform:uppercase;letter-spacing:.28em;
+  font-size:.72rem;color:var(--atl-accent);margin-bottom:.9rem;font-weight:600;
+}
+/* ── hero ── */
+#view-conhecendo .hero{
+  position:relative;color:var(--atl-cream);overflow:hidden;
+  background:radial-gradient(120% 80% at 80% -10%,rgba(192,85,47,.55),transparent 55%),
+    radial-gradient(120% 90% at 0% 110%,rgba(47,107,79,.55),transparent 55%),
+    linear-gradient(160deg,#1b1711,#0e0c09);
+  padding:3.8rem 0 2.8rem;
+}
+#view-conhecendo .hero .wrap{position:relative;z-index:2}
+#view-conhecendo .kicker{
+  font-family:'Fraunces',serif;text-transform:uppercase;letter-spacing:.35em;
+  font-size:.73rem;color:var(--atl-gold);margin-bottom:1.2rem;
+}
+#view-conhecendo .hero h1{font-size:clamp(2.4rem,7vw,5.2rem);line-height:.92}
+#view-conhecendo .hero h1 em{font-style:italic;color:var(--atl-tf)}
+#view-conhecendo .hero h1 .amp{font-style:italic;font-weight:300;color:#e9ddc4}
+#view-conhecendo .hero p.lede{font-size:1.08rem;max-width:600px;margin-top:1.3rem;color:#e7ddc8}
+#view-conhecendo .meta-row{display:flex;gap:2rem;flex-wrap:wrap;margin-top:2rem}
+#view-conhecendo .meta-row div span{
+  display:block;font-family:'Fraunces',serif;font-size:1.65rem;color:var(--atl-cream);line-height:1;
+}
+#view-conhecendo .meta-row div small{
+  font-size:.73rem;letter-spacing:.12em;text-transform:uppercase;color:#b6ab93;
+}
+/* ── sections ── */
+#view-conhecendo section.block{padding:3.2rem 0}
+/* ── island pick ── */
+#view-conhecendo .island-pick{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-top:2.2rem}
+#view-conhecendo .pick{
+  position:relative;border-radius:18px;overflow:hidden;cursor:pointer;color:#fff;
+  padding:2rem;min-height:200px;display:flex;flex-direction:column;justify-content:flex-end;
+  border:1px solid rgba(0,0,0,.06);transition:transform .35s,box-shadow .35s;
+}
+#view-conhecendo .pick:hover{transform:translateY(-4px);box-shadow:0 22px 48px -22px rgba(0,0,0,.5)}
+#view-conhecendo .pick.tf{background:radial-gradient(120% 120% at 70% 0%,#d96a3e,#7c2f15)}
+#view-conhecendo .pick.md{background:radial-gradient(120% 120% at 70% 0%,#3f8a64,#173f2c)}
+#view-conhecendo .pick h3{font-size:1.75rem}
+#view-conhecendo .pick small{letter-spacing:.18em;text-transform:uppercase;font-size:.71rem;opacity:.85;font-family:'Fraunces',serif}
+#view-conhecendo .pick p{font-size:.94rem;margin-top:.5rem;opacity:.92}
+#view-conhecendo .pick .go{margin-top:.9rem;font-family:'Fraunces',serif;font-size:.83rem;letter-spacing:.05em;border-bottom:1px solid rgba(255,255,255,.5);align-self:flex-start;padding-bottom:2px}
+/* ── island banner ── */
+#view-conhecendo .ibanner{color:#fff;padding:3.8rem 0 2.8rem;position:relative;overflow:hidden}
+#view-conhecendo .ibanner.tf{background:radial-gradient(130% 100% at 85% 0%,#d96a3e,transparent 55%),linear-gradient(160deg,#3a160a,#160a05)}
+#view-conhecendo .ibanner.md{background:radial-gradient(130% 100% at 85% 0%,#3f8a64,transparent 55%),linear-gradient(160deg,#10301f,#06140d)}
+#view-conhecendo .ibanner h1{font-size:clamp(2.2rem,6vw,4.4rem)}
+#view-conhecendo .ibanner .sub{font-size:1.07rem;max-width:580px;margin-top:.95rem;color:#f0e8d8}
+#view-conhecendo .ibanner .tags{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:1.3rem}
+#view-conhecendo .ibanner .tags span{
+  border:1px solid rgba(255,255,255,.32);border-radius:30px;
+  padding:.28rem .85rem;font-size:.75rem;font-family:'Fraunces',serif;letter-spacing:.04em;
+}
+/* ── stats ── */
+#view-conhecendo .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.4rem}
+#view-conhecendo .stat{background:var(--atl-cream);border:1px solid var(--atl-line);border-radius:14px;padding:1.1rem}
+#view-conhecendo .stat b{font-family:'Fraunces',serif;font-size:1.55rem;display:block;color:var(--atl-accent);line-height:1}
+#view-conhecendo .stat small{font-size:.73rem;text-transform:uppercase;letter-spacing:.08em;color:var(--atl-muted);display:block;margin-top:.45rem}
+/* ── timeline ── */
+#view-conhecendo .timeline{margin-top:1.7rem;border-left:2px solid var(--atl-line);padding-left:1.5rem}
+#view-conhecendo .tl{position:relative;padding-bottom:1.6rem}
+#view-conhecendo .tl::before{
+  content:"";position:absolute;left:-1.65rem;top:.45rem;width:11px;height:11px;
+  border-radius:50%;background:var(--atl-accent);box-shadow:0 0 0 4px var(--atl-parchment);
+}
+#view-conhecendo .tl .yr{font-family:'Fraunces',serif;font-weight:600;color:var(--atl-accent);font-size:.93rem;letter-spacing:.02em}
+#view-conhecendo .tl p{margin-top:.15rem;font-size:.97rem}
+/* ── regions ── */
+#view-conhecendo .regions{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem;margin-top:1.5rem}
+#view-conhecendo .region{
+  background:var(--atl-cream);border:1px solid var(--atl-line);border-radius:15px;
+  padding:1.3rem;transition:.3s;position:relative;overflow:hidden;
+}
+#view-conhecendo .region::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--atl-accent);opacity:.8}
+#view-conhecendo .region:hover{transform:translateY(-3px);box-shadow:0 16px 36px -22px rgba(0,0,0,.42)}
+#view-conhecendo .region h4{font-size:1.12rem;display:flex;align-items:baseline;gap:.45rem}
+#view-conhecendo .region h4 span{font-size:.71rem;font-family:'Spectral',serif;color:var(--atl-muted);font-weight:400;letter-spacing:.05em}
+#view-conhecendo .region p{font-size:.94rem;margin-top:.45rem}
+#view-conhecendo .region .tip{margin-top:.6rem;font-size:.84rem;color:var(--atl-muted);font-style:italic}
+/* ── curios ── */
+#view-conhecendo .curios{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.4rem}
+#view-conhecendo .curio{border:1px solid var(--atl-line);border-radius:13px;padding:1.2rem;background:linear-gradient(180deg,var(--atl-cream),var(--atl-parchment))}
+#view-conhecendo .curio .n{font-family:'Fraunces',serif;font-style:italic;color:var(--atl-accent);font-size:1.03rem}
+#view-conhecendo .curio p{font-size:.92rem;margin-top:.35rem}
+/* ── facts ── */
+#view-conhecendo .facts{list-style:none;margin-top:1.1rem}
+#view-conhecendo .facts li{padding:.65rem 0;border-bottom:1px dashed var(--atl-line);display:flex;gap:1rem}
+#view-conhecendo .facts li b{font-family:'Fraunces',serif;font-weight:600;min-width:110px;color:var(--atl-accent);font-size:.92rem}
+#view-conhecendo .facts li span{font-size:.96rem}
+/* ── callout ── */
+#view-conhecendo .callout{background:var(--atl-basalt);color:var(--atl-cream);border-radius:17px;padding:1.6rem 1.8rem;margin-top:1.8rem}
+#view-conhecendo .callout .eyebrow{color:var(--atl-gold)}
+#view-conhecendo .callout p{color:#e7ddc8}
+/* ── compare table ── */
+#view-conhecendo .cmp{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:.94rem;background:var(--atl-cream);border-radius:13px;overflow:hidden}
+#view-conhecendo .cmp th,#view-conhecendo .cmp td{padding:.82rem .95rem;text-align:left;border-bottom:1px solid var(--atl-line);vertical-align:top}
+#view-conhecendo .cmp thead th{font-family:'Fraunces',serif;background:var(--atl-basalt);color:var(--atl-cream);font-size:.82rem;letter-spacing:.04em}
+#view-conhecendo .cmp thead th.tf{color:#ffb89c}
+#view-conhecendo .cmp thead th.md{color:#a8e0c2}
+#view-conhecendo .cmp td:first-child{font-family:'Fraunces',serif;font-weight:500;color:var(--atl-muted);font-size:.86rem}
+#view-conhecendo .cmp tr:last-child td{border-bottom:none}
+/* ── responsive ── */
+@media(max-width:820px){
+  #view-conhecendo .twocol{grid-template-columns:1fr}
+  #view-conhecendo .island-pick{grid-template-columns:1fr}
+  #view-conhecendo .stats{grid-template-columns:repeat(2,1fr)}
+  #view-conhecendo .regions{grid-template-columns:1fr}
+  #view-conhecendo .curios{grid-template-columns:1fr}
+}
+
 /* ── DESKTOP ── */
 @media(min-width:1025px){
   #sidebar{display:flex;}
@@ -683,6 +863,368 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
     <div id="view-gastro"></div>
     <div id="view-pretrip"></div>
     <div id="view-fotos"></div>
+
+    <!-- ═══════ CONHECENDO OS LUGARES ═══════ -->
+    <div id="view-conhecendo">
+
+      <!-- nav interna -->
+      <nav class="atl-nav" aria-label="Navegação Conhecendo os Lugares">
+        <div class="atl-nav-inner">
+          <button type="button" class="atl-nav-btn active" data-atl="overview" onclick="atlSwitch('overview')">Visão Geral</button>
+          <button type="button" class="atl-nav-btn" data-atl="tenerife" onclick="atlSwitch('tenerife')">Tenerife</button>
+          <button type="button" class="atl-nav-btn" data-atl="madeira" onclick="atlSwitch('madeira')">Madeira</button>
+          <button type="button" class="atl-nav-btn" data-atl="compare" onclick="atlSwitch('compare')">Lado a Lado</button>
+        </div>
+      </nav>
+
+      <!-- ── VISÃO GERAL ── -->
+      <div class="atl-section active" id="atl-overview">
+        <div class="hero">
+          <div class="wrap">
+            <div class="kicker">Duas ilhas vulcânicas · um oceano</div>
+            <h1>Tenerife <span class="amp">&amp;</span> <em>Madeira</em></h1>
+            <p class="lede">Dois fragmentos de terra erguidos do fundo do Atlântico, próximos da costa africana, mas com almas distintas: uma espanhola e canária, outra portuguesa e atlântica. Este é o guia para entender de onde elas vêm antes de pisar nelas.</p>
+            <div class="meta-row">
+              <div><span>~962 mil</span><small>habitantes · Tenerife</small></div>
+              <div><span>~259 mil</span><small>habitantes · Madeira</small></div>
+              <div><span>3.715 m</span><small>Teide · ponto mais alto da Espanha</small></div>
+              <div><span>~600 anos</span><small>de história colonial atlântica</small></div>
+            </div>
+          </div>
+        </div>
+
+        <section class="block">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow">Por que comparar as duas</div>
+              <h2 class="title">Vizinhas no mapa, primas distantes na história</h2>
+              <p class="big lead-drop">Tenerife e Madeira estão a poucas centenas de quilômetros uma da outra, ambas mais perto da África do que da Europa continental, ambas nascidas de vulcões no meio do Atlântico. A semelhança termina aí. Tenerife é a maior das Ilhas Canárias, território da Espanha, e foi habitada muito antes da chegada europeia. Madeira é uma região autônoma de Portugal e estava deserta quando os navegadores portugueses a encontraram no início do século XV.</p>
+              <p>Essa diferença de origem explica quase tudo o que você vai sentir nas ruas: o sotaque, a comida, as festas e até a forma como cada ilha lida com seu passado. Em Tenerife, há o eco de um povo nativo, os guanches, exterminado e absorvido pela conquista castelhana. Em Madeira, tudo o que existe foi plantado, construído e cozido por colonos vindos do continente.</p>
+            </div>
+            <div class="island-pick">
+              <div class="pick tf" onclick="atlSwitch('tenerife')" role="button" tabindex="0" aria-label="Explorar Tenerife">
+                <small>Ilhas Canárias · Espanha</small>
+                <h3>Tenerife</h3>
+                <p>O vulcão Teide, o Carnaval que só perde para o do Rio e um povo nativo que resistiu até 1496.</p>
+                <span class="go">Explorar a ilha →</span>
+              </div>
+              <div class="pick md" onclick="atlSwitch('madeira')" role="button" tabindex="0" aria-label="Explorar Madeira">
+                <small>Arquipélago da Madeira · Portugal</small>
+                <h3>Madeira</h3>
+                <p>Levadas, vinho fortificado, floresta laurissilva e a cidade onde Cristiano Ronaldo nasceu.</p>
+                <span class="go">Explorar a ilha →</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" style="background:var(--atl-parchment-2);border-top:1px solid var(--atl-line);border-bottom:1px solid var(--atl-line)">
+          <div class="wrap twocol">
+            <div>
+              <div class="eyebrow">Geografia rápida</div>
+              <h2 class="title" style="font-size:1.9rem">Onde ficam, afinal</h2>
+              <p>As duas pertencem à Macaronésia, um conjunto de arquipélagos vulcânicos do Atlântico Norte que inclui ainda os Açores e Cabo Verde. Tenerife fica a cerca de 300 km da costa do Marrocos e do Saara Ocidental. Madeira está mais ao norte, a aproximadamente 520 km da costa africana e quase 1.000 km de Lisboa.</p>
+              <p>Apesar da latitude subtropical, o clima é ameno o ano todo, suavizado pelas correntes do Atlântico e pelos ventos alísios. Por isso ambas viraram refúgio de inverno para europeus desde o século XIX.</p>
+            </div>
+            <div>
+              <div class="eyebrow">Em números</div>
+              <ul class="facts">
+                <li><b>Tenerife</b><span>2.034 km², a maior das sete Canárias principais</span></li>
+                <li><b>Madeira</b><span>741 km² na ilha principal, mais Porto Santo e ilhas desertas</span></li>
+                <li><b>Fuso</b><span>Ambas em UTC+0 no inverno, três horas à frente de Brasília</span></li>
+                <li><b>Idioma</b><span>Espanhol em Tenerife, português na Madeira</span></li>
+                <li><b>Moeda</b><span>Euro nas duas</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div><!-- /atl-overview -->
+
+      <!-- ── TENERIFE ── -->
+      <div class="atl-section" id="atl-tenerife">
+        <div class="ibanner tf">
+          <div class="wrap">
+            <div class="kicker" style="color:#ffce9e;font-family:'Fraunces',serif;text-transform:uppercase;letter-spacing:.35em;font-size:.73rem;margin-bottom:1.2rem">Ilhas Canárias · Espanha</div>
+            <h1>Tenerife</h1>
+            <p class="sub">A ilha do Teide, do Carnaval e dos guanches. Maior e mais populosa das Canárias, dividida entre um norte verde e úmido e um sul seco e turístico.</p>
+            <div class="tags"><span>Capital: Santa Cruz</span><span>Gentílico: tinerfeño / chicharrero</span><span>~962 mil habitantes</span></div>
+          </div>
+        </div>
+
+        <div class="subnav">
+          <div class="wrap">
+            <a href="#tf-historia" class="on">História</a>
+            <a href="#tf-povo">Povo &amp; Demo</a>
+            <a href="#tf-crencas">Religião</a>
+            <a href="#tf-cultura">Cultura</a>
+            <a href="#tf-curios">Curiosidades</a>
+            <a href="#tf-regioes">Regiões</a>
+          </div>
+        </div>
+
+        <section class="block anchor" id="tf-historia">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow">História</div>
+              <h2 class="title">Dos guanches à conquista castelhana</h2>
+              <p class="lead-drop">Muito antes dos europeus, Tenerife já era habitada pelos guanches, um povo de origem berbere, vindo do norte da África há mais de dois mil anos. Viviam em cavas, criavam cabras, mumificavam seus mortos e dividiam a ilha em nove reinos chamados menceyatos. Foram os últimos canários a cair diante de Castela.</p>
+              <p>A conquista foi lenta e sangrenta. Em 1494, os guanches venceram os castelhanos na chamada Matança de Acentejo. A vitória durou pouco: epidemias e novas campanhas militares quebraram a resistência, e em 1496 a ilha estava sob domínio espanhol. O que veio depois foi açúcar, depois vinho, e um papel central como porto de escala na rota para as Américas.</p>
+            </div>
+            <div class="timeline">
+              <div class="tl"><div class="yr">Séc. I a.C.</div><p>Chegada dos guanches, de origem berbere norte-africana, à ilha.</p></div>
+              <div class="tl"><div class="yr">1494</div><p>Os guanches derrotam as tropas de Alonso Fernández de Lugo na Matança de Acentejo.</p></div>
+              <div class="tl"><div class="yr">1496</div><p>Rendição final. Tenerife passa a ser a última grande ilha canária conquistada por Castela.</p></div>
+              <div class="tl"><div class="yr">Séc. XVI–XVII</div><p>Economia do açúcar e depois do vinho de Malvasía, exportado para a Europa e as Américas.</p></div>
+              <div class="tl"><div class="yr">1797</div><p>O almirante Nelson tenta tomar Santa Cruz e fracassa, perdendo um braço no ataque.</p></div>
+              <div class="tl"><div class="yr">Séc. XIX–XX</div><p>Forte emigração canária para Cuba e Venezuela, laço que marca até hoje a cultura local.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="tf-povo" style="background:var(--atl-parchment-2);border-top:1px solid var(--atl-line);border-bottom:1px solid var(--atl-line)">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow">Povo &amp; Demografia</div>
+              <h2 class="title">Uma ilha em expansão acelerada</h2>
+              <p>Tenerife tinha cerca de 962 mil habitantes no início de 2025 e deve cruzar a marca de um milhão por volta de 2032. O crescimento vem sobretudo da imigração, com forte presença de latino-americanos, em especial venezuelanos, além de italianos e europeus do norte.</p>
+              <p>Os naturais da ilha se chamam tinerfeños, e quem nasce na capital ganha o apelido carinhoso de chicharrero. Cerca de um quarto da população nasceu fora da Espanha, o que faz de Tenerife uma das regiões mais cosmopolitas do país.</p>
+            </div>
+            <div class="stats">
+              <div class="stat"><b>~962 mil</b><small>habitantes (2025)</small></div>
+              <div class="stat"><b>478/km²</b><small>densidade demográfica</small></div>
+              <div class="stat"><b>~26%</b><small>nascidos no exterior</small></div>
+              <div class="stat"><b>~212 mil</b><small>na capital Santa Cruz</small></div>
+            </div>
+            <div class="reading" style="margin-top:2rem">
+              <div class="eyebrow">Etnia &amp; raça</div>
+              <p>A população é majoritariamente espanhola, fruto da mistura entre colonos castelhanos, andaluzes e portugueses e a herança genética dos guanches. Estudos de DNA mostram que parte significativa da ancestralidade materna dos canários atuais ainda é guanche, mesmo após séculos de mestiçagem. Some-se a isso a imigração recente da América Latina e da Europa, e o resultado é um povo de feições variadas, sem um padrão único.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="tf-crencas">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow">Religião</div>
+              <h2 class="title">Católica, com devoção à padroeira das Canárias</h2>
+              <p>A esmagadora maioria dos tinerfeños é católica romana, ainda que a prática religiosa venha caindo entre os mais jovens. A grande figura devocional é a Virgem de Candelaria, padroeira de todo o arquipélago canário, cuja basílica fica na cidade de Candelaria, no leste da ilha.</p>
+              <p>As festas religiosas se misturam com o calendário popular: romarias, procissões e festas de padroeiro em cada município, muitas com raízes que combinam o catolicismo trazido pelos colonos e ecos de tradições pré-hispânicas.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="tf-cultura" style="background:var(--atl-basalt);color:var(--atl-cream)">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow" style="color:var(--atl-gold)">Cultura</div>
+              <h2 class="title" style="color:var(--atl-cream)">Carnaval, mojo e luta canária</h2>
+              <p style="color:#e7ddc8">O Carnaval de Santa Cruz de Tenerife é o cartão de visitas cultural da ilha. Considerado um dos maiores do mundo, atrás apenas do carnaval do Rio de Janeiro, toma a capital em fevereiro com fantasias monumentais, comparsas e a eleição da Rainha do Carnaval.</p>
+              <p style="color:#e7ddc8">Na mesa, o prato-símbolo são as papas arrugadas — batatas pequenas cozidas na casca com bastante sal, servidas com molhos mojo: o mojo rojo, picante, e o mojo verde, de coentro. Há ainda o gofio, farinha de cereais tostados herdada dos guanches, e os vinhos locais. A luta canária e o timple, pequeno instrumento de cordas, completam o quadro.</p>
+            </div>
+            <div class="callout" style="background:rgba(255,255,255,.06)">
+              <div class="eyebrow">Detalhe linguístico</div>
+              <p>O espanhol canário soa muito mais parecido com o do Caribe e da América Latina do que com o castelhano da Espanha continental. Eles usam "ustedes" no lugar de "vosotros", praticam o "seseo" e chamam o ônibus de "guagua", exatamente como em Cuba.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="tf-curios">
+          <div class="wrap">
+            <div class="eyebrow">Curiosidades</div>
+            <h2 class="title">Coisas que quase ninguém conta</h2>
+            <div class="curios">
+              <div class="curio"><div class="n">Teto da Espanha</div><p>O Teide, com 3.715 m, é o ponto mais alto de toda a Espanha e o terceiro maior vulcão do planeta medido a partir da base, no fundo do oceano.</p></div>
+              <div class="curio"><div class="n">Capital dividida</div><p>Tenerife reveza a capitalidade das Canárias com Gran Canaria. A sede do governo regional troca de ilha a cada legislatura.</p></div>
+              <div class="curio"><div class="n">A árvore milenar</div><p>Em Icod de los Vinos vive o Drago Milenario, um dragoeiro com mais de mil anos, símbolo botânico das Canárias.</p></div>
+              <div class="curio"><div class="n">O braço de Nelson</div><p>O almirante britânico Horatio Nelson perdeu o braço direito tentando, sem sucesso, conquistar Santa Cruz em 1797.</p></div>
+              <div class="curio"><div class="n">Dois climas, uma ilha</div><p>O norte é verde, nublado e úmido. O sul é seco e ensolarado quase o ano todo. A diferença cabe em menos de uma hora de carro.</p></div>
+              <div class="curio"><div class="n">Céu protegido</div><p>O observatório do Teide está entre os melhores do mundo. Há lei que limita a poluição luminosa para proteger a astronomia.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="tf-regioes" style="background:var(--atl-parchment-2);border-top:1px solid var(--atl-line)">
+          <div class="wrap">
+            <div class="eyebrow">Regiões &amp; Bairros</div>
+            <h2 class="title">Como a ilha se divide</h2>
+            <p class="reading">Pense em Tenerife em quatro grandes faixas: a área metropolitana a leste, o norte verde, o sul turístico e o coração vulcânico no centro.</p>
+            <div class="regions">
+              <div class="region"><h4>Santa Cruz <span>capital · leste</span></h4><p>O centro urbano e o porto. Vale ver o Auditório de Tenerife (Calatrava), a Plaza de España, o parque García Sanabria e o mercado de Nuestra Señora de África.</p><p class="tip">Base prática para quem gosta de cidade e cultura.</p></div>
+              <div class="region"><h4>La Laguna <span>norte metropolitano</span></h4><p>A antiga capital, com centro histórico tombado pela UNESCO e a principal universidade da ilha. Atmosfera estudantil, ruas coloniais e clima mais fresco.</p><p class="tip">Imperdível para história e arquitetura.</p></div>
+              <div class="region"><h4>Puerto de la Cruz <span>norte</span></h4><p>O balneário clássico do norte, com o complexo de piscinas Lago Martiánez assinado por César Manrique e o famoso parque Loro Parque.</p><p class="tip">Charme antigo, mar mais agitado.</p></div>
+              <div class="region"><h4>La Orotava &amp; Icod <span>norte</span></h4><p>Vales férteis, casarões senhoriais e o Drago Milenario em Icod de los Vinos. Coração da Tenerife mais tradicional e verde.</p><p class="tip">Ótimo para passeios de carro pelo interior.</p></div>
+              <div class="region"><h4>Costa Adeje &amp; Las Américas <span>sul</span></h4><p>O polo turístico ensolarado: grandes resorts, praias, vida noturna e o ponto de partida para os penhascos de Los Gigantes.</p><p class="tip">Sol garantido, perfil bem internacional.</p></div>
+              <div class="region"><h4>Parque do Teide <span>centro</span></h4><p>Patrimônio Mundial da UNESCO. Uma paisagem lunar de lava e o teleférico que sobe quase ao topo do vulcão. Frio e altitude no centro da ilha.</p><p class="tip">Reserve a subida ao pico com antecedência.</p></div>
+            </div>
+          </div>
+        </section>
+      </div><!-- /atl-tenerife -->
+
+      <!-- ── MADEIRA ── -->
+      <div class="atl-section" id="atl-madeira">
+        <div class="ibanner md">
+          <div class="wrap">
+            <div class="kicker" style="color:#a8e0c2;font-family:'Fraunces',serif;text-transform:uppercase;letter-spacing:.35em;font-size:.73rem;margin-bottom:1.2rem">Arquipélago da Madeira · Portugal</div>
+            <h1>Madeira</h1>
+            <p class="sub">A ilha das levadas, do vinho fortificado e da floresta laurissilva. Deserta até o século XV, hoje uma das regiões mais verdes e montanhosas do Atlântico.</p>
+            <div class="tags"><span>Capital: Funchal</span><span>Gentílico: madeirense</span><span>~259 mil habitantes</span></div>
+          </div>
+        </div>
+
+        <div class="subnav">
+          <div class="wrap">
+            <a href="#md-historia" class="on">História</a>
+            <a href="#md-povo">Povo &amp; Demo</a>
+            <a href="#md-crencas">Religião</a>
+            <a href="#md-cultura">Cultura</a>
+            <a href="#md-curios">Curiosidades</a>
+            <a href="#md-regioes">Regiões</a>
+          </div>
+        </div>
+
+        <section class="block anchor" id="md-historia">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow">História</div>
+              <h2 class="title">Uma ilha de madeira, ouro branco e descobrimentos</h2>
+              <p class="lead-drop">Quando os navegadores portugueses chegaram, no início do século XV, a Madeira estava completamente deserta. Porto Santo foi alcançada em 1418 e a ilha maior em 1419, por João Gonçalves Zarco e Tristão Vaz Teixeira, sob o impulso do Infante Dom Henrique. O nome veio do óbvio: a ilha era um bosque cerrado, e madeira foi o que primeiro saltou aos olhos.</p>
+              <p>O açúcar transformou tudo. Nos séculos XV e XVI, a cana fez da Madeira uma das terras mais ricas do Atlântico — o chamado ouro branco — cultivado com trabalho escravo. Depois veio o vinho fortificado, que ganharia fama mundial. Cristóvão Colombo morou na ilha e ali se casou, antes de cruzar o oceano.</p>
+            </div>
+            <div class="timeline">
+              <div class="tl"><div class="yr">1418</div><p>Zarco e Vaz Teixeira chegam a Porto Santo, levados por uma tempestade.</p></div>
+              <div class="tl"><div class="yr">1419</div><p>Descoberta da ilha principal da Madeira. Início do povoamento por colonos do continente.</p></div>
+              <div class="tl"><div class="yr">Séc. XV–XVI</div><p>Auge do açúcar, o "ouro branco", base de uma economia movida por trabalho escravo.</p></div>
+              <div class="tl"><div class="yr">~1480</div><p>Cristóvão Colombo vive no arquipélago e casa-se com Filipa Moniz, filha de um capitão-donatário.</p></div>
+              <div class="tl"><div class="yr">Séc. XVII em diante</div><p>O vinho Madeira substitui o açúcar como principal produto de exportação.</p></div>
+              <div class="tl"><div class="yr">1976</div><p>A Madeira torna-se Região Autônoma de Portugal, com governo e parlamento próprios.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="md-povo" style="background:var(--atl-parchment-2);border-top:1px solid var(--atl-line);border-bottom:1px solid var(--atl-line)">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow">Povo &amp; Demografia</div>
+              <h2 class="title">Pequena, envelhecida e muito concentrada</h2>
+              <p>A Madeira tinha cerca de 259 mil habitantes no fim de 2024, a maioria esmagadora na ilha principal e apenas alguns milhares em Porto Santo. Funchal concentra perto de 45% de toda a população da região na sua área urbana.</p>
+              <p>É uma população que envelhece: a idade mediana passou de 47 anos e o número de idosos já supera o de jovens em todos os municípios. A emigração histórica de madeirenses para a Venezuela, a África do Sul, o Brasil e as ilhas do Canal marcou gerações inteiras.</p>
+            </div>
+            <div class="stats">
+              <div class="stat"><b>~259 mil</b><small>habitantes (2024)</small></div>
+              <div class="stat"><b>324/km²</b><small>densidade demográfica</small></div>
+              <div class="stat"><b>47 anos</b><small>idade mediana</small></div>
+              <div class="stat"><b>~106 mil</b><small>na capital Funchal</small></div>
+            </div>
+            <div class="reading" style="margin-top:2rem">
+              <div class="eyebrow">Etnia &amp; raça</div>
+              <p>Como a ilha estava deserta na descoberta, os madeirenses são etnicamente portugueses, descendentes sobretudo de colonos do Minho e do Algarve, com contribuições de escravizados africanos e de mercadores genoveses e flamengos ligados ao comércio do açúcar. Apesar dessa base lusitana, desenvolveram uma identidade regional forte, com sotaque, vocabulário e tradições próprios.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="md-crencas">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow">Religião</div>
+              <h2 class="title">Profundamente católica</h2>
+              <p>A Madeira é uma das regiões mais católicas de Portugal. A grande maioria da população se identifica como católica romana, e a Diocese do Funchal, uma das mais antigas do país, tem sua catedral, a Sé, no coração da capital.</p>
+              <p>A fé molda o calendário. Cada freguesia tem seu santo padroeiro e seus arraiais — festas populares com música, comida e fogo. O ponto alto é a quadra do Natal e Ano Novo, incluindo as famosas missas do parto que antecedem o Natal.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="md-cultura" style="background:var(--atl-basalt);color:var(--atl-cream)">
+          <div class="wrap">
+            <div class="reading">
+              <div class="eyebrow" style="color:var(--atl-gold)">Cultura</div>
+              <h2 class="title" style="color:var(--atl-cream)">Levadas, poncha e bordado</h2>
+              <p style="color:#e7ddc8">A cultura madeirense nasce da relação com uma terra íngreme e da água. As levadas, canais de irrigação cavados ao longo de séculos para levar água das montanhas às plantações, viraram uma rede de trilhas que atravessa a floresta laurissilva, um bosque pré-histórico classificado como Patrimônio Mundial da UNESCO.</p>
+              <p style="color:#e7ddc8">À mesa, a estrela é a espada preta, peixe abissal servido com banana, ao lado da espetada de carne no espeto de loureiro, do bolo do caco com manteiga de alho e do milho frito. Para beber, a poncha — feita de aguardente de cana, mel e limão — e claro, o vinho Madeira. O bordado madeirense, artesanato delicado e mundialmente conhecido, completa a identidade local.</p>
+            </div>
+            <div class="callout" style="background:rgba(255,255,255,.06)">
+              <div class="eyebrow">Filho mais famoso</div>
+              <p>Cristiano Ronaldo nasceu na freguesia de Santo António, no Funchal. A ilha batizou o aeroporto com seu nome e mantém um museu dedicado ao jogador na zona da marina. Para os madeirenses, ele é fonte de enorme orgulho regional.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="md-curios">
+          <div class="wrap">
+            <div class="eyebrow">Curiosidades</div>
+            <h2 class="title">Coisas que quase ninguém conta</h2>
+            <div class="curios">
+              <div class="curio"><div class="n">A lenda do fogo</div><p>Conta-se que, para limpar o terreno, os colonos atearam fogo à mata. O incêndio teria durado sete anos, alimentando a fertilidade do solo vulcânico.</p></div>
+              <div class="curio"><div class="n">Vinho da independência</div><p>O vinho Madeira foi usado para brindar a assinatura da Declaração de Independência dos Estados Unidos, em 1776.</p></div>
+              <div class="curio"><div class="n">Descer de cesto</div><p>No Monte, acima do Funchal, dá para descer a ladeira em carros de cesto de vime empurrados por dois carreiros de chapéu de palha.</p></div>
+              <div class="curio"><div class="n">Réveillon recordista</div><p>O fogo de artifício do Ano Novo no Funchal já entrou no Guinness como o maior espetáculo pirotécnico do mundo.</p></div>
+              <div class="curio"><div class="n">Casas triangulares</div><p>Em Santana sobrevivem as casas de colmo, pequenas construções triangulares com telhado de palha, virtuais cartões-postais da ilha.</p></div>
+              <div class="curio"><div class="n">Praia de ouro emprestado</div><p>A Madeira quase não tem areia. A praia da Calheta foi criada com areia dourada importada do Saara e do Marrocos.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block anchor" id="md-regioes" style="background:var(--atl-parchment-2);border-top:1px solid var(--atl-line)">
+          <div class="wrap">
+            <div class="eyebrow">Regiões &amp; Bairros</div>
+            <h2 class="title">Como a ilha se divide</h2>
+            <p class="reading">A Madeira tem onze municípios. A maior parte da vida está na costa sul, mais quente e abrigada, com Funchal no centro. O norte é mais selvagem e chuvoso, e o interior é puro pico e vale.</p>
+            <div class="regions">
+              <div class="region"><h4>Funchal <span>capital · sul</span></h4><p>O coração da ilha. A Sé na zona histórica, a Zona Velha com suas portas pintadas e restaurantes, o mercado dos Lavradores e a freguesia do Monte, alcançada de teleférico.</p><p class="tip">Melhor base para quase qualquer roteiro.</p></div>
+              <div class="region"><h4>Câmara de Lobos <span>sul</span></h4><p>Vila piscatória pitoresca, onde nasceu a poncha e que Winston Churchill gostava de pintar. Casario colorido sobre uma baía de barcos.</p><p class="tip">Vá ao fim da tarde, com a luz baixa.</p></div>
+              <div class="region"><h4>Caniço &amp; Santa Cruz <span>sudeste</span></h4><p>Onde fica o aeroporto e os subúrbios em crescimento. Garajau, com seu cristo sobre o mar, e zonas de mergulho na reserva marinha.</p><p class="tip">Prático para quem chega e quer mar perto.</p></div>
+              <div class="region"><h4>Santana <span>norte</span></h4><p>Famosa pelas casas de colmo triangulares. Porta de entrada para as trilhas do Pico Ruivo e para a Madeira mais rural.</p><p class="tip">Combine com a subida ao ponto mais alto da ilha.</p></div>
+              <div class="region"><h4>Porto Moniz &amp; São Vicente <span>norte</span></h4><p>As piscinas naturais de lava de Porto Moniz e as paisagens dramáticas da costa norte, mais úmida e verde.</p><p class="tip">Estrada cênica imperdível, leve casaco.</p></div>
+              <div class="region"><h4>Porto Santo <span>ilha vizinha</span></h4><p>A cerca de 40 minutos de barco ou voo curto, oferece o que falta na Madeira: 9 km de praia de areia dourada, considerada terapêutica.</p><p class="tip">O destino de praia do arquipélago.</p></div>
+            </div>
+          </div>
+        </section>
+      </div><!-- /atl-madeira -->
+
+      <!-- ── LADO A LADO ── -->
+      <div class="atl-section" id="atl-compare">
+        <section class="block" style="padding-top:3rem">
+          <div class="wrap">
+            <div class="eyebrow">Lado a Lado</div>
+            <h2 class="title">Tenerife e Madeira em uma tabela</h2>
+            <p class="reading">Um resumo direto para decidir o que esperar de cada uma antes de fazer as malas.</p>
+            <table class="cmp">
+              <thead>
+                <tr><th></th><th class="tf">🌋 Tenerife</th><th class="md">🌿 Madeira</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>País</td><td>Espanha (Ilhas Canárias)</td><td>Portugal (Região Autônoma)</td></tr>
+                <tr><td>Idioma</td><td>Espanhol, sotaque canário</td><td>Português, sotaque madeirense</td></tr>
+                <tr><td>População</td><td>~962 mil habitantes</td><td>~259 mil habitantes</td></tr>
+                <tr><td>Capital</td><td>Santa Cruz de Tenerife</td><td>Funchal</td></tr>
+                <tr><td>Origem do povo</td><td>Guanches nativos + colonos castelhanos + imigração latino-americana</td><td>Colonos portugueses do Minho e Algarve, ilha antes deserta</td></tr>
+                <tr><td>Religião</td><td>Católica, padroeira Virgem de Candelaria</td><td>Católica, uma das mais devotas de Portugal</td></tr>
+                <tr><td>Paisagem</td><td>Vulcão Teide, norte verde e sul desértico</td><td>Montanhas, levadas e floresta laurissilva</td></tr>
+                <tr><td>Sabor típico</td><td>Papas arrugadas com mojo, gofio</td><td>Espada com banana, espetada, poncha</td></tr>
+                <tr><td>Festa-símbolo</td><td>Carnaval de Santa Cruz</td><td>Réveillon do Funchal e Festa da Flor</td></tr>
+                <tr><td>Perfil de viagem</td><td>Mais turística e movimentada, praias de sol no sul</td><td>Mais tranquila e natural, foco em trilhas e paisagem</td></tr>
+              </tbody>
+            </table>
+
+            <div class="divider"></div>
+
+            <div class="twocol">
+              <div>
+                <div class="eyebrow">Dica de roteiro</div>
+                <h3 style="font-size:1.3rem;margin-bottom:.6rem">Se for às duas na mesma viagem</h3>
+                <p>Não há voos diretos curtos entre elas o tempo todo, mas a conexão costuma passar por Lisboa, Madri ou Las Palmas. Vale reservar pelo menos quatro a cinco noites em cada uma. Tenerife pede um dia inteiro para o Teide e outro para o norte verde. Na Madeira, separe dias para as levadas e para a costa norte.</p>
+              </div>
+              <div>
+                <div class="eyebrow">Para sentir cada uma</div>
+                <h3 style="font-size:1.3rem;margin-bottom:.6rem">Em uma frase</h3>
+                <p><span class="pin">Tenerife</span> é energia, vulcão e festa — uma ilha que mistura sol caribenho com herança nativa e turismo de massa.</p>
+                <p><span class="pin">Madeira</span> é silêncio, verde e altura — uma ilha-jardim onde a água corre pelas levadas e o tempo passa mais devagar.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div><!-- /atl-compare -->
+
+    </div><!-- /view-conhecendo -->
   </main>
 </div>
 
@@ -2605,6 +3147,7 @@ function renderTabs() {
     {id:'madrid',label:'🏛️ Madrid'},{id:'reservas',label:'📋 Reservas'},
     {id:'gastro',label:'🍴 Gastronomia'},{id:'pretrip',label:'✅ Pré-viagem'},
     {id:'fotos',label:'📷 Fotos'},
+    {id:'conhecendo',label:'🗺️ Conhecendo'},
   ];
   const ch = getChecked();
   const unchecked = ALL_RES.filter(r => !ch[r.id] && r.prio==='red').length;
@@ -3089,8 +3632,9 @@ function showView(view) {
   document.getElementById('view-reservas').style.display  = view==='reservas'?'block':'none';
   document.getElementById('view-gastro').style.display    = view==='gastro'?'block':'none';
   document.getElementById('view-pretrip').style.display   = view==='pretrip'?'block':'none';
-  document.getElementById('view-fotos').style.display     = view==='fotos'?'block':'none';
-  document.getElementById('sidebar').style.display        = view==='itinerary'?'':'none';
+  document.getElementById('view-fotos').style.display      = view==='fotos'?'block':'none';
+  document.getElementById('view-conhecendo').style.display = view==='conhecendo'?'block':'none';
+  document.getElementById('sidebar').style.display         = view==='itinerary'?'':'none';
   const cw = document.getElementById('day-chips-wrap');
   if (cw) cw.style.display = view==='itinerary'?'':'none';
   document.getElementById('bottom-bar').style.display     = view==='itinerary'?'':'none';
@@ -3113,6 +3657,11 @@ function switchDest(destId) {
   } else if (destId==='fotos') {
     S.dest='fotos'; S.view='fotos';
     showView('fotos'); renderPhotosView();
+  } else if (destId==='conhecendo') {
+    S.dest='conhecendo'; S.view='conhecendo';
+    showView('conhecendo');
+    // reset interno para visão geral ao entrar pela primeira vez
+    atlSwitch(atlCurrentView || 'overview');
   } else {
     S.dest=destId; S.dayIdx=0; S.view='itinerary';
     applyTheme(destId); showView('itinerary');
@@ -3136,6 +3685,49 @@ function switchDay(idx) {
 
 function setResFilter(f) { S.resFilter=f; renderReservas(); }
 function closeSidebar()  {}  // no mobile sidebar in v2
+
+// ════════════════════════════════════════════════════════════
+//  CONHECENDO OS LUGARES — navegação interna
+// ════════════════════════════════════════════════════════════
+let atlCurrentView = 'overview';
+let _atlObs = null;
+
+function atlSwitch(id) {
+  atlCurrentView = id;
+  // troca seção visível
+  document.querySelectorAll('#view-conhecendo .atl-section').forEach(s =>
+    s.classList.toggle('active', s.id === 'atl-' + id)
+  );
+  // marca botão ativo
+  document.querySelectorAll('#view-conhecendo .atl-nav-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.atl === id)
+  );
+  // troca cor de destaque
+  const accents = {overview:'#c0552f', tenerife:'#c0552f', madeira:'#2f6b4f', compare:'#caa244'};
+  const el = document.getElementById('view-conhecendo');
+  if (el) el.style.setProperty('--atl-accent', accents[id] || '#c0552f');
+  // scroll ao topo
+  window.scrollTo({top:0, behavior:'instant'});
+  // subnav scroll-spy (apenas para páginas de ilha)
+  if (_atlObs) { _atlObs.disconnect(); _atlObs = null; }
+  if (id === 'tenerife' || id === 'madeira') {
+    const section = document.getElementById('atl-' + id);
+    if (!section) return;
+    const nav   = section.querySelector('.subnav');
+    if (!nav) return;
+    const links = [...nav.querySelectorAll('a')];
+    const sects = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    _atlObs = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          const hid = '#' + en.target.id;
+          links.forEach(l => l.classList.toggle('on', l.getAttribute('href') === hid));
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    sects.forEach(s => _atlObs.observe(s));
+  }
+}
 
 // ════════════════════════════════════════════════════════════
 //  INIT
