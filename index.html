@@ -1238,36 +1238,6 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
   </button>
 </div>
 
-<!-- ═══════ MODAL: LOGIN ═══════ -->
-<div class="modal-overlay" id="auth-modal" onclick="handleOverlayClick(event,'auth-modal')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Entrar no álbum</div>
-    <div class="modal-sub">Digite seu email para receber um link de acesso.<br>Sem senha.</div>
-    <label class="modal-label" for="auth-email">Email</label>
-    <input class="modal-input" id="auth-email" type="email" placeholder="nome@email.com"
-      autocomplete="email" inputmode="email">
-    <button class="modal-btn-primary" id="auth-submit-btn" onclick="handleAuthSubmit()">
-      Enviar link de acesso
-    </button>
-    <div class="modal-status" id="auth-status"></div>
-    <button class="modal-btn-secondary" onclick="closeModal('auth-modal')">Cancelar</button>
-  </div>
-</div>
-
-<!-- ═══════ MODAL: NOME (primeiro login) ═══════ -->
-<div class="modal-overlay" id="name-modal">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Como você quer aparecer?</div>
-    <div class="modal-sub">Seu nome vai aparecer junto com suas fotos. Só precisa fazer isso uma vez.</div>
-    <label class="modal-label" for="name-input">Nome</label>
-    <input class="modal-input" id="name-input" type="text" placeholder="Ex: Solon"
-      autocomplete="name" maxlength="30">
-    <button class="modal-btn-primary" onclick="handleNameSubmit()">Salvar</button>
-  </div>
-</div>
-
 <!-- ═══════ MODAL: UPLOAD ═══════ -->
 <div class="modal-overlay" id="upload-modal" onclick="handleOverlayClick(event,'upload-modal')">
   <div class="modal-sheet">
@@ -1286,6 +1256,11 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
       <div class="upload-progress-bar" id="upload-progress-bar"></div>
     </div>
     <div style="margin-top:14px;">
+      <label class="modal-label" for="upload-name">Seu nome</label>
+      <input class="modal-input" id="upload-name" type="text"
+        placeholder="Ex: Solon" maxlength="30" autocomplete="name">
+    </div>
+    <div style="margin-top:10px;">
       <label class="modal-label" for="upload-caption">Legenda (opcional)</label>
       <input class="modal-input" id="upload-caption" type="text"
         placeholder="Ex: Playa del Duque ao pôr do sol" maxlength="120">
@@ -1320,14 +1295,12 @@ header{position:sticky;top:0;z-index:500;height:var(--header-h);
 //    uploaded_at   TIMESTAMPTZ DEFAULT NOW()
 //  );
 //  ALTER TABLE trip_photos ENABLE ROW LEVEL SECURITY;
-//  CREATE POLICY "ver" ON trip_photos FOR SELECT TO authenticated USING (true);
-//  CREATE POLICY "inserir" ON trip_photos FOR INSERT TO authenticated WITH CHECK (true);
-//  CREATE POLICY "deletar proprio" ON trip_photos FOR DELETE TO authenticated
-//    USING (auth.email() = uploader_email);
+//  CREATE POLICY "ver" ON trip_photos FOR SELECT TO anon, authenticated USING (true);
+//  CREATE POLICY "inserir" ON trip_photos FOR INSERT TO anon, authenticated WITH CHECK (true);
+//  CREATE POLICY "deletar" ON trip_photos FOR DELETE TO anon, authenticated USING (true);
 //
 //  4. Em Storage → New bucket: nome "photos", Public ON
-//  5. Em Authentication → Providers → Email: habilitar Magic Link,
-//     desabilitar "Confirm email", Site URL = https://solonferreira.github.io/viagem-espanha-osdificil/
+//  5. Em Storage → Policies → bucket "photos": permitir INSERT e DELETE para role anon
 // ════════════════════════════════════════════════════════════
 const SUPABASE_URL      = 'https://pwzzqakjpofjdlfaxzgj.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_oUFd8FmRm3gIf3yuRjyh1g_wjorPs21';
@@ -2803,46 +2776,12 @@ function applyTheme(destId) {
 }
 
 // ════════════════════════════════════════════════════════════
-//  SUPABASE — AUTH
+//  SUPABASE — AUTH (desabilitado — acesso aberto)
 // ════════════════════════════════════════════════════════════
-async function initAuth() {
-  if (!sb) return;
-  sb.auth.onAuthStateChange((event, session) => {
-    S.authUser = session?.user || null;
-    renderHeaderUser();
-    if (event === 'SIGNED_IN' && session?.user) {
-      if (!session.user.user_metadata?.name) openModal('name-modal');
-    }
-    if (S.view === 'fotos') renderPhotosView();
-  });
-  const { data:{ session } } = await sb.auth.getSession();
-  S.authUser = session?.user || null;
-  renderHeaderUser();
-}
-
+async function initAuth() { /* acesso aberto, sem login */ }
 function renderHeaderUser() {
   const el = document.getElementById('header-user');
-  if (!el) return;
-  if (!SUPABASE_OK) { el.innerHTML = ''; return; }
-  if (S.authUser) {
-    const name = S.authUser.user_metadata?.name || S.authUser.email.split('@')[0];
-    el.innerHTML = `<button class="header-user-btn logged-in" onclick="handleUserMenuClick()" title="${S.authUser.email}">👤 ${name}</button>`;
-  } else {
-    el.innerHTML = `<button class="header-user-btn" onclick="openModal('auth-modal')">Entrar</button>`;
-  }
-}
-
-function handleUserMenuClick() {
-  const name = S.authUser?.user_metadata?.name || S.authUser?.email;
-  if (confirm(`Sair da conta de ${name}?`)) signOut();
-}
-
-async function signOut() {
-  if (!sb) return;
-  await sb.auth.signOut();
-  S.authUser = null;
-  renderHeaderUser();
-  if (S.view === 'fotos') renderPhotosView();
+  if (el) el.innerHTML = '';
 }
 
 // Modal helpers
@@ -2850,11 +2789,6 @@ function openModal(id) {
   const m = document.getElementById(id);
   if (!m) return;
   m.classList.add('open');
-  if (id === 'auth-modal') {
-    setModalStatus('auth-status','','');
-    const btn = document.getElementById('auth-submit-btn');
-    if (btn) { btn.disabled=false; btn.textContent='Enviar link de acesso'; }
-  }
 }
 function closeModal(id) {
   const m = document.getElementById(id);
@@ -2866,38 +2800,6 @@ function setModalStatus(id, msg, type) {
   if (!el) return;
   el.textContent = msg;
   el.className = 'modal-status' + (type?' '+type:'');
-}
-
-async function handleAuthSubmit() {
-  const email = (document.getElementById('auth-email')?.value||'').trim();
-  if (!email || !email.includes('@')) {
-    setModalStatus('auth-status','Por favor insira um email válido.','error');
-    return;
-  }
-  const btn = document.getElementById('auth-submit-btn');
-  btn.disabled = true; btn.textContent = 'Enviando...';
-  try {
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options:{ emailRedirectTo: location.origin + location.pathname }
-    });
-    if (error) throw error;
-    setModalStatus('auth-status', `✅ Link enviado para ${email}! Abra o email e clique no link.`, 'success');
-    btn.textContent = 'Link enviado!';
-  } catch(err) {
-    setModalStatus('auth-status','Erro ao enviar. Tente novamente.','error');
-    btn.disabled = false; btn.textContent = 'Enviar link de acesso';
-  }
-}
-
-async function handleNameSubmit() {
-  const name = (document.getElementById('name-input')?.value||'').trim();
-  if (name.length < 2) return;
-  await sb.auth.updateUser({ data:{ name } });
-  if (S.authUser) S.authUser.user_metadata = {...(S.authUser.user_metadata||{}), name};
-  closeModal('name-modal');
-  renderHeaderUser();
-  if (S.view === 'fotos') renderPhotosView();
 }
 
 // ════════════════════════════════════════════════════════════
@@ -2916,15 +2818,11 @@ async function loadDayPhotos(destId, dayN) {
   } catch(e) { console.warn('loadDayPhotos error', e); S.photosCache[key]=[]; return []; }
 }
 
-async function uploadPhoto(file, destId, dayN, caption) {
-  if (!sb || !S.authUser) throw new Error('Não autenticado');
-  // Compress/convert to JPEG
+async function uploadPhoto(file, destId, dayN, caption, uploaderName) {
+  if (!sb) throw new Error('Supabase não configurado');
   let blob;
   try { blob = await compressToJpeg(file); }
-  catch(e) {
-    // Fallback: upload original if canvas can't decode (e.g. HEIC on Android)
-    blob = file;
-  }
+  catch(e) { blob = file; }
   const ext  = blob.type === 'image/jpeg' ? 'jpg' : (file.name.split('.').pop() || 'jpg');
   const path = `photos/${destId}/d${dayN}/${crypto.randomUUID()}.${ext}`;
   const { error:upErr } = await sb.storage.from('photos').upload(path, blob, {
@@ -2932,21 +2830,20 @@ async function uploadPhoto(file, destId, dayN, caption) {
   });
   if (upErr) throw upErr;
   const { data:{ publicUrl } } = sb.storage.from('photos').getPublicUrl(path);
-  const uploaderName = S.authUser.user_metadata?.name || S.authUser.email.split('@')[0];
   const { error:dbErr } = await sb.from('trip_photos').insert({
     dest_id:destId, day_n:dayN, storage_path:path, public_url:publicUrl,
-    caption:caption||null, uploader_name:uploaderName, uploader_email:S.authUser.email
+    caption:caption||null, uploader_name:uploaderName||'Anônimo', uploader_email:null
   });
   if (dbErr) throw dbErr;
-  delete S.photosCache[`${destId}:${dayN}`]; // invalidar cache
+  delete S.photosCache[`${destId}:${dayN}`];
 }
 
 async function deletePhoto(photoId, storagePath) {
-  if (!sb || !S.authUser) throw new Error('Não autenticado');
+  if (!sb) throw new Error('Supabase não configurado');
   await sb.storage.from('photos').remove([storagePath]);
   const { error } = await sb.from('trip_photos').delete().eq('id', photoId);
   if (error) throw error;
-  S.photosCache = {}; // limpar todo o cache
+  S.photosCache = {};
 }
 
 // Canvas compression — converts any image (incl. HEIC on iOS) to JPEG ≤1200px
@@ -3055,12 +2952,8 @@ async function renderDayPhotosView(destId, dayN) {
   const container = document.getElementById('view-fotos');
   const dest = DEST[destId];
   const day  = dest.days.find(d => d.n===dayN);
-  const isLoggedIn = !!S.authUser;
-  const addBtnHtml = isLoggedIn
-    ? `<button class="dph-add-btn" style="--dest:${dest.color}"
-        onclick="openUploadModal('${destId}',${dayN})">+ Foto</button>`
-    : `<button class="dph-add-btn needs-login"
-        onclick="openModal('auth-modal')">Entrar para adicionar</button>`;
+  const addBtnHtml = `<button class="dph-add-btn" style="--dest:${dest.color}"
+      onclick="openUploadModal('${destId}',${dayN})">+ Foto</button>`;
 
   const headerHtml = `<div class="day-photos-header">
     <button class="dph-back" onclick="backToPhotosOverview()">←</button>
@@ -3076,9 +2969,7 @@ async function renderDayPhotosView(destId, dayN) {
   if (!photos.length) {
     listHtml = `<div class="dp-empty">📷<br>Nenhuma foto ainda.<br>Seja o primeiro a marcar este dia!</div>`;
   } else {
-    const userEmail = S.authUser?.email;
     listHtml = photos.map(p => {
-      const isOwn = p.uploader_email === userEmail;
       return `<div class="dp-item">
         <img class="dp-img" src="${p.public_url}" alt="${p.caption||''}" loading="lazy">
         <div class="dp-meta">
@@ -3086,8 +2977,8 @@ async function renderDayPhotosView(destId, dayN) {
             ${p.caption?`<div class="dp-caption">${p.caption}</div>`:''}
             <div class="dp-uploader">${p.uploader_name||'Anônimo'} · ${fmtDate(p.uploaded_at)}</div>
           </div>
-          ${isOwn?`<button class="dp-delete-btn" title="Apagar foto"
-            onclick="confirmDeletePhoto('${p.id}','${p.storage_path}')">✕</button>`:''}
+          <button class="dp-delete-btn" title="Apagar foto"
+            onclick="confirmDeletePhoto('${p.id}','${p.storage_path}')">✕</button>
         </div>
       </div>`;
     }).join('');
@@ -3120,7 +3011,6 @@ function switchToPhotosDay(destId, dayN) {
 //  SUPABASE — UPLOAD MODAL
 // ════════════════════════════════════════════════════════════
 function openUploadModal(destId, dayN) {
-  if (!S.authUser) { openModal('auth-modal'); return; }
   S.uploadTarget = {destId,dayN};
   _selectedFile  = null;
   const dest = DEST[destId], day = dest.days.find(d=>d.n===dayN);
@@ -3128,6 +3018,8 @@ function openUploadModal(destId, dayN) {
   if (titleEl) titleEl.textContent = `Foto — Dia ${dayN} · ${day.title}`;
   const prev = document.getElementById('upload-preview');
   if (prev) prev.innerHTML = '<span class="upload-preview-ph">📷</span>';
+  const nameEl = document.getElementById('upload-name');
+  if (nameEl) nameEl.value = localStorage.getItem('uploader_name') || '';
   const capEl = document.getElementById('upload-caption');
   if (capEl) capEl.value = '';
   const subBtn = document.getElementById('upload-submit-btn');
@@ -3164,9 +3056,11 @@ async function handleUploadSubmit() {
   if (pw) pw.style.display='block'; if (pb) pb.style.width='30%';
   setModalStatus('upload-status','','');
   try {
+    const name = (document.getElementById('upload-name')?.value||'').trim() || 'Anônimo';
+    localStorage.setItem('uploader_name', name);
     const caption = (document.getElementById('upload-caption')?.value||'').trim();
     btn.textContent='Enviando...'; if (pb) pb.style.width='60%';
-    await uploadPhoto(_selectedFile, S.uploadTarget.destId, S.uploadTarget.dayN, caption);
+    await uploadPhoto(_selectedFile, S.uploadTarget.destId, S.uploadTarget.dayN, caption, name);
     if (pb) pb.style.width='100%';
     setModalStatus('upload-status','✅ Foto enviada!','success');
     btn.textContent='Enviado!';
@@ -3414,23 +3308,19 @@ async function renderDayPhotosInline() {
 
   const photos = await loadDayPhotos(S.dest, day.n);
 
-  const addBtn = S.authUser
-    ? `<button class="dpi-add-btn" onclick="openUploadModal('${S.dest}',${day.n})" style="--dest:${dest.color}">+ Adicionar foto</button>`
-    : `<button class="dpi-add-btn needs-login" onclick="openModal('auth-modal')">Entrar para adicionar</button>`;
+  const addBtn = `<button class="dpi-add-btn" onclick="openUploadModal('${S.dest}',${day.n})" style="--dest:${dest.color}">+ Adicionar foto</button>`;
 
   let photosHtml;
   if (!photos.length) {
     photosHtml = `<div class="dpi-empty">Nenhuma foto ainda · Seja o primeiro!</div>`;
   } else {
-    const userEmail = S.authUser?.email;
     photosHtml = `<div class="dpi-grid">` + photos.map(p => {
-      const isOwn = p.uploader_email === userEmail;
       return `<div class="dpi-item">
         <img class="dpi-img" src="${p.public_url}" alt="${p.caption||''}" loading="lazy">
         <div class="dpi-meta">
           ${p.caption ? `<span class="dpi-caption">${p.caption}</span>` : ''}
           <span class="dpi-uploader">${p.uploader_name||'Anônimo'}</span>
-          ${isOwn ? `<button class="dp-delete-btn" title="Apagar" onclick="confirmDeletePhoto('${p.id}','${p.storage_path}')">✕</button>` : ''}
+          <button class="dp-delete-btn" title="Apagar" onclick="confirmDeletePhoto('${p.id}','${p.storage_path}')">✕</button>
         </div>
       </div>`;
     }).join('') + `</div>`;
